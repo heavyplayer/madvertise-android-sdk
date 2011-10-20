@@ -10,10 +10,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Setup your site token -->
-        <meta-data android:value="TestTokn" android:name="madvertise_site_token" />
+        <!-- Setup your site token. For tests, use 'TestTokn'-->        
+        <meta-data android:value="CvgJ4uu2" android:name="madvertise_site_token" />
     </application>
+    
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="12"></uses-sdk>
 </manifest>

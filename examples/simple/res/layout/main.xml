@@ -5,17 +5,35 @@
 		android:orientation="vertical"
 		android:layout_width="fill_parent" 
 		android:layout_height="fill_parent"
+        android:gravity="center_horizontal"
 		>
-		<de.madvertise.android.sdk.MadView
+        
+        <!-- 
+        Create a new MadvertiseView. You can create multiple of them, e. g. one fixed and another in a ListView. 
+        However, it is not recommended to use more than four of them.
+        You can set the following attributes:
+        textColor [color], the color your text ad's text should have. E.g. '#012'.
+        textSize [integer], the size of your text ad's text. Maximum size is 20, minimum is 10.
+        backgroundColor [color], the color the background of your text ads. E.g. '#012'.
+        secondsToRefresh [integer], the time after which a new ad will be loaded. Minimum is 30.
+        bannerType [mma|leaderboard|fullscreen|portrait|landscape|medium_rectangle], the ad type of your banner. 
+                    You can also chain types like that: 'mma,portrait,landscape'. 
+                    The sizes are: mma 320x53, leaderboard 728x90, fullcreen 768x768, portrait 766x66, landscape 1024x66, medium_rectangle 320x200.                    
+        animation [fade|left_to_right|top_down], the way new ads will be animated. 'fade' is default.
+        deliverOnlyText [true|false], whether your ad only displays text or not. This only has effect on mma type banners.
+        -->
+		<de.madvertise.android.sdk.MadvertiseView
 			android:id="@+id/madad"
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"
-			mad:isTestMode="true"
-			mad:backgroundColor="#000000"
+			mad:backgroundColor="#555"
 			mad:textColor="#FF1F1F"
 			mad:bannerType="mma"
-			mad:deliverOnlyText="false"
+            mad:animation="fade"
+            mad:textSize="20"
+            mad:deliverOnlyText="false"
 		/>
+       
 		<ListView
 			android:id="@+id/country_list"
 			android:layout_width="wrap_content" 

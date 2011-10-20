@@ -8,5 +8,6 @@
 		<attr name="isTestMode" format="boolean" />
 		<attr name="bannerType" format="string" />
 		<attr name="deliverOnlyText" format="boolean" />
+        <attr name="animation" format="string" />         
 	</declare-styleable>
 </resources>
