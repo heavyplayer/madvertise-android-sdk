@@ -11,7 +11,7 @@
             </intent-filter>
         </activity>
         <!-- Setup your site token. For tests, use 'TestTokn'-->        
-        <meta-data android:value="CvgJ4uu2" android:name="madvertise_site_token" />
+        <meta-data android:value="TestTokn" android:name="madvertise_site_token" />
     </application>
     
     <uses-permission android:name="android.permission.INTERNET" />
