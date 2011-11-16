@@ -457,7 +457,7 @@ public class MadvertiseUtil {
      * @param message
      * @see android.util.Log
      */
-    static void logMessage(final String tag, final int level, final String message) {
+    static void logMessage(final String tag, final int level, String message) {    	
         String logTag = tag;
         if (!PRINT_LOG) {
             if (!Log.isLoggable(logTag, level))
@@ -466,6 +466,11 @@ public class MadvertiseUtil {
         if (tag == null) {
             logTag = MadvertiseUtil.LOG;
         }
+        
+    	if (message == null) {
+    		message = "";
+    	}
+        
         String fullClassName = Thread.currentThread().getStackTrace()[3].getClassName();
         String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
         String methodName = Thread.currentThread().getStackTrace()[3].getMethodName();

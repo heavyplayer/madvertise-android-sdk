@@ -90,7 +90,7 @@ public class MadvertiseView extends FrameLayout {
 
     private String mBannerType = MadvertiseUtil.BANNER_TYPE_DEFAULT;
 
-    private String mAnimationType;
+    private String mAnimationType = MadvertiseUtil.ANIMATION_TYPE_DEFAULT;
 
     private boolean mDeliverOnlyText = MadvertiseUtil.DELIVER_ONLY_TEXT_DEFAULT;
 
@@ -106,9 +106,9 @@ public class MadvertiseView extends FrameLayout {
 
     private int mBannerWidthDp = MadvertiseUtil.BANNER_WIDTH_DEFAULT;
 
-    private int mParentWidth;
+    private int mParentWidth = 0;
 
-    private int mParentHeight;
+    private int mParentHeight = 0;
 
     private MadvertiseViewCallbackListener mCallbackListener = null;
 
@@ -205,7 +205,6 @@ public class MadvertiseView extends FrameLayout {
         setVisibility(GONE);
 
         if (context.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
-
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** Missing internet permissions! *** ");
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
@@ -318,7 +317,7 @@ public class MadvertiseView extends FrameLayout {
         if (childViewCounter > 0) {
             final Animation animation = createAnimation(true);
             for (int i = 0; i < childViewCounter; i++) {
-                if (animation != null) {
+                if (animation != null && getChildAt(i) != null) {
                     getChildAt(i).setAnimation(animation);
                     mOldViews.add(getChildAt(i));
                 }
@@ -330,16 +329,16 @@ public class MadvertiseView extends FrameLayout {
         Animation animation = null;
 
         if (isOutAnimation) {
-            if (mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_FADE)) {
+            if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_FADE)) {
                 animation = new AlphaAnimation(1.0f, 0.0f);
                 animation.setDuration(700);
-            } else if (mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
+            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 1.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f);
                 animation.setDuration(900);
                 animation.setInterpolator(new AccelerateInterpolator());
-            } else if (mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
+            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 1.0f);
@@ -347,16 +346,16 @@ public class MadvertiseView extends FrameLayout {
                 animation.setInterpolator(new AccelerateInterpolator());
             }
         } else {
-            if (mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_FADE)) {
+            if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_FADE)) {
                 animation = new AlphaAnimation(0.0f, 1.0f);
                 animation.setDuration(1200);
-            } else if (mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
+            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, -1.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f);
                 animation.setDuration(900);
                 animation.setInterpolator(new AccelerateInterpolator());
-            } else if (mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
+            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, -1.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f);
@@ -364,6 +363,11 @@ public class MadvertiseView extends FrameLayout {
                 animation.setInterpolator(new AccelerateInterpolator());
             }
         }
+        
+        // create a no-animation animation
+//        if (animation == null) {
+//        	animation = new AlphaAnimation(1.0f, 1.0f);
+//        }
 
         return animation;
     }
@@ -420,30 +424,40 @@ public class MadvertiseView extends FrameLayout {
             if (packageName != null) {
                 MadvertiseUtil.logMessage(null, Log.DEBUG, "namespace = " + packageName);
             }
+            
             mTestMode = attrs.getAttributeBooleanValue(packageName, "isTestMode",
                     IS_TESTMODE_DEFAULT);
+            
             mTextColor = attrs.getAttributeIntValue(packageName, "textColor",
                     MadvertiseUtil.TEXT_COLOR_DEFAULT);
+            
             mBackgroundColor = attrs.getAttributeIntValue(packageName, "backgroundColor",
                     MadvertiseUtil.BACKGROUND_COLOR_DEFAULT);
+            
             mSecondsToRefreshAd = attrs.getAttributeIntValue(packageName, "secondsToRefresh",
                     MadvertiseUtil.SECONDS_TO_REFRESH_AD_DEFAULT);
-            mBannerType = attrs.getAttributeValue(packageName, "bannerType");
-            if (mBannerType == null) {
-                mBannerType = MadvertiseUtil.BANNER_TYPE_DEFAULT;
+            
+            if (attrs.getAttributeValue(packageName, "bannerType") != null) {
+            	mBannerType = attrs.getAttributeValue(packageName, "bannerType");
             }
-            mAnimationType = attrs.getAttributeValue(packageName, "animation");
+            
+            if (attrs.getAttributeValue(packageName, "animation") != null) {
+            	mAnimationType = attrs.getAttributeValue(packageName, "animation");
+            }
+            
             mDeliverOnlyText = attrs.getAttributeBooleanValue(packageName, "deliverOnlyText",
                     MadvertiseUtil.DELIVER_ONLY_TEXT_DEFAULT);
+            
             if (!mBannerType.equals(MadvertiseUtil.BANNER_TYPE_MMA) && mDeliverOnlyText) {
                 MadvertiseUtil
                         .logMessage(null, Log.DEBUG,
-                                "Only banners in mma-format can show text. Setting deliferOnlyText to true.");
+                                "Only banners in mma-format can show text. Setting deliferOnlyText to false.");
                 mDeliverOnlyText = false;
             }
 
             mTextSize = attrs.getAttributeIntValue(packageName, "textSize",
                     MadvertiseUtil.TEXT_SIZE_DEFAULT);
+            
             if (mTextSize > 20) {
                 MadvertiseUtil.logMessage(null, Log.DEBUG,
                         "The text size must be set to 20 at maximum.");
@@ -456,14 +470,6 @@ public class MadvertiseView extends FrameLayout {
         } else {
             MadvertiseUtil.logMessage(null, Log.DEBUG,
                     "AttributeSet is null. Using default parameters");
-            mTestMode = IS_TESTMODE_DEFAULT;
-            mTextColor = MadvertiseUtil.TEXT_COLOR_DEFAULT;
-            mBackgroundColor = MadvertiseUtil.BACKGROUND_COLOR_DEFAULT;
-            mSecondsToRefreshAd = MadvertiseUtil.SECONDS_TO_REFRESH_AD_DEFAULT;
-            mBannerType = MadvertiseUtil.BANNER_TYPE_DEFAULT;
-            mDeliverOnlyText = MadvertiseUtil.DELIVER_ONLY_TEXT_DEFAULT;
-            mTextSize = MadvertiseUtil.TEXT_SIZE_DEFAULT;
-            mAnimationType = MadvertiseUtil.ANIMATION_TYPE_DEFAULT;
         }
 
         if (mSecondsToRefreshAd != 0 && mSecondsToRefreshAd < 30) {
@@ -740,37 +746,37 @@ public class MadvertiseView extends FrameLayout {
         boolean bannerTypeFound = false;
 
         // set the banner width and height
-        if (!bannerTypeFound && (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE))) {
+        if (!bannerTypeFound && (mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE))) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
+        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.MMA_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.MMA_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MMA_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MMA_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
+        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.FULLSCREEN_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.FULLSCREEN_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
+        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.LANDSCAPE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LANDSCAPE_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
+        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
+        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.PORTRAIT_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
@@ -793,7 +799,7 @@ public class MadvertiseView extends FrameLayout {
         }
 
         // fullscreen is a square so we have special treatment here
-        if (mBannerType.equals(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
+        if (mBannerType != null && mBannerType.equals(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
             if (tempHeight < tempWidth) {
                 mBannerWidth = tempHeight;
                 mBannerHeight = tempHeight;
@@ -968,7 +974,7 @@ public class MadvertiseView extends FrameLayout {
      */
     private MadvertiseAd getCachedAd() {
         int i = 0;
-        if (mBannerType.equals(MadvertiseUtil.BANNER_TYPE_ALL) && sCachedAds.size() > 0) {
+        if (mBannerType != null && mBannerType.equals(MadvertiseUtil.BANNER_TYPE_ALL) && sCachedAds.size() > 0) {
             increaseCacheCounter();
             final SoftReference<MadvertiseAd> adReference = sCachedAds.get(sNextCachedAdCounter);
             if (adReference != null) {
@@ -988,6 +994,7 @@ public class MadvertiseView extends FrameLayout {
                 i++;
             }
         }
+        
         return null;
     }
 
