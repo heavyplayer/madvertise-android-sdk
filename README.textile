@@ -1,0 +1,160 @@
+h1. madvertise Android SDK
+
+
+h2. Intro
+
+The madvertise Android SDK lets you monetize your Android apps via advertising. Basically, the code sends http requests to the madvertise ad server and displays banner ads in various formats. You will receive 100 % of click generated revenues, as we commited in our "developer fund":http://www.madvertise-fund.com/.
+
+h2. Preparations
+
+* Install Eclipse
+* Install "Android SDK":http://developer.android.com/sdk/index.html and the "ADT Eclipse Plugin":http://developer.android.com/sdk/eclipse-adt.html
+* Install Git
+* Sign up at "madvertise":https://www.madvertise.com/register
+** If you don't have already an account, please sign up.
+** Create an app and copy the token, it will identify the requests send to our ad-server.
+** The Sample SDK comes with its own token. You can use it during development and for testing.
+
+* All code was tested with the latest Eclipse 3.7.1 (Build id: M20110909-1335) and ADT 12.0.0.v201106281929-138431
+
+* The required Android SDK version is 7 (2.1).
+
+h2. Sample App
+
+The SDK comes with a very simple example, how to integrate the SDK in your APP. You can find it at [PROJECT_ROOT]/example/simple/.
+Please make sure to add the madvertiseSDK to the build path settings accordingly to your development environment.
+
+For Eclipse with installed ADT Plugin follow "these steps":http://developer.android.com/guide/developing/projects/projects-eclipse.html#ReferencingLibraryProject.
+
+h2. Using the SDK
+
+h3. For the impatient
+
+* Clone this repository:
+
+  git clone git@github.com:madvertise/madvertise-android-sdk.git
+
+* Import the SDK project located at [PROJECT_ROOT]/madvertiseSDK/ to your workspace
+
+* Add the SDK to your project build path as described "here":http://developer.android.com/guide/developing/projects/projects-eclipse.html#ReferencingLibraryProject
+
+* Embed the MadvertiseView as shown in the sample app
+
+* Make sure to add the madvertise_site_token to your AndroidManifest.xml, that you get when creating an app on our "plattform":https://app.madvertise.de/register.
+
+h3. Step by Step
+
+Once you have installed everything, open Eclipse and import (<code>File | Import | General | Existing Projects into Workspace ...</code>) the Madvertise SDK for Android Project in your Workspace.
+
+With the SDK project created, you can create your app. Create a new Android Project in your workspace from <code>File | New | Project...</code>, using the defaults and populating the require fields.
+
+!https://github.com/madvertise/madvertise-android-sdk/documentation/new_android_project_my_app.jpg!
+
+After your app project is created, you will need to add a reference to the Madvertise SDK for Android Project. Open the properties window for our app (<code>File | Properties</code>), select the Android item from the list, press the Add... button in the Library area and selecting the Madvertise SDK for Android Project created above.
+
+!https://github.com/madvertise/madvertise-android-sdk/documentation/app_properties_reference.jpg!
+
+h4. Edit your AndroidManifest.xml file
+
+* Add internet (required) and location (optional) permissions
+* Add meta data called madvertise_site_token
+* Finally, your manifest file should look something like this
+
+<pre><code class="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="de.madvertise.test"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+        <activity android:name=".BannerActivity" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <meta-data android:value="YOUR_TOKEN" android:name="madvertise_site_token" />
+    </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>
+</code>
+</pre>
+
+h4. Prepare view configuration
+
+* Add a ressource file <code>attrs.xml</code> to the res/values folder of your android project
+* Copy the following code to the file
+
+<pre><code class="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name = "de.madvertise.android.sdk.MadView">
+		<attr name="secondsToRefresh" format="integer" />
+		<attr name="backgroundColor" format="color" />
+		<attr name="textSize" format="integer" />
+		<attr name="textColor" format="color" />
+		<attr name="isTestMode" format="boolean" />
+		<attr name="bannerType" format="string" />
+		<attr name="deliverOnlyText" format="boolean" />
+		<attr name="animation" format="string" />
+	</declare-styleable>
+</resources>
+</code>
+</pre>
+
+h4. Include the view that displays advertising banners
+
+* Add new namespace mad to your layout xml file
+* Add the MadvertiseView to your layout structure and configure it
+* The layout file should look similiar to this
+
+<pre><code class="xml">
+<?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout
+		 xmlns:android="http://schemas.android.com/apk/res/android"
+ 		xmlns:mad="http://schemas.android.com/apk/res/de.madvertise.test"
+ 		android:orientation="vertical"
+ 		android:layout_width="fill_parent"
+ 		android:layout_height="fill_parent"
+ 		android:gravity="center_horizontal">
+		<de.madvertise.android.sdk.MadvertiseView
+			android:id="@+id/madad"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			mad:backgroundColor="#555"
+			mad:textColor="#FF1F1F"
+			mad:bannerType="mma"
+			mad:animation="fade"
+			mad:textSize="20"
+			mad:deliverOnlyText="false"
+		/>
+		<ListView
+			android:id="@+id/country_list"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="#000000"
+		/>
+ </LinearLayout>
+</code>
+</pre>
+
+h2. About
+
+madvertise is a mobile ad network, that enables developers to monetize their apps via advertising. Banners of various sizes can be placed on mobile websites or directly in applications. The latter is usually done with a SDK in form of a compiled library, that sends requests to an ad-server and display the mobile ad. So far, so good.
+
+But apps are different, developers are, and so are the requirements and wishes, that developers have in order to include advertising in their apps. Additionally, it feels kind of strange, to use foreign librarys in your own code, without being able to actually have a look at the sources.
+
+This is why madvertise decided to make all SDKs public as open source projects. We simply could not handle all the (we admit, pretty good) feature requests and suggestions that developers make. Well, we believe nobody can and that's why we want to share the code with the whole community and enhanced it together. You can adapt the library much more quicker to whatever fits best for you.
+
+h2. Change Log
+
+h2. Contributing
+
+1. Fork it.
+2. Create a branch (`git checkout -b my_markup`)
+3. Commit your changes (`git commit -am "Added Awesome Feature"`)
+4. Push to the branch (`git push origin my_feature`)
+5. Create an "Issue":https://github.com/madvertise/madvertise-android-sdk/issues with a link to your branch
+6. Enjoy a refreshing Diet Coke and wait
