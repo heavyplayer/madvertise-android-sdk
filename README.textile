@@ -70,6 +70,15 @@ h4. Include the view that displays advertising banners
 # Add the MadvertiseView to your layout structure and configure it
 # The layout file should look similiar to "this":https://github.com/madvertise/madvertise-android-sdk/blob/documentation_update/examples/simple/res/layout/main.xml
 
+h2. Contributing
+
+# Fork it.
+# Create a branch (`git checkout -b my_markup`)
+# Commit your changes (`git commit -am "Added Awesome Feature"`)
+# Push to the branch (`git push origin my_feature`)
+# Create an "Issue":https://github.com/madvertise/madvertise-android-sdk/issues with a link to your branch
+# Enjoy a refreshing Diet Coke and wait
+
 h2. About
 
 madvertise is a mobile ad network, that enables developers to monetize their apps via advertising. Banners of various sizes can be placed on mobile websites or directly in applications. The latter is usually done with a SDK in form of a compiled library, that sends requests to an ad-server and display the mobile ad. So far, so good.
@@ -79,14 +88,3 @@ But apps are different, developers are, and so are the requirements and wishes, 
 This is why madvertise decided to make all SDKs public as open source projects. We simply could not handle all the (we admit, pretty good) feature requests and suggestions that developers make. Well, we believe nobody can and that's why we want to share the code with the whole community and enhanced it together. You can adapt the library much more quicker to whatever fits best for you.
 
 h2. Change Log
-
--
-
-h2. Contributing
-
-# Fork it.
-# Create a branch (`git checkout -b my_markup`)
-# Commit your changes (`git commit -am "Added Awesome Feature"`)
-# Push to the branch (`git push origin my_feature`)
-# Create an "Issue":https://github.com/madvertise/madvertise-android-sdk/issues with a link to your branch
-# Enjoy a refreshing Diet Coke and wait
