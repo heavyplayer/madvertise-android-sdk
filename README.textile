@@ -47,11 +47,11 @@ Once you have installed everything, open Eclipse and import (<code>File | Import
 
 With the SDK project created, you can create your app. Create a new Android Project in your workspace from <code>File | New | Project...</code>, using the defaults and populating the require fields.
 
-!https://github.com/madvertise/madvertise-android-sdk/documentation/new_android_project_my_app.jpg!
+!https://github.com/madvertise/madvertise-android-sdk/raw/master/documentation/new_android_project_my_app.jpg!
 
 After your app project is created, you will need to add a reference to the Madvertise SDK for Android Project. Open the properties window for our app (<code>File | Properties</code>), select the Android item from the list, press the Add... button in the Library area and selecting the Madvertise SDK for Android Project created above.
 
-!https://github.com/madvertise/madvertise-android-sdk/documentation/app_properties_reference.jpg!
+!https://github.com/madvertise/madvertise-android-sdk/raw/master/documentation/app_properties_reference.jpg!
 
 h4. Edit your AndroidManifest.xml file
 
