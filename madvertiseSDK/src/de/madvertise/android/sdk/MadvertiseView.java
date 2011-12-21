@@ -986,7 +986,7 @@ public class MadvertiseView extends FrameLayout {
                 increaseCacheCounter();
                 final SoftReference<MadvertiseAd> adReference = sCachedAds
                         .get(sNextCachedAdCounter);
-                if (adReference != null && mBannerType != null
+                if (adReference != null && adReference.get() != null && mBannerType != null
                         && mBannerType.contains(adReference.get().getBannerType())) {
                     mBannerType = adReference.get().getBannerType();
                     return adReference.get();
