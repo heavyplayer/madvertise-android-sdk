@@ -261,6 +261,10 @@ public class MadvertiseTracker {
                             MadvertiseUtil.logMessage(null, Log.DEBUG,
                                     "Could not receive a http response on an report-request");                           
                             e.printStackTrace();
+                        } catch (Exception e) {
+                        	MadvertiseUtil.logMessage(null, Log.DEBUG,
+                                    "Could not receive a http response on an report-request");                           
+                            e.printStackTrace();
                         }
                     }
                 }

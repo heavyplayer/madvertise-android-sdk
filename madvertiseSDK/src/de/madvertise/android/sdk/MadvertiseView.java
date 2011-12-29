@@ -694,6 +694,13 @@ public class MadvertiseView extends FrameLayout {
                                 mCallbackListener.onError(e);
                             }
                             e.printStackTrace();
+                        } catch (Exception e) {
+                        	MadvertiseUtil.logMessage(null, Log.DEBUG,
+                                    "Could not receive a http response on an ad request");
+                            if (mCallbackListener != null) {
+                                mCallbackListener.onError(e);
+                            }
+                            e.printStackTrace();
                         } finally {
                             if (inputStream != null) {
                                 try {
