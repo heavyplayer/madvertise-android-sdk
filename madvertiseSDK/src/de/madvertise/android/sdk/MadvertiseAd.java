@@ -120,6 +120,9 @@ class MadvertiseAd {
 
         try {
             mContext.startActivity(intent);
+            if(mCallbackListener != null) {
+                mCallbackListener.onAdClicked();
+            }
         } catch (Exception e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Failed to open URL : " + mClickUrl);
             if (mCallbackListener != null) {

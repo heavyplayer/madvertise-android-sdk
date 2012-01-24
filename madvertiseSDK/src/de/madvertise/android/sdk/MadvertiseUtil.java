@@ -68,6 +68,8 @@ public class MadvertiseUtil {
     static final int TEXT_COLOR_DEFAULT = 0xffffffff;
 
     static final int BACKGROUND_COLOR_DEFAULT = 0x000000;
+    
+    static final String BANNER_TYPE_RICH_MEDIA = "rich_media";
 
     static final String BANNER_TYPE_MEDIUM_RECTANGLE = "medium_rectangle";
 
@@ -92,6 +94,10 @@ public class MadvertiseUtil {
     static final String ANIMATION_TYPE_FADE = "fade";
     
     static final String ANIMATION_TYPE_DEFAULT = ANIMATION_TYPE_FADE;
+    
+    static final String RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT = "max_view_height";
+
+    static final String RICH_MEDIA_ATTRIBUTE_MAX_WIDTH = "max_view_width";
 
     static final boolean DELIVER_ONLY_TEXT_DEFAULT = false;
 
@@ -130,10 +136,12 @@ public class MadvertiseUtil {
 
     static final int MEDIUM_RECTANGLE_BANNER_HEIGHT = 250;
 
-    static final int BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
-
+    static final int RICH_MEDIA_BANNER_WIDTH_DEFAULT = MMA_BANNER_WIDTH;
     
-
+    static final int RICH_MEDIA_BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
+    
+    static final int BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
+    
     private static final String MADVERTISE_SITE_TOKEN = "madvertise_site_token";
 
     private static String sUA;

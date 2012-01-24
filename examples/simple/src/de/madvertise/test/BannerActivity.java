@@ -31,6 +31,7 @@ import de.madvertise.android.sdk.MadvertiseTracker;
 import de.madvertise.android.sdk.MadvertiseView;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
+
 /**
  * BannerActivity.java Example activity that shows how the madvertise SDK can be
  * integrated. It shows a list view containing some countries and the madvertise
@@ -40,6 +41,8 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 public class BannerActivity extends Activity implements MadvertiseViewCallbackListener {
 
     private MadvertiseTracker mTracker;
+    
+    private MadvertiseView mMadView;
 
     /** Called when the activity is first created. */
     @Override
@@ -54,9 +57,9 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         setContentView(R.layout.main);
 
         // set the callback listener, to receive a message when an ad was loaded
-        MadvertiseView madView = (MadvertiseView)findViewById(R.id.madad);
-        madView.setMadvertiseViewCallbackListener(this);
-
+        mMadView = (MadvertiseView)findViewById(R.id.madad);
+        mMadView.setMadvertiseViewCallbackListener(this);
+        
         // prepare the list adapter with some countries
         String[] countries = new String[] {
                 "French Southern Territories", "Gabon", "Georgia", "Germany", "Ghana", "Gibraltar",
@@ -142,5 +145,13 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         // statuscode (200).
         // Statuscode 204 usually means your device is not known to the
         // madvertise-server yet.
+    }
+
+    @Override
+    public void onAdClicked() {
+        Log.d("YOUR_LOG_TAG", "Ad clicked");
+        // stop loading new ads and "remove" the view from the layout
+        mMadView.setFetchingAdsEnabled(false);
+        mMadView.setVisibility(View.GONE);
     }
 }

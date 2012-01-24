@@ -117,8 +117,8 @@ public class MadvertiseView extends FrameLayout {
     private static final int MAKE_VISIBLE = View.VISIBLE;
 
     private static final int ANIMATION_COMPLETE = 2;
-  
-    private  static String sGender = "";
+
+    private static String sGender = "";
 
     private static String sAge = "";
 
@@ -135,8 +135,6 @@ public class MadvertiseView extends FrameLayout {
         }
     };
 
-    private boolean mRunningRefreshAd = false;
-
     private Drawable mInitialBackground = null;
 
     private Thread mRequestThread;
@@ -152,6 +150,13 @@ public class MadvertiseView extends FrameLayout {
         }
     };
 
+    private int mMaxViewWidth;
+
+    private int mMaxViewHeight;
+    
+    private boolean mFetchAdsEnabled = true;
+
+
     /**
      * Static ad cache. We use {@link SoftReference} as they are guaranteed to
      * be collected before an {@link OutOfMemoryError} occurs. If the app using
@@ -159,11 +164,11 @@ public class MadvertiseView extends FrameLayout {
      * will be requested when the layout containing this design is recreated.
      */
     private static List<SoftReference<MadvertiseAd>> sCachedAds = new ArrayList<SoftReference<MadvertiseAd>>();
-    
+
     private static boolean reportLauch = true;
 
     private static int sNextCachedAdCounter = -1;
-    
+
     /**
      * The gender-type of male users
      */
@@ -173,7 +178,7 @@ public class MadvertiseView extends FrameLayout {
      * The gender-type of female users
      */
     public static final String GENDER_FEMALE = "F";
-    
+
     /**
      * Constructor
      * 
@@ -191,11 +196,11 @@ public class MadvertiseView extends FrameLayout {
      */
     public MadvertiseView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        
+
         // report launch
         if (reportLauch) {
-        	MadvertiseTracker.getInstance(context).reportLaunch();
-        	reportLauch = false;
+            MadvertiseTracker.getInstance(context).reportLaunch();
+            reportLauch = false;
         }
 
         MadvertiseUtil.logMessage(null, Log.DEBUG, "** Constructor for mad view called **");
@@ -220,7 +225,7 @@ public class MadvertiseView extends FrameLayout {
 
         mInitialBackground = this.getBackground();
         Rect r = new Rect(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-        if(sTextBannerBackground == null) {
+        if (sTextBannerBackground == null) {
             sTextBannerBackground = generateBackgroundDrawable(r, mBackgroundColor, 0xffffff);
         }
 
@@ -228,7 +233,7 @@ public class MadvertiseView extends FrameLayout {
         setFocusable(true);
         setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        if(mRequestThread == null || !mRequestThread.isAlive()) {
+        if (mRequestThread == null || !mRequestThread.isAlive()) {
             requestNewAd(false);
         }
     }
@@ -332,13 +337,15 @@ public class MadvertiseView extends FrameLayout {
             if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_FADE)) {
                 animation = new AlphaAnimation(1.0f, 0.0f);
                 animation.setDuration(700);
-            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
+            } else if (mAnimationType != null
+                    && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 1.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f);
                 animation.setDuration(900);
                 animation.setInterpolator(new AccelerateInterpolator());
-            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
+            } else if (mAnimationType != null
+                    && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 1.0f);
@@ -349,13 +356,15 @@ public class MadvertiseView extends FrameLayout {
             if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_FADE)) {
                 animation = new AlphaAnimation(0.0f, 1.0f);
                 animation.setDuration(1200);
-            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
+            } else if (mAnimationType != null
+                    && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_LEFT_TO_RIGHT)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, -1.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f);
                 animation.setDuration(900);
                 animation.setInterpolator(new AccelerateInterpolator());
-            } else if (mAnimationType != null && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
+            } else if (mAnimationType != null
+                    && mAnimationType.equals(MadvertiseUtil.ANIMATION_TYPE_TOP_DOWN)) {
                 animation = new TranslateAnimation(Animation.RELATIVE_TO_PARENT, 0.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f, Animation.RELATIVE_TO_PARENT, -1.0f,
                         Animation.RELATIVE_TO_PARENT, 0.0f);
@@ -363,11 +372,11 @@ public class MadvertiseView extends FrameLayout {
                 animation.setInterpolator(new AccelerateInterpolator());
             }
         }
-        
+
         // create a no-animation animation
-//        if (animation == null) {
-//        	animation = new AlphaAnimation(1.0f, 1.0f);
-//        }
+        // if (animation == null) {
+        // animation = new AlphaAnimation(1.0f, 1.0f);
+        // }
 
         return animation;
     }
@@ -424,30 +433,30 @@ public class MadvertiseView extends FrameLayout {
             if (packageName != null) {
                 MadvertiseUtil.logMessage(null, Log.DEBUG, "namespace = " + packageName);
             }
-            
+
             mTestMode = attrs.getAttributeBooleanValue(packageName, "isTestMode",
                     IS_TESTMODE_DEFAULT);
-            
+
             mTextColor = attrs.getAttributeIntValue(packageName, "textColor",
                     MadvertiseUtil.TEXT_COLOR_DEFAULT);
-            
+
             mBackgroundColor = attrs.getAttributeIntValue(packageName, "backgroundColor",
                     MadvertiseUtil.BACKGROUND_COLOR_DEFAULT);
-            
+
             mSecondsToRefreshAd = attrs.getAttributeIntValue(packageName, "secondsToRefresh",
                     MadvertiseUtil.SECONDS_TO_REFRESH_AD_DEFAULT);
-            
+
             if (attrs.getAttributeValue(packageName, "bannerType") != null) {
-            	mBannerType = attrs.getAttributeValue(packageName, "bannerType");
+                mBannerType = attrs.getAttributeValue(packageName, "bannerType");
             }
-            
+
             if (attrs.getAttributeValue(packageName, "animation") != null) {
-            	mAnimationType = attrs.getAttributeValue(packageName, "animation");
+                mAnimationType = attrs.getAttributeValue(packageName, "animation");
             }
-            
+
             mDeliverOnlyText = attrs.getAttributeBooleanValue(packageName, "deliverOnlyText",
                     MadvertiseUtil.DELIVER_ONLY_TEXT_DEFAULT);
-            
+
             if (!mBannerType.equals(MadvertiseUtil.BANNER_TYPE_MMA) && mDeliverOnlyText) {
                 MadvertiseUtil
                         .logMessage(null, Log.DEBUG,
@@ -457,7 +466,7 @@ public class MadvertiseView extends FrameLayout {
 
             mTextSize = attrs.getAttributeIntValue(packageName, "textSize",
                     MadvertiseUtil.TEXT_SIZE_DEFAULT);
-            
+
             if (mTextSize > 20) {
                 MadvertiseUtil.logMessage(null, Log.DEBUG,
                         "The text size must be set to 20 at maximum.");
@@ -467,6 +476,17 @@ public class MadvertiseView extends FrameLayout {
                         "The text size must be set to 10 at minimum.");
                 mTextSize = 10;
             }
+
+            int maxHeightDefault = 0;
+            int maxWidthDefault = 0;
+            if(mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+                maxHeightDefault = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
+                maxWidthDefault = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
+            }            
+            mMaxViewHeight = attrs.getAttributeIntValue(packageName,
+                    MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, maxHeightDefault);
+            mMaxViewWidth = attrs.getAttributeIntValue(packageName,
+                    MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, maxWidthDefault);            
         } else {
             MadvertiseUtil.logMessage(null, Log.DEBUG,
                     "AttributeSet is null. Using default parameters");
@@ -498,13 +518,12 @@ public class MadvertiseView extends FrameLayout {
      * refresh timer task
      */
     private void requestNewAd(final boolean isTimerRequest) {
-        MadvertiseUtil.logMessage(null, Log.DEBUG, "Trying to fetch a new ad");
-
-        // exit if already requesting a new ad, not used yet
-        if (mRunningRefreshAd) {
-            MadvertiseUtil.logMessage(null, Log.DEBUG, "Another request is still in progress ...");
+        if (!mFetchAdsEnabled) {
+            MadvertiseUtil.logMessage(null, Log.DEBUG, "Fetching ads is disabled");
             return;
         }
+
+        MadvertiseUtil.logMessage(null, Log.DEBUG, "Trying to fetch a new ad");
 
         if (!isTimerRequest) {
             // get a cached ad (in case of view reorientation).
@@ -553,13 +572,21 @@ public class MadvertiseView extends FrameLayout {
                             .getLocalIpAddress(mCallbackListener)));
                     parameterList.add(new BasicNameValuePair("format", "json"));
                     parameterList.add(new BasicNameValuePair("requester", "android_sdk"));
-                    parameterList.add(new BasicNameValuePair("version", "2.0"));
+                    parameterList.add(new BasicNameValuePair("version", "3.0"));
                     parameterList.add(new BasicNameValuePair("uid", uid));
                     parameterList.add(new BasicNameValuePair("banner_type", mBannerType));
                     parameterList.add(new BasicNameValuePair("deliver_only_text", Boolean
                             .toString(mDeliverOnlyText)));
                     if (sAge != null && !sAge.equals("")) {
                         parameterList.add(new BasicNameValuePair("age", sAge));
+                    }
+                    if (mMaxViewHeight > 0 && mMaxViewWidth > 0) {
+                        parameterList.add(new BasicNameValuePair(
+                                MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, Integer
+                                        .toString(mMaxViewHeight)));
+                        parameterList.add(new BasicNameValuePair(
+                                MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, Integer
+                                        .toString(mMaxViewWidth)));
                     }
                     final int labelId = getContext().getApplicationContext().getApplicationInfo().labelRes;
                     if (labelId != 0) {
@@ -695,7 +722,7 @@ public class MadvertiseView extends FrameLayout {
                             }
                             e.printStackTrace();
                         } catch (Exception e) {
-                        	MadvertiseUtil.logMessage(null, Log.DEBUG,
+                            MadvertiseUtil.logMessage(null, Log.DEBUG,
                                     "Could not receive a http response on an ad request");
                             if (mCallbackListener != null) {
                                 mCallbackListener.onError(e);
@@ -753,41 +780,54 @@ public class MadvertiseView extends FrameLayout {
         boolean bannerTypeFound = false;
 
         // set the banner width and height
-        if (!bannerTypeFound && (mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE))) {
+        if (!bannerTypeFound
+                && (mBannerType != null && mBannerType
+                        .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE))) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
+        } else if (!bannerTypeFound && mBannerType != null
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.MMA_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.MMA_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MMA_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MMA_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
+        } else if (!bannerTypeFound && mBannerType != null
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.FULLSCREEN_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.FULLSCREEN_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
+        } else if (!bannerTypeFound && mBannerType != null
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.LANDSCAPE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LANDSCAPE_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
+        } else if (!bannerTypeFound && mBannerType != null
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH;
             bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
+        } else if (!bannerTypeFound && mBannerType != null
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
             mBannerHeight = (int)(mDp * MadvertiseUtil.PORTRAIT_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int)(mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
+        } else if (!bannerTypeFound && mBannerType != null
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+            mBannerHeight = (int)(mDp * MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT + 0.5f);
+            mBannerWidth = (int)(mDp * MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT + 0.5f);
+            mBannerHeightDp = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
+            mBannerWidthDp = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
         }
 
         mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 128;
@@ -871,7 +911,7 @@ public class MadvertiseView extends FrameLayout {
         try {
             Bitmap bitmap = Bitmap.createBitmap(rect.width(), rect.height(),
                     Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);            
+            Canvas canvas = new Canvas(bitmap);
             drawTextBannerBackground(canvas, rect, backgroundColor, shineColor);
             return new BitmapDrawable(bitmap);
         } catch (Throwable t) {
@@ -981,7 +1021,8 @@ public class MadvertiseView extends FrameLayout {
      */
     private MadvertiseAd getCachedAd() {
         int i = 0;
-        if (mBannerType != null && mBannerType.equals(MadvertiseUtil.BANNER_TYPE_ALL) && sCachedAds.size() > 0) {
+        if (mBannerType != null && mBannerType.equals(MadvertiseUtil.BANNER_TYPE_ALL)
+                && sCachedAds.size() > 0) {
             increaseCacheCounter();
             final SoftReference<MadvertiseAd> adReference = sCachedAds.get(sNextCachedAdCounter);
             if (adReference != null) {
@@ -1001,7 +1042,7 @@ public class MadvertiseView extends FrameLayout {
                 i++;
             }
         }
-        
+
         return null;
     }
 
@@ -1011,7 +1052,7 @@ public class MadvertiseView extends FrameLayout {
             sNextCachedAdCounter = 0;
         }
     }
-    
+
     /**
      * Set the gender of your app's user.
      * 
@@ -1040,6 +1081,17 @@ public class MadvertiseView extends FrameLayout {
      */
     interface AnimationEndListener {
         void onAnimationEnd();
+    }
+    
+    /**
+     * Enable/disable the loading of new ads. Default is true.
+     * @param isEnabled 
+     */    
+    public void setFetchingAdsEnabled(final boolean isEnabled) {
+        mFetchAdsEnabled = isEnabled;
+        if(!isEnabled) {
+            stopRequestThread();
+        }
     }
 
     /**
@@ -1070,7 +1122,7 @@ public class MadvertiseView extends FrameLayout {
     }
 
     /**
-     * Interface to receive a callback, if the ad loading was successful or not
+     * Interface to receive diverse callbacks
      */
     public interface MadvertiseViewCallbackListener {
         /**
@@ -1096,5 +1148,10 @@ public class MadvertiseView extends FrameLayout {
          * @param message a message with a reason of the problem
          */
         public void onIllegalHttpStatusCode(final int statusCode, final String message);
+        
+        /**
+         * Notifies the listener when an ad is clicked
+         */
+        public void onAdClicked();
     }
 }
