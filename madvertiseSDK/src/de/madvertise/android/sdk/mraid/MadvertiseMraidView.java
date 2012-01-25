@@ -243,8 +243,7 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
         } catch (Exception e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Failed to open URL : " + url);
             if (mCallbackListener != null) {
-                mCallbackListener.onError(e);
-                
+                mCallbackListener.onError(e);                
             }
             e.printStackTrace();
         }
