@@ -1,4 +1,8 @@
+examples/simple/.classpath
+examples/simple/.project
 examples/simple/bin/
 examples/simple/gen/
+madvertiseSDK/.classpath
+madvertiseSDK/.project
 madvertiseSDK/bin/
 madvertiseSDK/gen/
