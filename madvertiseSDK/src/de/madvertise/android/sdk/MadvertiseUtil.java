@@ -465,7 +465,7 @@ public class MadvertiseUtil {
      * @param message
      * @see android.util.Log
      */
-    static void logMessage(final String tag, final int level, String message) {    	
+    public static void logMessage(final String tag, final int level, String message) {    	
         String logTag = tag;
         if (!PRINT_LOG) {
             if (!Log.isLoggable(logTag, level))
