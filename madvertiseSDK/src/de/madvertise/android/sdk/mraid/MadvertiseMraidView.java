@@ -22,11 +22,15 @@
 
 package de.madvertise.android.sdk.mraid;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -41,6 +45,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import de.madvertise.android.sdk.MadvertiseUtil;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
+import de.madvertise.android.sdk.R;
 
 public class MadvertiseMraidView extends WebView implements IMraidBridge {
 
@@ -72,6 +77,8 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
 
     private static final String PLACEMENT_TYPE_INTERSTITIAL = "interstitial";
 
+    private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
+
     private String mCurrentState = STATE_DEFAULT;
 
     private boolean mEnlarged = false;
@@ -89,7 +96,7 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
         getSettings().setJavaScriptEnabled(true);
-        
+        loadJs();
     }
 
     public MadvertiseMraidView(Context context, AttributeSet attrs, String url,
@@ -335,5 +342,23 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
                 e.printStackTrace();
             }
         }
+    }
+    
+    private void loadJs() {
+        String script = "";
+        try {
+            InputStream is = getContext().getResources().openRawResource(R.raw.mraid);
+            int size = is.available();
+            byte[] buffer = new byte[size+11];
+            byte[] js = "javascript:".getBytes();
+            for (int i = 0; i < 11; i++) buffer[i] = js[i];
+            is.read(buffer, 11, size);
+            is.close();
+            script = new String(buffer);
+//            MadvertiseUtil.logMessage(TAG, Log.DEBUG, script);
+        } catch (IOException e) {
+            MadvertiseUtil.logMessage(TAG, Log.ERROR, "error reading mraid.js");
+        }
+        loadUrl(script);
     }
 }

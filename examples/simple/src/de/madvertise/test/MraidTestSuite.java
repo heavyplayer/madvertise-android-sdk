@@ -30,10 +30,18 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
     }
 
 
+    public void testAdControllerExists() {
+        loadHtml("<html><head></head><body>testing Ad Controller exists</body></html>");
+        executeAsyncJs("typeof mraid", new JsCallback() {
+            void done(String type) {
+                assertEquals("object", type);
+            }
+        });
+    }
 
     // getVersion should return "1.0"
     public void testGetVersion() {
-        mraidView.loadUrl("javascript:var mraid = {}; mraid.getVersion = function() { return '1.0'; }");
+        loadHtml("<html><head></head><body>testing getVersion()</body></html>");
         executeAsyncJs("mraid.getVersion()", new JsCallback() {
             void done(String version) {
                 assertEquals("1.0", version);
@@ -51,16 +59,19 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
         });
     }
     
-    // it should support static non-rich media Ads (plain HTML5/Css/Js)
-    public void testFallback() {
-        loadHtml("<html><body>testing HTML5 fallback</body></html>");
-        executeAsyncJs("typeof mraid", new JsCallback() {
-            void done(String type) {
-                assertEquals("undefined", type);
+    // initial state should be "loading"
+    public void testInitialState() {
+        loadHtml("<html><head></head><body>testing initial state</body></html>");
+        executeAsyncJs("mraid.getState()", new JsCallback() {
+            void done(String version) {
+                assertEquals("loading", version);
             }
         });
     }
 
+    //    public void testA() {
+//        assertEquals(true, true);
+//    }
 
 
     // ------------ Test util stuff ---------------------
@@ -90,12 +101,12 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             long timeout = 3000;
             while (timeout > 0) {
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     Assert.fail("InterruptedException while waiting");
                 }
                 if (check()) return;
-                timeout -= 200;
+                timeout -= 300;
             }
             Assert.fail("Waiting timed out!");
         }
