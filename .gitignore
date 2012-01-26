@@ -1,8 +1,10 @@
 examples/simple/.classpath
+examples/simple/.settings
 examples/simple/.project
 examples/simple/bin/
 examples/simple/gen/
 madvertiseSDK/.classpath
+madvertiseSDK/.settings
 madvertiseSDK/.project
 madvertiseSDK/bin/
 madvertiseSDK/gen/
