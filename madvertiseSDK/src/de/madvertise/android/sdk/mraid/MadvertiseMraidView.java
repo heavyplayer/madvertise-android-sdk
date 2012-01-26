@@ -83,6 +83,14 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
     private FrameLayout mEnlargeLayout;
     
     private MadvertiseViewCallbackListener mCallbackListener;
+    
+    public MadvertiseMraidView(Context context) {
+        super(context);
+        setVerticalScrollBarEnabled(false);
+        setHorizontalScrollBarEnabled(false);
+        getSettings().setJavaScriptEnabled(true);
+        
+    }
 
     public MadvertiseMraidView(Context context, AttributeSet attrs, String url,
             MadvertiseViewCallbackListener listener) {

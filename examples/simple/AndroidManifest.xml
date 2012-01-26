@@ -12,7 +12,12 @@
         </activity>
         <!-- Setup your site token. For tests, use 'TestTokn'-->        
         <meta-data android:value="TestTokn" android:name="madvertise_site_token" />
+        
+        <activity android:name="MraidTestActivity" />
+        <uses-library android:name="android.test.runner" />
     </application>
+    
+    <instrumentation android:targetPackage="de.madvertise.test" android:name="android.test.InstrumentationTestRunner" />
     
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
