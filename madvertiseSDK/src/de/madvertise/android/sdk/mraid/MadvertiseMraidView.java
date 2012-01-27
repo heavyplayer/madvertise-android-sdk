@@ -37,6 +37,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -47,49 +48,21 @@ import de.madvertise.android.sdk.MadvertiseUtil;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 import de.madvertise.android.sdk.R;
 
-public class MadvertiseMraidView extends WebView implements IMraidBridge {
+public class MadvertiseMraidView extends WebView {
 
-    private static final String JAVASCRIPT_INDICATOR = "javascript:";
+    
 
-    private static final int CLOSE_BUTTON_SIZE = 50;
-
-    private static final String STATE_DEFAULT = "default";
-
-    private static final String STATE_EXPANDED = "expanded";
-
-    private static final String STATE_LOADING = "loading";
-
-    private static final String STATE_HIDDEN = "hidden";
-
-    private static final String EVENT_ERROR = "error";
-
-    private static final String EVENT_READY = "ready";
-
-    private static final String EVENT_STATE_CHANGE = "stateChange";
-
-    private static final String EVENT_VIEWABLE_CHANGE = "viewableChange";
-
-    private static final String MRAID_VERSION = "1.0";
+//    private static final int CLOSE_BUTTON_SIZE = 50;
 
     private static final String JS_INTERFACE_NAME = "mraid";
 
-    private static final String PLACEMENT_TYPE_INLINE = "inline";
-
-    private static final String PLACEMENT_TYPE_INTERSTITIAL = "interstitial";
-
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
 
-    private String mCurrentState = STATE_DEFAULT;
-
-    private boolean mEnlarged = false;
-
-    private boolean mUseCustomClose = false;
-
-    private ExpandProperties mExpandProperties;
-
-    private FrameLayout mEnlargeLayout;
+//    private FrameLayout mEnlargeLayout;
     
     private MadvertiseViewCallbackListener mCallbackListener;
+    
+    private MraidBridge mBridge;
     
     public MadvertiseMraidView(Context context) {
         super(context);
@@ -120,233 +93,91 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
         final WebSettings webSettings = getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        final IMraidBridge bridge = this;
-        this.addJavascriptInterface(bridge, JS_INTERFACE_NAME);
+        mBridge = new MraidBridge(this);
+        
+        this.addJavascriptInterface(mBridge, JS_INTERFACE_NAME);
 
         final WebViewClient webViewClient = new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                fireReadyEvent();
+                mBridge.onLoadingComplete();
             }
         };
         setWebViewClient(webViewClient);
-
-        final DisplayMetrics displayMetrics = getContext().getApplicationContext().getResources()
-                .getDisplayMetrics();
-        mExpandProperties = new ExpandProperties(displayMetrics.widthPixels,
-                displayMetrics.heightPixels);
         
         loadJs();
     }
-
-    public void expand() {
-        expand(300, 300);
-        mCurrentState = STATE_EXPANDED;
-        fireStateChangeEvent();
-    }
-
-    public void expand(final String url) {
-        loadUrl(url);
-        expand();
-    }
-
-    public void expand(final int width, final int height) {
-        FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
-
-        final FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(width, height);
-
-        mEnlargeLayout = new FrameLayout(getContext());
-        final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.gravity = Gravity.CENTER;
-        mEnlargeLayout.setLayoutParams(layoutParams);
-
-        this.setLayoutParams(adParams);
-        ((ViewGroup)getParent()).removeView(this);
-        mEnlargeLayout.addView(this);
-
-        if (!mUseCustomClose) {
-            final ImageView imageView = new ImageView(getContext());
-            imageView.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-
-            final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
-                    CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
-            closeButtonParams.gravity = Gravity.RIGHT;
-            imageView.setLayoutParams(closeButtonParams);
-            mEnlargeLayout.addView(imageView);
-        }
-
-        content.addView(mEnlargeLayout);
-
-        mEnlarged = true;
-    }
-
-    public void close() {
-        if (mEnlargeLayout != null) {
-            ((ViewGroup)mEnlargeLayout.getParent()).removeView(mEnlargeLayout);
-        }
-    }
-
-    private void fireErrorEvent(final String message, final String action) {
-
-    }
-
-    private void fireReadyEvent() {
-
-    }
-
-    private void fireStateChangeEvent() {
-        // for ()
-        // String injection = function + "(" + mCurrentState + ")";
-    }
-
-    private void fireViewableChangeEvent() {
-
-    }
-
+    
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-
-        if (mEnlarged && getWidth() - event.getX() < CLOSE_BUTTON_SIZE
-                && event.getY() < CLOSE_BUTTON_SIZE && event.getAction() == MotionEvent.ACTION_UP) {
-            close();
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+        boolean isVisible;
+        if(visibility == View.VISIBLE) {
+            isVisible = true;
+        } else {
+            isVisible = false;
         }
-
-        return super.dispatchTouchEvent(event);
-
-    }
-
-    @Override
-    public void addEventListener(final String event, final String listener) {
-        // TODO Auto-generated method stub
-
-    }
-
-    //
-    // @Override
-    // public String getExpandProperties() {
-    // return mExpandProperties.toJson();
-    // }
-    //
-    // @Override
-    // public String getPlacementType() {
-    // // TODO Auto-generated method stub
-    // return null;
-    // }
-    //
-    // @Override
-    // public String getState() {
-    // return mCurrentState;
-    // }
-
-    // @Override
-    // public String getVersion() {
-    // return MRAID_VERSION;
-    // }
-    //
-    // @Override
-    // public boolean isViewable() {
-    // // TODO Auto-generated method stub
-    // return false;
-    // }
-
-    @Override
-    public void open(final String url) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        try {
-            getContext().startActivity(intent);
-        } catch (Exception e) {
-            MadvertiseUtil.logMessage(null, Log.DEBUG, "Failed to open URL : " + url);
-            if (mCallbackListener != null) {
-                mCallbackListener.onError(e);                
-            }
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void removeEventListener(final String event, String listener) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setExpandProperties(final String json) {
-        mExpandProperties.fromJson(json);
-        mUseCustomClose = mExpandProperties.useCustomClose;
-    }
-
-    @Override
-    public void useCustomClose(final boolean useCustomClose) {
-        mUseCustomClose = useCustomClose;
-    }
-
-    private void inject(final String javaScript) {
-        if (javaScript != null) {
-            loadUrl(JAVASCRIPT_INDICATOR + javaScript);
-        }
-    }
-
-    class ExpandProperties {
-        private static final String WIDTH = "width";
-
-        private static final String HEIGHT = "height";
-
-        private static final String USE_CUSTOM_CLOSE = "useCustomClose";
-
-        private static final String IS_MODAL = "isModal";
-
-        int width;
-
-        int height;
-
-        boolean useCustomClose = false;
-
-        boolean isModal = true;
-
-        ExpandProperties(final int width, final int height) {
-            this.width = width;
-            this.height = height;
-        }
-
-        @Override
-        public String toString() {
-            final JSONObject jsonObject = new JSONObject();
-
-            try {
-                jsonObject.put(WIDTH, width);
-                jsonObject.put(HEIGHT, height);
-                jsonObject.put(USE_CUSTOM_CLOSE, useCustomClose);
-                jsonObject.put(IS_MODAL, isModal);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return jsonObject.toString();
-        }
-
-        void fromJson(final String json) {
-            JSONObject jsonObject;
-            try {
-                jsonObject = new JSONObject(json);
-
-                if (jsonObject.has(HEIGHT)) {
-                    width = jsonObject.getInt(WIDTH);
-                }
-                if (jsonObject.has(WIDTH)) {
-                    height = jsonObject.getInt(HEIGHT);
-                }
-                if (jsonObject.has(USE_CUSTOM_CLOSE)) {
-                    useCustomClose = jsonObject.getBoolean(USE_CUSTOM_CLOSE);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        mBridge.setIsViewable(isVisible);
     }
     
+    public void setPlacementType(final String type) {
+        mBridge.setPlacementType(type);
+    }
+
+  
+
+//    public void expand(final int width, final int height) {
+//        FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
+//
+//        final FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(width, height);
+//
+//        mEnlargeLayout = new FrameLayout(getContext());
+//        final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+//                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+//        layoutParams.gravity = Gravity.CENTER;
+//        mEnlargeLayout.setLayoutParams(layoutParams);
+//
+//        this.setLayoutParams(adParams);
+//        ((ViewGroup)getParent()).removeView(this);
+//        mEnlargeLayout.addView(this);
+//
+//        if (!mUseCustomClose) {
+//            final ImageView imageView = new ImageView(getContext());
+//            imageView.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+//
+//            final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
+//                    CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
+//            closeButtonParams.gravity = Gravity.RIGHT;
+//            imageView.setLayoutParams(closeButtonParams);
+//            mEnlargeLayout.addView(imageView);
+//        }
+//
+//        content.addView(mEnlargeLayout);
+//
+//        mEnlarged = true;
+//    }
+
+//    public void close() {
+//        if (mEnlargeLayout != null) {
+//            ((ViewGroup)mEnlargeLayout.getParent()).removeView(mEnlargeLayout);
+//        }
+//    }
+ 
+
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent event) {
+//        
+//        if (mEnlarged && getWidth() - event.getX() < CLOSE_BUTTON_SIZE
+//                && event.getY() < CLOSE_BUTTON_SIZE && event.getAction() == MotionEvent.ACTION_UP) {
+//            close();
+//        }
+//
+//        return super.dispatchTouchEvent(event);
+//
+//    }
+
+    
+    //Utility methods
     private void loadJs() {
         String script = "";
         try {

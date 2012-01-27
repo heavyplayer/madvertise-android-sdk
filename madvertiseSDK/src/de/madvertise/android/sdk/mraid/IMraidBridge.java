@@ -22,10 +22,8 @@ package de.madvertise.android.sdk.mraid;
 
 public interface IMraidBridge {
     public void close();
-    public void expand();
+    public void expand(final String url);
     public void setExpandProperties(String json);
-    public void addEventListener(String event, String listener);
-    public void removeEventListener(String event, String listener);
     public void open(String url);
     public void useCustomClose(boolean useCustomClose);
 }
