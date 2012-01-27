@@ -1,5 +1,5 @@
-package de.madvertise.test;
 
+package de.madvertise.test;
 
 import junit.framework.Assert;
 import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
@@ -9,7 +9,9 @@ import android.util.Log;
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestActivity> {
 
     private MraidTestActivity activity;
+
     private MadvertiseMraidView mraidView;
+
     protected String callback_data;
 
     public MraidTestSuite() {
@@ -20,15 +22,14 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
     protected void setUp() throws Exception {
         super.setUp();
         activity = getActivity();
-        mraidView = (MadvertiseMraidView) activity.findViewById(42);
-        mraidView.addJavascriptInterface(new Object(){
+        mraidView = (MadvertiseMraidView)activity.findViewById(42);
+        mraidView.addJavascriptInterface(new Object() {
             public void callback(String data) {
                 callback_data = data;
-                Log.d("Javascript", "called back: "+data);
+                Log.d("Javascript", "called back: " + data);
             }
         }, "test");
     }
-
 
     public void testAdControllerExists() {
         loadHtml("<html><head></head><body>testing Ad Controller exists</body></html>");
@@ -48,7 +49,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             }
         });
     }
-    
+
     // mraid conform Ads should identify themselves with a script tag
     public void testIdentification() {
         loadHtml("<html><head><script src=\"mraid.js\"></script></head></html>");
@@ -58,7 +59,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             }
         });
     }
-    
+
     // initial state should be "loading"
     public void testInitialState() {
         loadHtml("<html><head></head><body>testing initial state</body></html>");
@@ -68,30 +69,37 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             }
         });
     }
-
-    //    public void testA() {
-//        assertEquals(true, true);
-//    }
-
+//
+//     public void testA() {//         
+//     assertEquals(true, true);
+//     }
 
     // ------------ Test util stuff ---------------------
-    
+
     private void loadHtml(String html) {
         mraidView.loadData(html, "text/html", "utf8");
-        new WaitFor() { boolean check() { return mraidView.getProgress() == 100; }}.run();
+        new WaitFor() {
+            boolean check() {
+                return mraidView.getProgress() == 100;
+            }
+        }.run();
     }
-    
+
     private abstract class JsCallback {
         abstract void done(String arg);
     }
-    
+
     private void executeAsyncJs(String javascript, JsCallback callback) {
         callback_data = null;
-        mraidView.loadUrl("javascript:test.callback("+javascript+");");
-        new WaitFor() { boolean check() { return callback_data != null; }}.run();
+        mraidView.loadUrl("javascript:test.callback(" + javascript + ");");
+        new WaitFor() {
+            boolean check() {
+                return callback_data != null;
+            }
+        }.run();
         callback.done(callback_data);
     }
-    
+
     // wait for 'things' to happen...
     private abstract class WaitFor {
 
@@ -105,7 +113,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
                 } catch (InterruptedException e) {
                     Assert.fail("InterruptedException while waiting");
                 }
-                if (check()) return;
+                if (check())
+                    return;
                 timeout -= 300;
             }
             Assert.fail("Waiting timed out!");

@@ -96,7 +96,7 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
         getSettings().setJavaScriptEnabled(true);
-        loadJs();
+        init();        
     }
 
     public MadvertiseMraidView(Context context, AttributeSet attrs, String url,
@@ -135,6 +135,8 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
                 .getDisplayMetrics();
         mExpandProperties = new ExpandProperties(displayMetrics.widthPixels,
                 displayMetrics.heightPixels);
+        
+        loadJs();
     }
 
     public void expand() {
@@ -287,7 +289,7 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
         }
     }
 
-    private class ExpandProperties {
+    class ExpandProperties {
         private static final String WIDTH = "width";
 
         private static final String HEIGHT = "height";
@@ -309,7 +311,8 @@ public class MadvertiseMraidView extends WebView implements IMraidBridge {
             this.height = height;
         }
 
-        String toJson() {
+        @Override
+        public String toString() {
             final JSONObject jsonObject = new JSONObject();
 
             try {
