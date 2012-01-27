@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.madvertise.android.sdk.MadvertiseUtil;
+import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
@@ -43,11 +44,14 @@ public class MraidBridge implements IMraidBridge {
 
     private ExpandProperties mExpandProperties;
 
+    private MadvertiseViewCallbackListener mListener;
+    
     private Context mContext;
 
-    public MraidBridge(MadvertiseMraidView mraidView) {
+    public MraidBridge(final MadvertiseMraidView mraidView, final MadvertiseViewCallbackListener listener) {
         mMraidView = mraidView;
         mContext = mraidView.getContext();
+        mListener = listener;
 
         final DisplayMetrics displayMetrics = mContext.getApplicationContext().getResources()
                 .getDisplayMetrics();
@@ -105,6 +109,7 @@ public class MraidBridge implements IMraidBridge {
     @Override
     public void open(final String url) {
         // TODO: Browser Activity
+        mListener.onAdClicked();
     }
 
     @Override
