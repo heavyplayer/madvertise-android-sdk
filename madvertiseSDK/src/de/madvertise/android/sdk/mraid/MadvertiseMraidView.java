@@ -172,7 +172,10 @@ public class MadvertiseMraidView extends WebView {
 //
 //    }
 
-    
+    public void fireEvent(String event) {
+        loadUrl("javascript:mraid.fireEvent('"+event+"');");
+    }
+
     //Utility methods
     private void loadJs() {
         String script = "";

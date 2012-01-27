@@ -52,7 +52,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
 
     // mraid conform Ads should identify themselves with a script tag
     public void testIdentification() {
-        loadHtml("<html><head><script src=\"mraid.js\"></script></head></html>");
+        loadHtml("<html><head><script src=\"mraid.js\"></script></head><body>testing identification</body></html>");
         executeAsyncJs("document.getElementsByTagName('script')[0].src", new JsCallback() {
             void done(String script_tag_src) {
                 assertEquals("mraid.js", script_tag_src);
@@ -69,10 +69,29 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             }
         });
     }
-//
+
+    public void testAddEventListenerFunctionExists() {
+        loadHtml("<html><head></head><body>testing event listener function exists</body></html>");
+        executeAsyncJs("typeof mraid.addEventListener", new JsCallback() {
+            void done(String type) {
+                assertEquals("function", type);
+            }
+        });
+    }
+
+    public void testEventListenersListenForEvents() {
+        loadHtml("<html><head></head><body>testing event listeners actually listen for events</body></html>");
+        mraidView.loadUrl("javascript:mraid.addEventListener('ready', function(event) { test.callback(event); });");
+        mraidView.fireEvent("ready");
+        waitForJsCallback();
+        assertEquals("ready", callback_data);
+    }
+
 //     public void testA() {//         
 //     assertEquals(true, true);
 //     }
+
+
 
     // ------------ Test util stuff ---------------------
 
@@ -92,12 +111,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
     private void executeAsyncJs(String javascript, JsCallback callback) {
         callback_data = null;
         mraidView.loadUrl("javascript:test.callback(" + javascript + ");");
+        waitForJsCallback();
+        callback.done(callback_data);
+    }
+
+    private void waitForJsCallback() {
         new WaitFor() {
             boolean check() {
                 return callback_data != null;
             }
         }.run();
-        callback.done(callback_data);
     }
 
     // wait for 'things' to happen...
