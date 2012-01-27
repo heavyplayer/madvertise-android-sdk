@@ -60,7 +60,7 @@ public class MadvertiseMraidView extends WebView {
 
 //    private FrameLayout mEnlargeLayout;
     
-    private MadvertiseViewCallbackListener mCallbackListener;
+    private MadvertiseViewCallbackListener mListener;
     
     private MraidBridge mBridge;
     
@@ -76,7 +76,7 @@ public class MadvertiseMraidView extends WebView {
             MadvertiseViewCallbackListener listener) {
         super(context, attrs);
         
-        this.mCallbackListener = listener;
+        this.mListener = listener;
         
         init();
 
@@ -93,7 +93,7 @@ public class MadvertiseMraidView extends WebView {
         final WebSettings webSettings = getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        mBridge = new MraidBridge(this);
+        mBridge = new MraidBridge(this, mListener);
         
         this.addJavascriptInterface(mBridge, JS_INTERFACE_NAME);
 
