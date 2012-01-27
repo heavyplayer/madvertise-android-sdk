@@ -25,25 +25,13 @@ package de.madvertise.android.sdk.mraid;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import de.madvertise.android.sdk.MadvertiseUtil;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 import de.madvertise.android.sdk.R;
@@ -64,17 +52,25 @@ public class MadvertiseMraidView extends WebView {
     
     private MraidBridge mBridge;
     
+    private String mPlacementType;
+        
     public MadvertiseMraidView(Context context) {
         super(context);
-        setVerticalScrollBarEnabled(false);
-        setHorizontalScrollBarEnabled(false);
-        getSettings().setJavaScriptEnabled(true);
+
         init();        
     }
 
     public MadvertiseMraidView(Context context, AttributeSet attrs, String url,
             MadvertiseViewCallbackListener listener) {
         super(context, attrs);
+        
+        String packageName = "http://schemas.android.com/apk/res/"
+                + getContext().getApplicationContext().getPackageName();
+ 
+        mPlacementType = attrs.getAttributeValue(packageName, "placement_type");
+        if(mPlacementType == null || mPlacementType.equals("")) {
+            mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
+        }
         
         this.mListener = listener;
         
@@ -93,7 +89,7 @@ public class MadvertiseMraidView extends WebView {
         final WebSettings webSettings = getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        mBridge = new MraidBridge(this, mListener);
+        mBridge = new MraidBridge(this, mListener, mPlacementType);
         
         this.addJavascriptInterface(mBridge, JS_INTERFACE_NAME);
 
@@ -120,9 +116,9 @@ public class MadvertiseMraidView extends WebView {
         mBridge.setIsViewable(isVisible);
     }
     
-    public void setPlacementType(final String type) {
-        mBridge.setPlacementType(type);
-    }
+//    public void setPlacementType(final String type) {
+//        mBridge.setPlacementType(type);
+//    }
 
   
 

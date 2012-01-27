@@ -48,7 +48,7 @@ public class MraidBridge implements IMraidBridge {
     
     private Context mContext;
 
-    public MraidBridge(final MadvertiseMraidView mraidView, final MadvertiseViewCallbackListener listener) {
+    public MraidBridge(final MadvertiseMraidView mraidView, final MadvertiseViewCallbackListener listener, final String placementType) {
         mMraidView = mraidView;
         mContext = mraidView.getContext();
         mListener = listener;
@@ -61,6 +61,8 @@ public class MraidBridge implements IMraidBridge {
         mCurrentState = STATE_LOADING;
         setState(mCurrentState);
         triggerEvent(EVENT_STATE_CHANGE);
+        
+        setPlacementType(placementType);
     }
 
     @Override
@@ -104,6 +106,9 @@ public class MraidBridge implements IMraidBridge {
     public void setExpandProperties(final String json) {
         mExpandProperties.fromJson(json);
         mUseCustomClose = mExpandProperties.useCustomClose;
+        setExpandProperties(mExpandProperties);
+        
+        // TODO: Resize ad size
     }
 
     @Override
