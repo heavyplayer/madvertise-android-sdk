@@ -31,7 +31,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
                 Log.d("Javascript", "called back: " + data);
             }
         }, "test");
-        Thread.sleep(300); // somehow needed to finish initialization
+        Thread.sleep(500); // somehow needed to finish initialization
     }
 
     public void testAdControllerExists() {

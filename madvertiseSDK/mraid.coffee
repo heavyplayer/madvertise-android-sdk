@@ -29,11 +29,14 @@ mraid =
     else # remove all listeners for this event
       delete listeners[event]
 
-  setState: (stateId) ->
-    state = states[stateId]
-    fireEvent("stateChange")
 
   # internal functions
 
   fireEvent: (event) ->
     listener(event) for listener in listeners[event]
+
+  setState: (state_id) ->
+    state = states[state_id]
+    fireEvent("stateChange")
+
+
