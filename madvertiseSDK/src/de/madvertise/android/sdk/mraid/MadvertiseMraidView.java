@@ -23,10 +23,14 @@ package de.madvertise.android.sdk.mraid;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -51,7 +55,7 @@ public class MadvertiseMraidView extends WebView {
 
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
 
-    private FrameLayout mEnlargeLayout;
+    private FrameLayout mExpandLayout;
 
     protected static final int STATE_LOADING = 0;
 
@@ -68,20 +72,16 @@ public class MadvertiseMraidView extends WebView {
 
     private String mPlacementType;
 
-    private int mState = STATE_LOADING;
-
-    private MadvertiseViewCallbackListener mListener;
-
-    private AnimationEndListener mAnimationEndListener;
-    
+    private int mState;
     private int mIndex;
-
-    private boolean mUseCustomClose = false;
-    
-    private Handler mLoadingCompletedHandler;
-    
     private MadvertiseAd mAd;
-    
+    private ViewGroup mOriginalParent;
+    private Handler mLoadingCompletedHandler;
+    private ExpandProperties mExpandProperties;
+    private MadvertiseViewCallbackListener mListener;
+    private AnimationEndListener mAnimationEndListener;
+
+
 
     public MadvertiseMraidView(Context context, AttributeSet attrs,
             MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseAd ad) {
@@ -114,34 +114,24 @@ public class MadvertiseMraidView extends WebView {
         getSettings().setJavaScriptEnabled(true);
         addJavascriptInterface(mBridge, "mraid_bridge");
         loadJs();
-
+        
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
+        injectJs("mraid.setExpandProperties("+mExpandProperties.toJson()+");");
+        
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d("TEST", "FINISHED loading");
                 setState(STATE_DEFAULT);
                 fireEvent("ready");
-                mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
+                if (mLoadingCompletedHandler != null)
+                    mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
     }
-
-    // to be called from the App (java side)
-
-    public void setState(int state) {
-        mState = state;
-        injectJs("mraid.setState('" + state + "');");
-    }
-
-    public void fireEvent(String event) {
-        injectJs("mraid.fireEvent('" + event + "');");
-    }
-
-    private void injectJs(String jsCode) {
-        loadUrl("javascript:" + jsCode);
-    }
-
+    
     // to be called from the Ad (js side)
+    
     Object mBridge = new Object() {
 
         public void expand(final String url) {
@@ -158,37 +148,34 @@ public class MadvertiseMraidView extends WebView {
             // TODO start (ORMMA?) BrowseActivity
             mListener.onAdClicked();
         }
-
-        public void setExpandProperties(final String json) {
-            // mExpandProperties.fromJson(json);
-            // mUseCustomClose = mExpandProperties.useCustomClose;
-            // setExpandProperties(mExpandProperties);
-            // TODO: Resize ad size
-        }
-
-        // we could just pass comma-separated values in a certain order?
-        // or set Properties separately?
-        // like e.g.:
-        public void setUseCustomClose(String customClose) {
-        }
-
-        public void setExpandDimensions(String dimensions) {
+        
+        public void setExpandProperties(String json) {
+            mExpandProperties.readJson(json);
         }
     };
 
-    @Override
-    public void setVisibility(int visibility) {
-        super.setVisibility(visibility);
-        boolean isVisible;
-        if (visibility == View.VISIBLE) {
-            isVisible = true;
-        } else {
-            isVisible = false;
-        }
-        // mBridge.setIsViewable(isVisible);
+
+
+    // to be called from the App (java side)
+
+    public void setState(int state) {
+        mState = state;
+        injectJs("mraid.setState('" + state + "');");
     }
 
-    private ViewGroup mOriginalParent;
+    public void fireEvent(String event) {
+        injectJs("mraid.fireEvent('" + event + "');");
+    }
+    
+    public ExpandProperties getExpandProperties() {
+        return mExpandProperties;
+    }
+    
+    private void injectJs(String jsCode) {
+        loadUrl("javascript:" + jsCode);
+    }
+
+
 
     public void expand(final int width, final int height) {
         final FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
@@ -198,11 +185,11 @@ public class MadvertiseMraidView extends WebView {
         final View placeholderView = new View(getContext());
         placeholderView.setLayoutParams(getLayoutParams());
 
-        mEnlargeLayout = new FrameLayout(getContext());
+        mExpandLayout = new FrameLayout(getContext());
         final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
-        mEnlargeLayout.setLayoutParams(layoutParams);
+        mExpandLayout.setLayoutParams(layoutParams);
 
         mOriginalParent = (ViewGroup)getParent();
 
@@ -217,7 +204,7 @@ public class MadvertiseMraidView extends WebView {
 
         this.setLayoutParams(adParams);
         mOriginalParent.removeView(this);
-        mEnlargeLayout.addView(this);
+        mExpandLayout.addView(this);
 
         final ImageButton closeButton = new ImageButton(getContext());
         final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
@@ -225,25 +212,23 @@ public class MadvertiseMraidView extends WebView {
         closeButtonParams.gravity = Gravity.RIGHT;
         closeButton.setLayoutParams(closeButtonParams);
         closeButton.setBackgroundColor(Color.TRANSPARENT);
-        mEnlargeLayout.addView(closeButton);
+        mExpandLayout.addView(closeButton);
 
-        if (!mUseCustomClose) {
+        if (!mExpandProperties.useCustomClose) {
             closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
         }
 
-        content.addView(mEnlargeLayout);
-
+        content.addView(mExpandLayout);
         mOriginalParent.addView(placeholderView, mIndex);
-
         mState = STATE_EXPANDED;
     }
 
     public void close() {
         switch (mState) {
             case STATE_EXPANDED:
-                if (mEnlargeLayout != null) {
-                    ((ViewGroup)mEnlargeLayout.getParent()).removeView(mEnlargeLayout);
-                    mEnlargeLayout.removeView(this);
+                if (mExpandLayout != null) {
+                    ((ViewGroup)mExpandLayout.getParent()).removeView(mExpandLayout);
+                    mExpandLayout.removeView(this);
                     this.setLayoutParams(mOriginalParent.getChildAt(mIndex).getLayoutParams());
                     mOriginalParent.removeViewAt(mIndex);
                     mOriginalParent.addView(this, mIndex);
@@ -255,6 +240,77 @@ public class MadvertiseMraidView extends WebView {
                 break;
         }
     }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+        boolean isVisible;
+        if (visibility == View.VISIBLE) {
+            isVisible = true;
+        } else {
+            isVisible = false;
+        }
+        // mBridge.setIsViewable(isVisible);
+    }
+    
+//    public void setPlacementType(final String type) {
+//        mBridge.setPlacementType(type);
+//    }
+
+
+
+
+    public class ExpandProperties {
+
+        private static final String WIDTH = "width";
+        private static final String HEIGHT = "height";
+        private static final String USE_CUSTOM_CLOSE = "useCustomClose";
+        private static final String IS_MODAL = "isModal";
+
+        public int width;
+        public int height;
+        public boolean useCustomClose;
+        public boolean isModal;
+
+        ExpandProperties(final int width, final int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        public String toJson() {
+            final JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put(WIDTH, width);
+                jsonObject.put(HEIGHT, height);
+                jsonObject.put(USE_CUSTOM_CLOSE, useCustomClose);
+                jsonObject.put(IS_MODAL, isModal);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonObject.toString();
+        }
+
+        void readJson(final String json) {
+            JSONObject jsonObject;
+            try {
+                jsonObject = new JSONObject(json);
+
+                if (jsonObject.has(HEIGHT)) {
+                    width = jsonObject.getInt(WIDTH);
+                }
+                if (jsonObject.has(WIDTH)) {
+                    height = jsonObject.getInt(HEIGHT);
+                }
+                if (jsonObject.has(USE_CUSTOM_CLOSE)) {
+                    useCustomClose = jsonObject.getBoolean(USE_CUSTOM_CLOSE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     // Utility methods
     private void loadJs() {

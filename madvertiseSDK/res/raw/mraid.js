@@ -1,5 +1,11 @@
-var listeners, mraid, state, states;
+var expandProperties, listeners, mraid, state, states;
 var __slice = Array.prototype.slice;
+expandProperties = {
+  width: 320,
+  height: 480,
+  useCustomClose: false,
+  isModal: false
+};
 states = ["loading", "hidden", "default", "expanded"];
 state = "loading";
 listeners = {};
@@ -9,6 +15,21 @@ mraid = {
   },
   getState: function() {
     return state;
+  },
+  getExpandProperties: function() {
+    return expandProperties;
+  },
+  setExpandProperties: function(properties) {
+    if (properties.width) {
+      expandProperties.width = properties.width;
+    }
+    if (properties.height) {
+      expandProperties.height = properties.height;
+    }
+    if (properties.useCustomClose) {
+      expandProperties.useCustomClose = properties.useCustomClose;
+    }
+    return mraid_bridge.setExpandProperties(JSON.stringify(expandProperties));
   },
   addEventListener: function(event, listener) {
     return (listeners[event] || (listeners[event] = [])).push(listener);
@@ -33,10 +54,6 @@ mraid = {
       return delete listeners[event];
     }
   },
-  setState: function(stateId) {
-    state = states[stateId];
-    return fireEvent("stateChange");
-  },
   fireEvent: function(event) {
     var listener, _i, _len, _ref, _results;
     _ref = listeners[event];
@@ -46,5 +63,9 @@ mraid = {
       _results.push(listener(event));
     }
     return _results;
+  },
+  setState: function(state_id) {
+    state = states[state_id];
+    return fireEvent("stateChange");
   }
 };

@@ -3,7 +3,9 @@ package de.madvertise.test;
 
 import junit.framework.Assert;
 import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
+import de.madvertise.android.sdk.mraid.MadvertiseMraidView.ExpandProperties;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestActivity> {
@@ -29,6 +31,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
                 Log.d("Javascript", "called back: " + data);
             }
         }, "test");
+        Thread.sleep(500); // somehow needed to finish initialization
     }
 
     public void testAdControllerExists() {
@@ -62,19 +65,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
 
     // initial state should be "loading"
     public void testInitialState() {
-        Log.d("TEST", "before initial State check");
         loadHtml("<html><head></head><body>testing initial state" +
                 "<script type=\"text/javascript\">test.callback(mraid.getState());" +
                 "</script></body></html>");
-        Log.d("TEST", "after initial State check");
         waitForJsCallback();
-        Log.d("TEST", "after waiting for callback");
         assertEquals("loading", callback_data);
     }
 
-    // initial state should be "loading"
-    public void testState() {
-        loadHtml("<html><head></head><body>testing initial state</body></html>");
+    // state should be "default" when 'ready'
+    public void testStateAfterInitialization() {
+        loadHtml("<html><head></head><body>testing state after initialization</body></html>");
         Log.d("TEST", "before later State check");
         executeAsyncJs("mraid.getState()", new JsCallback() {
             void done(String version) {
@@ -122,9 +122,33 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
         assertEquals(null, callback_data);
     }
 
-//     public void testA() {//         
-//     assertEquals(true, true);
-//     }
+    // expand properties should be set to screen dimensions by default
+    public void testInitialExpandProperties() {
+        loadHtml("<html><head></head><body>testing initial expandProperties </body></html>");
+        final DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+        executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
+            void done(String properties) {
+                assertEquals("{\"width\":" + metrics.widthPixels + ",\"height\":" + metrics.heightPixels +
+                            ",\"useCustomClose\":false,\"isModal\":false}", properties);
+            }
+        });
+    }
+
+    public void testExpandPropertyAccessors() {
+        loadHtml("<html><head></head><body>testing getter and setter for expand properties </body></html>");
+        mraidView.loadUrl("javascript:mraid.setExpandProperties({width:42,height:23,useCustomClose:true,isModal:true});");
+        executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
+            void done(String properties) {
+                assertEquals("{\"width\":42,\"height\":23,\"useCustomClose\":true,\"isModal\":false}", properties);
+            }
+        });
+        ExpandProperties props = mraidView.getExpandProperties();
+        assertEquals(42, props.width);
+        assertEquals(23, props.height);
+        assertTrue(props.useCustomClose);
+        assertFalse(props.isModal); // because this is read-only!
+    }
+    
 
 
 
