@@ -3,6 +3,7 @@ package de.madvertise.android.sdk;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.webkit.WebView;
@@ -36,7 +37,7 @@ class MadvertiseImageView extends WebView {
     private AnimationEndListener mAnimationListener;
     
     public MadvertiseImageView(final Context context, final int newWidth, final int newHeight,
-            final MadvertiseAd ad, final LoadingCompletedListener  loadingListener, final AnimationEndListener animationListener) {
+            final MadvertiseAd ad, final Handler  loadingCompletedHandler, final AnimationEndListener animationListener) {
         super(context);
         
         mAnimationListener = animationListener;
@@ -54,8 +55,8 @@ class MadvertiseImageView extends WebView {
         WebViewClient webViewClient = new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (loadingListener != null) {
-                    loadingListener.onLoadingComplete();
+                if (loadingCompletedHandler != null) {
+                    loadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
                 }
             }
         };
@@ -64,7 +65,7 @@ class MadvertiseImageView extends WebView {
         StringBuilder content = new StringBuilder();
         content.append(
                 "<html><head><style>* {margin:0;padding:0;}</style></head><body>")
-                .append("<img src=\"" + mImageAd.getBannerURL() + "\" height=\"" + newHeight
+                .append("<img src=\"" + mImageAd.getBannerUrl() + "\" height=\"" + newHeight
                         + "\" width=\"" + newWidth + "\"/>").append("</html></head>");
 
         loadDataWithBaseURL(null, content.toString(), "text/html", "UTF-8", null);        
@@ -78,13 +79,6 @@ class MadvertiseImageView extends WebView {
         }
         return super.dispatchTouchEvent(event);
     }
-
-    /**
-     * interface to signal that this view has loaded its contents.
-     */
-    interface LoadingCompletedListener {      
-        void onLoadingComplete();
-    }  
     
       /**
      * This is needed because of a sad Android-Bug: onAnimationEnd() will not be

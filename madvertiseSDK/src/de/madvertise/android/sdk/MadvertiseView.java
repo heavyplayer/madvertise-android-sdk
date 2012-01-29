@@ -64,7 +64,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import de.madvertise.android.sdk.MadvertiseImageView.LoadingCompletedListener;
+import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
 
 public class MadvertiseView extends FrameLayout {
 
@@ -114,7 +114,7 @@ public class MadvertiseView extends FrameLayout {
 
     private Timer mAdTimer = null;
 
-    private static final int MAKE_VISIBLE = View.VISIBLE;
+    public static final int MAKE_VISIBLE = View.VISIBLE;
 
     private static final int ANIMATION_COMPLETE = 2;
 
@@ -153,9 +153,10 @@ public class MadvertiseView extends FrameLayout {
     private int mMaxViewWidth;
 
     private int mMaxViewHeight;
-    
+
     private boolean mFetchAdsEnabled = true;
 
+    private AttributeSet mAttrs;
 
     /**
      * Static ad cache. We use {@link SoftReference} as they are guaranteed to
@@ -196,6 +197,8 @@ public class MadvertiseView extends FrameLayout {
      */
     public MadvertiseView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
+
+        this.mAttrs = attrs;
 
         // report launch
         if (reportLauch) {
@@ -251,7 +254,11 @@ public class MadvertiseView extends FrameLayout {
 
         if (mCurrentAd != null) {
             if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-                showImageView();
+                if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+                    showMraidView();
+                } else {
+                    showImageView();
+                }
             } else {
                 showTextView();
                 // show the MadvertiseView immediately so this doesn't need to
@@ -269,16 +276,33 @@ public class MadvertiseView extends FrameLayout {
         }
     }
 
+    private void showMraidView() {
+        MadvertiseUtil.logMessage(null, Log.DEBUG, "Add rich media banner");
+
+        MadvertiseMraidView mraidView = new MadvertiseMraidView(getContext()
+                .getApplicationContext(), mAttrs, mCallbackListener, mAnimationListener, mHandler,
+                mCurrentAd);
+
+        // animate the old views
+        animateOldViews();
+
+        addView(mraidView);
+
+        final Animation animation = createAnimation(false);
+        if (animation != null) {
+            mraidView.startAnimation(animation);
+        }
+    }
+
     private void showImageView() {
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Add image banner");
 
         MadvertiseImageView imageView = new MadvertiseImageView(getContext()
                 .getApplicationContext(), mBannerWidthDp, mBannerHeightDp, mCurrentAd,
-                new LoadingCompletedListener() {
-                    public void onLoadingComplete() {
-                        mHandler.sendEmptyMessage(MAKE_VISIBLE);
-                    }
-                }, mAnimationListener);
+
+        mHandler
+
+        , mAnimationListener);
 
         // animate the old views
         animateOldViews();
@@ -289,7 +313,6 @@ public class MadvertiseView extends FrameLayout {
         if (animation != null) {
             imageView.startAnimation(animation);
         }
-
     }
 
     private void showTextView() {
@@ -479,14 +502,14 @@ public class MadvertiseView extends FrameLayout {
 
             int maxHeightDefault = 0;
             int maxWidthDefault = 0;
-            if(mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+            if (mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
                 maxHeightDefault = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
                 maxWidthDefault = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
-            }            
+            }
             mMaxViewHeight = attrs.getAttributeIntValue(packageName,
                     MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, maxHeightDefault);
             mMaxViewWidth = attrs.getAttributeIntValue(packageName,
-                    MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, maxWidthDefault);            
+                    MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, maxWidthDefault);
         } else {
             MadvertiseUtil.logMessage(null, Log.DEBUG,
                     "AttributeSet is null. Using default parameters");
@@ -1079,17 +1102,18 @@ public class MadvertiseView extends FrameLayout {
     /**
      * Listener to be informed when animations on a view end
      */
-    interface AnimationEndListener {
+    public interface AnimationEndListener {
         void onAnimationEnd();
     }
-    
+
     /**
      * Enable/disable the loading of new ads. Default is true.
-     * @param isEnabled 
-     */    
+     * 
+     * @param isEnabled
+     */
     public void setFetchingAdsEnabled(final boolean isEnabled) {
         mFetchAdsEnabled = isEnabled;
-        if(!isEnabled) {
+        if (!isEnabled) {
             stopRequestThread();
         }
     }
@@ -1148,7 +1172,7 @@ public class MadvertiseView extends FrameLayout {
          * @param message a message with a reason of the problem
          */
         public void onIllegalHttpStatusCode(final int statusCode, final String message);
-        
+
         /**
          * Notifies the listener when an ad is clicked
          */
