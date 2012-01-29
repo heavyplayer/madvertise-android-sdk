@@ -32,7 +32,7 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
  * synchronously fetched from the madvertise server and stored on the device.
  * Click action is handled asynchronously.
  */
-class MadvertiseAd {
+public class MadvertiseAd {
 
     private final String CLICK_URL_CODE = "click_url";
 
@@ -47,7 +47,7 @@ class MadvertiseAd {
     private String mBannerUrl;
 
     private String mText;
-    
+
     private String mBannerType;
 
     private boolean mDownloadBanner;
@@ -91,11 +91,11 @@ class MadvertiseAd {
                 }
             }
             mClickUrl = json.isNull(CLICK_URL_CODE) ? "" : json.getString(CLICK_URL_CODE);
-            mBannerUrl = json.isNull(BANNER_URL_CODE) ? "" : json.getString(BANNER_URL_CODE);            
+            mBannerUrl = json.isNull(BANNER_URL_CODE) ? "" : json.getString(BANNER_URL_CODE);
             mText = json.isNull(TEXT_CODE) ? "" : json.getString(TEXT_CODE);
             mDownloadBanner = Boolean.parseBoolean(json.isNull(HAS_BANNER_CODE) ? "true" : json
                     .getString(HAS_BANNER_CODE));
-           
+
             if (mDownloadBanner) {
                 mHasBanner = mBannerUrl != null && !mBannerUrl.equals("");
             } else {
@@ -109,7 +109,7 @@ class MadvertiseAd {
             }
             e.printStackTrace();
         }
-    }    
+    }
 
     /**
      * Handles the click action (opens the click url)
@@ -120,7 +120,7 @@ class MadvertiseAd {
 
         try {
             mContext.startActivity(intent);
-            if(mCallbackListener != null) {
+            if (mCallbackListener != null) {
                 mCallbackListener.onAdClicked();
             }
         } catch (Exception e) {
@@ -136,7 +136,7 @@ class MadvertiseAd {
         return mClickUrl;
     }
 
-    protected String getBannerURL() {
+    public String getBannerUrl() {
         return mBannerUrl;
     }
 
@@ -151,7 +151,7 @@ class MadvertiseAd {
     protected byte[] getImageByteArray() {
         return mImageByteArray;
     }
-    
+
     protected String getBannerType() {
         return mBannerType;
     }

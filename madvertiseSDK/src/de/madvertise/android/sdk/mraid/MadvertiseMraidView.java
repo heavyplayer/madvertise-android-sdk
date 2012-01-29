@@ -25,6 +25,7 @@ import java.io.InputStream;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -35,7 +36,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import de.madvertise.android.sdk.MadvertiseAd;
 import de.madvertise.android.sdk.MadvertiseUtil;
+import de.madvertise.android.sdk.MadvertiseView;
+import de.madvertise.android.sdk.MadvertiseView.AnimationEndListener;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 import de.madvertise.android.sdk.R;
 
@@ -68,12 +72,19 @@ public class MadvertiseMraidView extends WebView {
 
     private MadvertiseViewCallbackListener mListener;
 
+    private AnimationEndListener mAnimationEndListener;
+    
     private int mIndex;
 
     private boolean mUseCustomClose = false;
+    
+    private Handler mLoadingCompletedHandler;
+    
+    private MadvertiseAd mAd;
+    
 
     public MadvertiseMraidView(Context context, AttributeSet attrs,
-            MadvertiseViewCallbackListener listener) {
+            MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseAd ad) {
         this(context);
         String packageName = "http://schemas.android.com/apk/res/"
                 + getContext().getApplicationContext().getPackageName();
@@ -82,6 +93,11 @@ public class MadvertiseMraidView extends WebView {
             mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
         }
         this.mListener = listener;
+        this.mAnimationEndListener = animationEndListener;
+        this.mLoadingCompletedHandler = loadingCompletedHandler;
+        this.mAd = ad;
+        
+        loadUrl(mAd.getBannerUrl());
     }
 
     public MadvertiseMraidView(Context context) {
@@ -105,6 +121,7 @@ public class MadvertiseMraidView extends WebView {
                 Log.d("TEST", "FINISHED loading");
                 setState(STATE_DEFAULT);
                 fireEvent("ready");
+                mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
     }
@@ -139,6 +156,7 @@ public class MadvertiseMraidView extends WebView {
 
         public void open(String url) {
             // TODO start (ORMMA?) BrowseActivity
+            mListener.onAdClicked();
         }
 
         public void setExpandProperties(final String json) {
@@ -256,5 +274,11 @@ public class MadvertiseMraidView extends WebView {
             MadvertiseUtil.logMessage(TAG, Log.ERROR, "error reading mraid.js");
         }
         loadUrl(script);
+    }
+    
+    @Override
+    protected void onAnimationEnd() {
+        super.onAnimationEnd();
+        mAnimationEndListener.onAnimationEnd();
     }
 }
