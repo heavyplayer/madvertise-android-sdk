@@ -148,6 +148,19 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
         assertTrue(props.useCustomClose);
         assertFalse(props.isModal); // because this is read-only!
     }
+
+    public void testUseCustomClose() {
+        loadHtml("<html><head></head><body>testing convenience setter for custom close handle </body></html>");
+        mraidView.loadUrl("javascript:mraid.useCustomClose(true);");
+        executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)", new JsCallback() {
+            void done(String properties) {
+                assertEquals("true", properties);
+            }
+        });
+        ExpandProperties props = mraidView.getExpandProperties();
+        assertTrue(props.useCustomClose);
+    }
+
     
 
 

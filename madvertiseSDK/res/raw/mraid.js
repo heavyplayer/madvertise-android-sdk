@@ -31,6 +31,10 @@ mraid = {
     }
     return mraid_bridge.setExpandProperties(JSON.stringify(expandProperties));
   },
+  useCustomClose: function(useCustomClose) {
+    expandProperties.useCustomClose = useCustomClose;
+    return mraid_bridge.setExpandProperties(JSON.stringify(expandProperties));
+  },
   addEventListener: function(event, listener) {
     return (listeners[event] || (listeners[event] = [])).push(listener);
   },

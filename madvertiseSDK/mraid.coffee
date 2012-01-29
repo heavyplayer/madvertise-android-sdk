@@ -20,6 +20,10 @@ mraid =
     expandProperties.useCustomClose = properties.useCustomClose if properties.useCustomClose
     mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
 
+  useCustomClose: (useCustomClose) ->
+    expandProperties.useCustomClose = useCustomClose
+    mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
+    
   addEventListener: (event, listener) ->
     (listeners[event] ||= []).push listener
 
