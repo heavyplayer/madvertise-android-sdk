@@ -62,10 +62,23 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
 
     // initial state should be "loading"
     public void testInitialState() {
+        Log.d("TEST", "before initial State check");
+        loadHtml("<html><head></head><body>testing initial state" +
+                "<script type=\"text/javascript\">test.callback(mraid.getState());" +
+                "</script></body></html>");
+        Log.d("TEST", "after initial State check");
+        waitForJsCallback();
+        Log.d("TEST", "after waiting for callback");
+        assertEquals("loading", callback_data);
+    }
+
+    // initial state should be "loading"
+    public void testState() {
         loadHtml("<html><head></head><body>testing initial state</body></html>");
+        Log.d("TEST", "before later State check");
         executeAsyncJs("mraid.getState()", new JsCallback() {
             void done(String version) {
-                assertEquals("loading", version);
+                assertEquals("default", version);
             }
         });
     }
