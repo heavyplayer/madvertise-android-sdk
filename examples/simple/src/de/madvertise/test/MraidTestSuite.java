@@ -80,11 +80,33 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
     }
 
     public void testEventListenersListenForEvents() {
-        loadHtml("<html><head></head><body>testing event listeners actually listen for events</body></html>");
+        loadHtml("<html><head></head><body>testing event listeners listen for events</body></html>");
         mraidView.loadUrl("javascript:mraid.addEventListener('ready', function(event) { test.callback(event); });");
         mraidView.fireEvent("ready");
         waitForJsCallback();
         assertEquals("ready", callback_data);
+    }
+
+    public void testRemoveEventListener() {
+        loadHtml("<html><head></head><body>testing removeEventListener removes one specific listener</body></html>");
+        mraidView.loadUrl("javascript:var listener = function(event) { test.callback(event); }");
+        mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener);");
+        mraidView.loadUrl("javascript:mraid.removeEventListener('ready', listener);");
+        mraidView.fireEvent("ready");
+        waitForTimeOut();
+        assertEquals(null, callback_data);
+    }
+
+    public void testRemoveAllEventListeners() {
+        loadHtml("<html><head></head><body>testing removeEventListener removes all listener for an event</body></html>");
+        mraidView.loadUrl("javascript:var listener = function(event) { test.callback(event); }");
+        mraidView.loadUrl("javascript:var listener2 = function(event) { test.callback(event); }");
+        mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener);");
+        mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener2);");
+        mraidView.loadUrl("javascript:mraid.removeEventListener('ready');"); // called without second argument
+        mraidView.fireEvent("ready");
+        waitForTimeOut();
+        assertEquals(null, callback_data);
     }
 
 //     public void testA() {//         
@@ -103,6 +125,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             }
         }.run();
     }
+    
 
     private abstract class JsCallback {
         abstract void done(String arg);
@@ -142,5 +165,11 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             }
             Assert.fail("Waiting timed out!");
         }
+    }
+    
+    private void waitForTimeOut() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {}
     }
 }
