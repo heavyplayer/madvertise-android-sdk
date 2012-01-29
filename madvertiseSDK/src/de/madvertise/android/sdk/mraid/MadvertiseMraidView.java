@@ -18,7 +18,6 @@
  * Container for rich media ads using the MRAID version 1.0 - standard
  */
 
-//TODO: 
 
 package de.madvertise.android.sdk.mraid;
 
@@ -26,12 +25,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import de.madvertise.android.sdk.MadvertiseUtil;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 import de.madvertise.android.sdk.R;
@@ -40,13 +44,13 @@ public class MadvertiseMraidView extends WebView {
 
     
 
-//    private static final int CLOSE_BUTTON_SIZE = 50;
+    private static final int CLOSE_BUTTON_SIZE = 50;
 
     private static final String JS_INTERFACE_NAME = "mraid";
 
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
 
-//    private FrameLayout mEnlargeLayout;
+    private FrameLayout mEnlargeLayout;
     
     private MadvertiseViewCallbackListener mListener;
     
@@ -84,7 +88,7 @@ public class MadvertiseMraidView extends WebView {
         setHorizontalScrollBarEnabled(false);
         setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 
-        // setBackgroundColor(Color.TRANSPARENT);
+         setBackgroundColor(Color.TRANSPARENT);
 
         final WebSettings webSettings = getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -122,42 +126,42 @@ public class MadvertiseMraidView extends WebView {
 
   
 
-//    public void expand(final int width, final int height) {
-//        FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
-//
-//        final FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(width, height);
-//
-//        mEnlargeLayout = new FrameLayout(getContext());
-//        final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-//                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-//        layoutParams.gravity = Gravity.CENTER;
-//        mEnlargeLayout.setLayoutParams(layoutParams);
-//
-//        this.setLayoutParams(adParams);
-//        ((ViewGroup)getParent()).removeView(this);
-//        mEnlargeLayout.addView(this);
-//
-//        if (!mUseCustomClose) {
-//            final ImageView imageView = new ImageView(getContext());
-//            imageView.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-//
-//            final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
-//                    CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
-//            closeButtonParams.gravity = Gravity.RIGHT;
-//            imageView.setLayoutParams(closeButtonParams);
-//            mEnlargeLayout.addView(imageView);
-//        }
-//
-//        content.addView(mEnlargeLayout);
-//
-//        mEnlarged = true;
-//    }
+    public void expand(final int width, final int height) {
+        FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
 
-//    public void close() {
-//        if (mEnlargeLayout != null) {
-//            ((ViewGroup)mEnlargeLayout.getParent()).removeView(mEnlargeLayout);
+        final FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(width, height);
+
+        mEnlargeLayout = new FrameLayout(getContext());
+        final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER;
+        mEnlargeLayout.setLayoutParams(layoutParams);
+
+        this.setLayoutParams(adParams);
+        ((ViewGroup)getParent()).removeView(this);
+        mEnlargeLayout.addView(this);
+
+//        if (!mUseCustomClose) {
+            final ImageView imageView = new ImageView(getContext());
+            imageView.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+
+            final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
+                    CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
+            closeButtonParams.gravity = Gravity.RIGHT;
+            imageView.setLayoutParams(closeButtonParams);
+            mEnlargeLayout.addView(imageView);
 //        }
-//    }
+
+        content.addView(mEnlargeLayout);
+
+//        mEnlarged = true;
+    }
+
+    public void close() {
+        if (mEnlargeLayout != null) {
+            ((ViewGroup)mEnlargeLayout.getParent()).removeView(mEnlargeLayout);
+        }
+    }
  
 
 //    @Override
