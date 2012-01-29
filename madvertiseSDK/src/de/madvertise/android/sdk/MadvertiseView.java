@@ -64,7 +64,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import de.madvertise.android.sdk.MadvertiseImageView.LoadingCompletedListener;
 import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
 
 public class MadvertiseView extends FrameLayout {

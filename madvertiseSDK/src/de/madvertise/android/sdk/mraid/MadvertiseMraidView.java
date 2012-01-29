@@ -97,7 +97,7 @@ public class MadvertiseMraidView extends WebView {
         this.mLoadingCompletedHandler = loadingCompletedHandler;
         this.mAd = ad;
         
-        loadUrl(mAd.getBannerUrl());
+//        loadUrl(mAd.getBannerUrl());
     }
 
     public MadvertiseMraidView(Context context) {
