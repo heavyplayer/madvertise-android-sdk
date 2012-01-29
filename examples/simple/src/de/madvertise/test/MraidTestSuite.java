@@ -29,6 +29,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
                 Log.d("Javascript", "called back: " + data);
             }
         }, "test");
+        Thread.sleep(300); // somehow needed to finish initialization
     }
 
     public void testAdControllerExists() {
@@ -62,19 +63,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
 
     // initial state should be "loading"
     public void testInitialState() {
-        Log.d("TEST", "before initial State check");
         loadHtml("<html><head></head><body>testing initial state" +
                 "<script type=\"text/javascript\">test.callback(mraid.getState());" +
                 "</script></body></html>");
-        Log.d("TEST", "after initial State check");
         waitForJsCallback();
-        Log.d("TEST", "after waiting for callback");
         assertEquals("loading", callback_data);
     }
 
-    // initial state should be "loading"
-    public void testState() {
-        loadHtml("<html><head></head><body>testing initial state</body></html>");
+    // state should be "default" when 'ready'
+    public void testStateAfterInitialization() {
+        loadHtml("<html><head></head><body>testing state after initialization</body></html>");
         Log.d("TEST", "before later State check");
         executeAsyncJs("mraid.getState()", new JsCallback() {
             void done(String version) {
