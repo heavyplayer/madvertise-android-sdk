@@ -25,11 +25,14 @@ package de.madvertise.android.sdk.mraid;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import de.madvertise.android.sdk.MadvertiseUtil;
@@ -51,7 +54,9 @@ public class MadvertiseMraidView extends WebView {
     
     private String mPlacementType;
     private int mState = STATE_LOADING;
+    private ExpandProperties mExpandProperties;
     private MadvertiseViewCallbackListener mListener;
+
     
     public MadvertiseMraidView(Context context, AttributeSet attrs, MadvertiseViewCallbackListener listener) {
         this(context);
@@ -74,10 +79,13 @@ public class MadvertiseMraidView extends WebView {
         addJavascriptInterface(mBridge, "mraid_bridge");
         loadJs();
         
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
+        injectJs("mraid.setExpandProperties("+mExpandProperties.toJson()+");");
+        
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d("TEST", "FINISHED loading");
                 setState(STATE_DEFAULT);
                 fireEvent("ready");
             }
@@ -94,6 +102,10 @@ public class MadvertiseMraidView extends WebView {
     
     public void fireEvent(String event) {
         injectJs("mraid.fireEvent('"+event+"');");
+    }
+    
+    public ExpandProperties getExpandProperties() {
+        return mExpandProperties;
     }
     
     private void injectJs(String jsCode) {
@@ -119,17 +131,9 @@ public class MadvertiseMraidView extends WebView {
             // TODO start (ORMMA?) BrowseActivity
         }
         
-        public void setExpandProperties(final String json) { 
-//            mExpandProperties.fromJson(json);
-//            mUseCustomClose = mExpandProperties.useCustomClose;
-//            setExpandProperties(mExpandProperties);
-            // TODO: Resize ad size
+        public void setExpandProperties(String json) {
+            mExpandProperties.fromJson(json);
         }
-        // we could just pass comma-separated values in a certain order?
-        // or set Properties separately? 
-        // like e.g.:
-        public void setUseCustomClose(String customClose) {}
-        public void setExpandDimensions(String dimensions) {}
     };
 
 
@@ -203,6 +207,56 @@ public class MadvertiseMraidView extends WebView {
 //    }
 
 
+    public class ExpandProperties {
+
+        private static final String WIDTH = "width";
+        private static final String HEIGHT = "height";
+        private static final String USE_CUSTOM_CLOSE = "useCustomClose";
+        private static final String IS_MODAL = "isModal";
+
+        public int width;
+        public int height;
+        public boolean useCustomClose;
+        public boolean isModal;
+
+        ExpandProperties(final int width, final int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        public String toJson() {
+            final JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put(WIDTH, width);
+                jsonObject.put(HEIGHT, height);
+                jsonObject.put(USE_CUSTOM_CLOSE, useCustomClose);
+                jsonObject.put(IS_MODAL, isModal);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return jsonObject.toString();
+        }
+
+        void fromJson(final String json) {
+            JSONObject jsonObject;
+            try {
+                jsonObject = new JSONObject(json);
+
+                if (jsonObject.has(HEIGHT)) {
+                    width = jsonObject.getInt(WIDTH);
+                }
+                if (jsonObject.has(WIDTH)) {
+                    height = jsonObject.getInt(HEIGHT);
+                }
+                if (jsonObject.has(USE_CUSTOM_CLOSE)) {
+                    useCustomClose = jsonObject.getBoolean(USE_CUSTOM_CLOSE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     //Utility methods
     private void loadJs() {
         String script = "";

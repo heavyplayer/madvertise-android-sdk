@@ -1,4 +1,5 @@
 
+expandProperties = width: 320, height: 480, useCustomClose: false, isModal: false
 states = ["loading", "hidden", "default", "expanded"]
 state = "loading"
 listeners = {}
@@ -10,6 +11,14 @@ mraid =
   getVersion: -> "1.0"
 
   getState: -> state
+
+  getExpandProperties: -> expandProperties
+
+  setExpandProperties: (properties) ->
+    expandProperties.width = properties.width if properties.width
+    expandProperties.height = properties.height if properties.height
+    expandProperties.useCustomClose = properties.useCustomClose if properties.useCustomClose
+    mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
 
   addEventListener: (event, listener) ->
     (listeners[event] ||= []).push listener
