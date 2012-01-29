@@ -1,5 +1,6 @@
-var listeners, mraid, state;
+var listeners, mraid, state, states;
 var __slice = Array.prototype.slice;
+states = ["loading", "hidden", "default", "expanded"];
 state = "loading";
 listeners = {};
 mraid = {
@@ -32,8 +33,8 @@ mraid = {
       return delete listeners[event];
     }
   },
-  setState: function(new_state) {
-    state = new_state;
+  setState: function(stateId) {
+    state = states[stateId];
     return fireEvent("stateChange");
   },
   fireEvent: function(event) {

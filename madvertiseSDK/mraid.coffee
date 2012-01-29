@@ -1,4 +1,5 @@
 
+states = ["loading", "hidden", "default", "expanded"]
 state = "loading"
 listeners = {}
 
@@ -19,8 +20,8 @@ mraid =
     else # remove all listeners for this event
       delete listeners[event]
 
-  setState: (new_state) ->
-    state = new_state
+  setState: (stateId) ->
+    state = states[stateId]
     fireEvent("stateChange")
 
   # internal functions
