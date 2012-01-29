@@ -32,6 +32,10 @@ mraid = {
       return delete listeners[event];
     }
   },
+  setState: function(new_state) {
+    state = new_state;
+    return fireEvent("stateChange");
+  },
   fireEvent: function(event) {
     var listener, _i, _len, _ref, _results;
     _ref = listeners[event];

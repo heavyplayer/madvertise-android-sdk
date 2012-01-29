@@ -101,9 +101,21 @@ public class MadvertiseMraidView extends WebView {
         };
         setWebViewClient(webViewClient);
         
-        loadJs();
+    };
+
+    public void fireEvent(String event) {
+        injectJs("mraid.fireEvent('"+event+"');");
     }
     
+    public void setState(String state) {
+        injectJs("mraid.setState('"+state+"');");
+    }
+    
+    public void injectJs(String jsCode) {
+        loadUrl("javascript:" + jsCode);
+    }
+
+
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(visibility);
@@ -172,9 +184,6 @@ public class MadvertiseMraidView extends WebView {
 //
 //    }
 
-    public void fireEvent(String event) {
-        loadUrl("javascript:mraid.fireEvent('"+event+"');");
-    }
 
     //Utility methods
     private void loadJs() {

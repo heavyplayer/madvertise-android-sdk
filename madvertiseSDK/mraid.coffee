@@ -19,6 +19,10 @@ mraid =
     else # remove all listeners for this event
       delete listeners[event]
 
+  setState: (new_state) ->
+    state = new_state
+    fireEvent("stateChange")
+
   # internal functions
 
   fireEvent: (event) ->
