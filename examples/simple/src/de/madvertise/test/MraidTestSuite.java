@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
@@ -189,6 +190,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         runTestOnUiThread(new Runnable() {
             public void run() {
                 mraidView = new MadvertiseMraidView(activity);
+//                mraidView.setVisibility(View.GONE);
             }
         });
         getInstrumentation().waitForIdleSync();
@@ -199,7 +201,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             }
         }, "test");
         loadHtml("<html><head></head><body>this view is not visible (yet)</body></html>");
-        Thread.sleep(1200);
+        Thread.sleep(1500);
         executeAsyncJs("mraid.isViewable()", new JsCallback() {
             void done(String viewable) {
                 assertFalse(Boolean.parseBoolean(viewable));
@@ -207,10 +209,11 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
         runTestOnUiThread(new Runnable() {
             public void run() { // make it visible
+//                mraidView.setVisibility(View.VISIBLE);
                 activity.setContentView(mraidView);
             }
         });
-        Thread.sleep(1200);
+        Thread.sleep(1500);
 //        loadHtml("<html><head></head><body>this view becomes now visible!</body></html>");
         executeAsyncJs("mraid.isViewable()", new JsCallback() {
             void done(String viewable) {
@@ -257,7 +260,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         abstract boolean check();
 
         public void run() {
-            long timeout = 3000;
+            long timeout = 5000;
             while (timeout > 0) {
                 try {
                     Thread.sleep(300);

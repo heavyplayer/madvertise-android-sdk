@@ -122,16 +122,29 @@ public class MadvertiseMraidView extends WebView {
                     mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
-        setPictureListener(new PictureListener() {
-            
-            @Override
-            public void onNewPicture(WebView wv, Picture pic) {
-                Log.d("TEST", "onNewPicture: pic="+pic);
-                injectJs("mraid.setViewable(true);");
-                
-            }
-        });
     }
+    
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.d("TEST", "onLayout (changed="+changed+")");
+        injectJs("mraid.setViewable(true);");
+        super.onLayout(changed, l, t, r, b);
+    };
+
+//    protected void onWindowVisibilityChanged(int visibility) {
+//        Log.d("TEST", "onWindowVisibilityChanged "+visibility);
+//        super.onWindowVisibilityChanged(visibility);
+//    };
+//
+//    protected void onAttachedToWindow() {
+//        Log.d("TEST", "onAttachedToWindow");
+//        super.onAttachedToWindow();
+//    };
+//    
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        Log.d("TEST", "onMeasure");
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//    };
+
 
 
     // to be called from the Ad (js side)
