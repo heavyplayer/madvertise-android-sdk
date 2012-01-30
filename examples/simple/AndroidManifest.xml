@@ -13,7 +13,7 @@
         <!-- Setup your site token. For tests, use 'TestTokn'-->        
         <meta-data android:value="TestTokn" android:name="madvertise_site_token" />
         
-        <activity android:name="MraidTestActivity" />
+        <activity android:name="android.app.Activity" />
         <uses-library android:name="android.test.runner" />
     </application>
     

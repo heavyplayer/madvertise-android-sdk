@@ -4,34 +4,43 @@ package de.madvertise.test;
 import junit.framework.Assert;
 import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
 import de.madvertise.android.sdk.mraid.MadvertiseMraidView.ExpandProperties;
+import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestActivity> {
+public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
-    private MraidTestActivity activity;
-
+    private Activity activity;
+    private String callback_data;
     private MadvertiseMraidView mraidView;
 
-    protected String callback_data;
-
     public MraidTestSuite() {
-        super("de.madvertise.test", MraidTestActivity.class);
+        super("de.madvertise.test", Activity.class);
     }
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        activity = getActivity();
-        mraidView = (MadvertiseMraidView)activity.findViewById(42);
-        mraidView.addJavascriptInterface(new Object() {
-            public void callback(String data) {
-                callback_data = data;
-                Log.d("Javascript", "called back: " + data);
-            }
-        }, "test");
-        Thread.sleep(500); // somehow needed to finish initialization
+    protected void setUp() {
+        try {
+            super.setUp();
+            activity = getActivity();
+            runTestOnUiThread(new Runnable() {
+                public void run() {
+                    mraidView = new MadvertiseMraidView(activity);
+                    activity.setContentView(mraidView);
+                }
+            });
+            getInstrumentation().waitForIdleSync();
+            mraidView.addJavascriptInterface(new Object() {
+                public void callback(String data) {
+                    callback_data = data;
+                    Log.d("Javascript", "called back: " + data);
+                }
+            }, "test");
+            Thread.sleep(900); // somehow needed to finish initialization
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     public void testAdControllerExists() {
