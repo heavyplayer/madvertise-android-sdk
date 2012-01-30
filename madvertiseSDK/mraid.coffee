@@ -3,6 +3,7 @@ expandProperties = width: 320, height: 480, useCustomClose: false, isModal: fals
 states = ["loading", "hidden", "default", "expanded"]
 placementType = "inline"
 state = "loading"
+viewable = false
 listeners = {}
 
 mraid =
@@ -12,6 +13,8 @@ mraid =
   getVersion: -> "1.0"
 
   getState: -> state
+
+  isViewable: -> viewable
 
   getPlacementType: -> placementType
 
@@ -45,6 +48,10 @@ mraid =
   setState: (state_id) ->
     state = states[state_id]
     fireEvent("stateChange")
+
+  setViewable: (view_able) ->
+    viewable = view_able
+    fireEvent("viewableChange")
 
   setPlacementType: (type) ->
     if type == 0

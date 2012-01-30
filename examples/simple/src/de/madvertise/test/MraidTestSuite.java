@@ -37,7 +37,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                     Log.d("Javascript", "called back: " + data);
                 }
             }, "test");
-            Thread.sleep(900); // somehow needed to finish initialization
+            Thread.sleep(1200); // somehow needed to finish initialization
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -185,6 +185,39 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
     }
     
+    public void testIsViewable() throws Throwable {
+        runTestOnUiThread(new Runnable() {
+            public void run() {
+                mraidView = new MadvertiseMraidView(activity);
+            }
+        });
+        getInstrumentation().waitForIdleSync();
+        mraidView.addJavascriptInterface(new Object() {
+            public void callback(String data) {
+                callback_data = data;
+                Log.d("Javascript", "called back: " + data);
+            }
+        }, "test");
+        loadHtml("<html><head></head><body>this view is not visible (yet)</body></html>");
+        Thread.sleep(1200);
+        executeAsyncJs("mraid.isViewable()", new JsCallback() {
+            void done(String viewable) {
+                assertFalse(Boolean.parseBoolean(viewable));
+            }
+        });
+        runTestOnUiThread(new Runnable() {
+            public void run() { // make it visible
+                activity.setContentView(mraidView);
+            }
+        });
+        Thread.sleep(1200);
+//        loadHtml("<html><head></head><body>this view becomes now visible!</body></html>");
+        executeAsyncJs("mraid.isViewable()", new JsCallback() {
+            void done(String viewable) {
+                assertTrue(Boolean.parseBoolean(viewable));
+            }
+        });
+    }
 
 
 
@@ -198,7 +231,6 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             }
         }.run();
     }
-    
 
     private abstract class JsCallback {
         abstract void done(String arg);

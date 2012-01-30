@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Picture;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -35,7 +36,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -115,14 +115,25 @@ public class MadvertiseMraidView extends WebView {
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
+                Log.d("TEST", "onPageFinished");
                 setState(STATE_DEFAULT);
                 fireEvent("ready");
                 if (mLoadingCompletedHandler != null)
                     mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
+        setPictureListener(new PictureListener() {
+            
+            @Override
+            public void onNewPicture(WebView wv, Picture pic) {
+                Log.d("TEST", "onNewPicture: pic="+pic);
+                injectJs("mraid.setViewable(true);");
+                
+            }
+        });
     }
-    
+
+
     // to be called from the Ad (js side)
     
     Object mBridge = new Object() {
