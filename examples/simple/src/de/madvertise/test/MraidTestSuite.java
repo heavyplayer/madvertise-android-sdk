@@ -9,6 +9,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
@@ -28,7 +29,10 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             runTestOnUiThread(new Runnable() {
                 public void run() {
                     mraidView = new MadvertiseMraidView(activity);
-                    activity.setContentView(mraidView);
+                    FrameLayout layout = new FrameLayout(activity);
+                    mraidView.setLayoutParams(new FrameLayout.LayoutParams(320, 53));
+                    layout.addView(mraidView);
+                    activity.setContentView(layout);
                 }
             });
             getInstrumentation().waitForIdleSync();
@@ -221,7 +225,26 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             }
         });
     }
+    
+    public void testExpandAndClose() throws InterruptedException {
+        loadHtml("<html><head></head><body>testing expand</div></body></html>");
+        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:230});");
+        mraidView.loadUrl("javascript:mraid.expand();");
+        Thread.sleep(1000);
+        assertEquals(230, mraidView.getHeight());
+        mraidView.loadUrl("javascript:mraid.close();");
+        Thread.sleep(1000);
+        assertEquals(53, mraidView.getHeight());
+    }
 
+    public void testExpandWithUrl() throws InterruptedException {
+        loadHtml("<html><head></head><body>testing expand with</div></body></html>");
+        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:450});");
+        mraidView.loadUrl("javascript:mraid.expand('http://andlabs.eu');");
+        Thread.sleep(1000);
+        assertEquals(450, mraidView.getHeight());
+        Thread.sleep(9000);
+    }
 
 
     // ------------ Test util stuff ---------------------

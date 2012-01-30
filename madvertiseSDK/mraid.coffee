@@ -16,6 +16,14 @@ mraid =
 
   isViewable: -> viewable
 
+  expand: (url...) ->
+    if url?.length == 0
+      mraid_bridge.expand()
+    else
+      mraid_bridge.expand(url[0])
+  
+  close: -> mraid_bridge.close()
+
   getPlacementType: -> placementType
 
   getExpandProperties: -> expandProperties

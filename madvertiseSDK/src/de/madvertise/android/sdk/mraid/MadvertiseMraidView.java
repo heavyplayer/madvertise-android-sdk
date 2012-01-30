@@ -151,13 +151,29 @@ public class MadvertiseMraidView extends WebView {
     
     Object mBridge = new Object() {
 
-        public void expand(final String url) {
-            // TODO expand on the screen..
+        public void expand() {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    MadvertiseMraidView.this.expand(mExpandProperties.width, mExpandProperties.height);
+                }
+            });
             setState(STATE_EXPANDED);
         }
 
+        public void expand(String url) {
+            Log.d("TEST", "expand with url");
+            loadUrl(url);
+            expand();
+        }
+
         public void close() {
-            // TODO close :-)
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    MadvertiseMraidView.this.close();
+                }
+            });
             setState(mState--);
         }
 
