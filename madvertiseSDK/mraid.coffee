@@ -1,6 +1,7 @@
 
 expandProperties = width: 320, height: 480, useCustomClose: false, isModal: false
 states = ["loading", "hidden", "default", "expanded"]
+placementType = "inline"
 state = "loading"
 listeners = {}
 
@@ -11,6 +12,8 @@ mraid =
   getVersion: -> "1.0"
 
   getState: -> state
+
+  getPlacementType: -> placementType
 
   getExpandProperties: -> expandProperties
 
@@ -43,4 +46,9 @@ mraid =
     state = states[state_id]
     fireEvent("stateChange")
 
+  setPlacementType: (type) ->
+    if type == 0
+      placementType = "inline"
+    else if type == 1
+      placementType = "interstitial"
 

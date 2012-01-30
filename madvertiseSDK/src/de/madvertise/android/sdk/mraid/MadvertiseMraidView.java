@@ -70,11 +70,11 @@ public class MadvertiseMraidView extends WebView {
     // protected static final String STATE_DEFAULT = "default";
     // protected static final String STATE_EXPANDED = "expanded";
 
-    private String mPlacementType;
 
     private int mState;
     private int mIndex;
     private MadvertiseAd mAd;
+    private int mPlacementType;
     private ViewGroup mOriginalParent;
     private Handler mLoadingCompletedHandler;
     private ExpandProperties mExpandProperties;
@@ -86,15 +86,11 @@ public class MadvertiseMraidView extends WebView {
     public MadvertiseMraidView(Context context, AttributeSet attrs,
             MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseAd ad) {
         this(context);
-        String packageName = "http://schemas.android.com/apk/res/"
-                + getContext().getApplicationContext().getPackageName();
-        mPlacementType = attrs.getAttributeValue(packageName, "placement_type");
-        if (mPlacementType == null || mPlacementType.equals("")) {
-            mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
-        }
-        this.mListener = listener;
-        this.mAnimationEndListener = animationEndListener;
+        String packageName = "http://schemas.android.com/apk/res/" + getContext().getPackageName();
+        setPlacementType(attrs.getAttributeValue(packageName, "placement_type"));
         this.mLoadingCompletedHandler = loadingCompletedHandler;
+        this.mAnimationEndListener = animationEndListener;
+        this.mListener = listener;
         this.mAd = ad;
         
         loadUrl(mAd.getBannerUrl());
@@ -169,6 +165,24 @@ public class MadvertiseMraidView extends WebView {
     
     public ExpandProperties getExpandProperties() {
         return mExpandProperties;
+    }
+    
+    public String getPlacementType() {
+        switch (mPlacementType) {
+        case MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL:
+            return "interstitial";
+        default:
+            return "inline";
+        }
+    }
+    
+    public void setPlacementType(String placementType) { // use enum here?
+        if (placementType.equals("interstitial")) {
+            mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL;
+        } else {
+            mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
+        }
+        injectJs("mraid.setPlacementType("+mPlacementType+");");
     }
     
     private void injectJs(String jsCode) {

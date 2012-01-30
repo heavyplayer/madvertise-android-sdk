@@ -1,4 +1,4 @@
-var expandProperties, listeners, mraid, state, states;
+var expandProperties, listeners, mraid, placementType, state, states;
 var __slice = Array.prototype.slice;
 expandProperties = {
   width: 320,
@@ -7,6 +7,7 @@ expandProperties = {
   isModal: false
 };
 states = ["loading", "hidden", "default", "expanded"];
+placementType = "inline";
 state = "loading";
 listeners = {};
 mraid = {
@@ -15,6 +16,9 @@ mraid = {
   },
   getState: function() {
     return state;
+  },
+  getPlacementType: function() {
+    return placementType;
   },
   getExpandProperties: function() {
     return expandProperties;
@@ -71,5 +75,12 @@ mraid = {
   setState: function(state_id) {
     state = states[state_id];
     return fireEvent("stateChange");
+  },
+  setPlacementType: function(type) {
+    if (type === 0) {
+      return placementType = "inline";
+    } else if (type === 1) {
+      return placementType = "interstitial";
+    }
   }
 };

@@ -161,6 +161,20 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
         assertTrue(props.useCustomClose);
     }
 
+    public void testPlacementTypeAccessor() {
+        loadHtml("<html><head></head><body>testing placement type getter and setter </body></html>");
+        executeAsyncJs("mraid.getPlacementType()", new JsCallback() {
+            void done(String placementType) {
+                assertEquals("inline", placementType); // default
+            }
+        });
+        mraidView.setPlacementType("interstitial");
+        executeAsyncJs("mraid.getPlacementType()", new JsCallback() {
+            void done(String placementType) {
+                assertEquals("interstitial", placementType); // default
+            }
+        });
+    }
     
 
 
