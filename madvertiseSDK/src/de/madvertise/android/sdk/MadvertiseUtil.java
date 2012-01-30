@@ -142,9 +142,9 @@ public class MadvertiseUtil {
     
     static final int BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
     
-    public static final String PLACEMENT_TYPE_INLINE = "inline";
+    public static final int PLACEMENT_TYPE_INLINE = 0;
 
-    public static final String PLACEMENT_TYPE_INTERSTITIAL = "interstitial";
+    public static final int PLACEMENT_TYPE_INTERSTITIAL = 1;
     
     private static final String MADVERTISE_SITE_TOKEN = "madvertise_site_token";
 

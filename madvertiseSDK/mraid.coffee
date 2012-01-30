@@ -1,7 +1,9 @@
 
 expandProperties = width: 320, height: 480, useCustomClose: false, isModal: false
 states = ["loading", "hidden", "default", "expanded"]
+placementType = "inline"
 state = "loading"
+viewable = false
 listeners = {}
 
 mraid =
@@ -12,6 +14,10 @@ mraid =
 
   getState: -> state
 
+  isViewable: -> viewable
+
+  getPlacementType: -> placementType
+
   getExpandProperties: -> expandProperties
 
   setExpandProperties: (properties) ->
@@ -20,6 +26,10 @@ mraid =
     expandProperties.useCustomClose = properties.useCustomClose if properties.useCustomClose
     mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
 
+  useCustomClose: (useCustomClose) ->
+    expandProperties.useCustomClose = useCustomClose
+    mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
+    
   addEventListener: (event, listener) ->
     (listeners[event] ||= []).push listener
 
@@ -39,4 +49,13 @@ mraid =
     state = states[state_id]
     fireEvent("stateChange")
 
+  setViewable: (view_able) ->
+    viewable = view_able
+    fireEvent("viewableChange")
+
+  setPlacementType: (type) ->
+    if type == 0
+      placementType = "inline"
+    else if type == 1
+      placementType = "interstitial"
 

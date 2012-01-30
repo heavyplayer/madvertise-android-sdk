@@ -4,34 +4,44 @@ package de.madvertise.test;
 import junit.framework.Assert;
 import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
 import de.madvertise.android.sdk.mraid.MadvertiseMraidView.ExpandProperties;
+import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
 
-public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestActivity> {
+public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
-    private MraidTestActivity activity;
-
+    private Activity activity;
+    private String callback_data;
     private MadvertiseMraidView mraidView;
 
-    protected String callback_data;
-
     public MraidTestSuite() {
-        super("de.madvertise.test", MraidTestActivity.class);
+        super("de.madvertise.test", Activity.class);
     }
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        activity = getActivity();
-        mraidView = (MadvertiseMraidView)activity.findViewById(42);
-        mraidView.addJavascriptInterface(new Object() {
-            public void callback(String data) {
-                callback_data = data;
-                Log.d("Javascript", "called back: " + data);
-            }
-        }, "test");
-        Thread.sleep(500); // somehow needed to finish initialization
+    protected void setUp() {
+        try {
+            super.setUp();
+            activity = getActivity();
+            runTestOnUiThread(new Runnable() {
+                public void run() {
+                    mraidView = new MadvertiseMraidView(activity);
+                    activity.setContentView(mraidView);
+                }
+            });
+            getInstrumentation().waitForIdleSync();
+            mraidView.addJavascriptInterface(new Object() {
+                public void callback(String data) {
+                    callback_data = data;
+                    Log.d("Javascript", "called back: " + data);
+                }
+            }, "test");
+            Thread.sleep(1200); // somehow needed to finish initialization
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     public void testAdControllerExists() {
@@ -148,7 +158,69 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
         assertTrue(props.useCustomClose);
         assertFalse(props.isModal); // because this is read-only!
     }
+
+    public void testUseCustomClose() {
+        loadHtml("<html><head></head><body>testing convenience setter for custom close handle </body></html>");
+        mraidView.loadUrl("javascript:mraid.useCustomClose(true);");
+        executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)", new JsCallback() {
+            void done(String properties) {
+                assertEquals("true", properties);
+            }
+        });
+        ExpandProperties props = mraidView.getExpandProperties();
+        assertTrue(props.useCustomClose);
+    }
+
+    public void testPlacementTypeAccessor() {
+        loadHtml("<html><head></head><body>testing placement type getter and setter </body></html>");
+        executeAsyncJs("mraid.getPlacementType()", new JsCallback() {
+            void done(String placementType) {
+                assertEquals("inline", placementType); // default
+            }
+        });
+        mraidView.setPlacementType("interstitial");
+        executeAsyncJs("mraid.getPlacementType()", new JsCallback() {
+            void done(String placementType) {
+                assertEquals("interstitial", placementType); // default
+            }
+        });
+    }
     
+    public void testIsViewable() throws Throwable {
+        runTestOnUiThread(new Runnable() {
+            public void run() {
+                mraidView = new MadvertiseMraidView(activity);
+//                mraidView.setVisibility(View.GONE);
+            }
+        });
+        getInstrumentation().waitForIdleSync();
+        mraidView.addJavascriptInterface(new Object() {
+            public void callback(String data) {
+                callback_data = data;
+                Log.d("Javascript", "called back: " + data);
+            }
+        }, "test");
+        loadHtml("<html><head></head><body>this view is not visible (yet)</body></html>");
+        Thread.sleep(1500);
+        executeAsyncJs("mraid.isViewable()", new JsCallback() {
+            void done(String viewable) {
+                assertFalse(Boolean.parseBoolean(viewable));
+            }
+        });
+        runTestOnUiThread(new Runnable() {
+            public void run() { // make it visible
+//                mraidView.setVisibility(View.VISIBLE);
+                activity.setContentView(mraidView);
+            }
+        });
+        Thread.sleep(1500);
+//        loadHtml("<html><head></head><body>this view becomes now visible!</body></html>");
+        executeAsyncJs("mraid.isViewable()", new JsCallback() {
+            void done(String viewable) {
+                assertTrue(Boolean.parseBoolean(viewable));
+            }
+        });
+    }
 
 
 
@@ -162,7 +234,6 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
             }
         }.run();
     }
-    
 
     private abstract class JsCallback {
         abstract void done(String arg);
@@ -189,7 +260,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<MraidTestAc
         abstract boolean check();
 
         public void run() {
-            long timeout = 3000;
+            long timeout = 5000;
             while (timeout > 0) {
                 try {
                     Thread.sleep(300);

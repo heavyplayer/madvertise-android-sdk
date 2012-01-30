@@ -1,4 +1,4 @@
-var expandProperties, listeners, mraid, state, states;
+var expandProperties, listeners, mraid, placementType, state, states, viewable;
 var __slice = Array.prototype.slice;
 expandProperties = {
   width: 320,
@@ -7,7 +7,9 @@ expandProperties = {
   isModal: false
 };
 states = ["loading", "hidden", "default", "expanded"];
+placementType = "inline";
 state = "loading";
+viewable = false;
 listeners = {};
 mraid = {
   getVersion: function() {
@@ -15,6 +17,12 @@ mraid = {
   },
   getState: function() {
     return state;
+  },
+  isViewable: function() {
+    return viewable;
+  },
+  getPlacementType: function() {
+    return placementType;
   },
   getExpandProperties: function() {
     return expandProperties;
@@ -29,6 +37,10 @@ mraid = {
     if (properties.useCustomClose) {
       expandProperties.useCustomClose = properties.useCustomClose;
     }
+    return mraid_bridge.setExpandProperties(JSON.stringify(expandProperties));
+  },
+  useCustomClose: function(useCustomClose) {
+    expandProperties.useCustomClose = useCustomClose;
     return mraid_bridge.setExpandProperties(JSON.stringify(expandProperties));
   },
   addEventListener: function(event, listener) {
@@ -67,5 +79,16 @@ mraid = {
   setState: function(state_id) {
     state = states[state_id];
     return fireEvent("stateChange");
+  },
+  setViewable: function(view_able) {
+    viewable = view_able;
+    return fireEvent("viewableChange");
+  },
+  setPlacementType: function(type) {
+    if (type === 0) {
+      return placementType = "inline";
+    } else if (type === 1) {
+      return placementType = "interstitial";
+    }
   }
 };
