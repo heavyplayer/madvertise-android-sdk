@@ -102,10 +102,7 @@ public class MadvertiseMraidView extends WebView {
         setHorizontalScrollBarEnabled(false);
         setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 
-        setBackgroundColor(Color.TRANSPARENT);
-
-        final WebSettings webSettings = getSettings();
-        webSettings.setJavaScriptEnabled(true);
+//        setBackgroundColor(Color.TRANSPARENT);
 
         getSettings().setJavaScriptEnabled(true);
         addJavascriptInterface(mBridge, "mraid_bridge");
