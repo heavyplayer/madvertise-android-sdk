@@ -70,21 +70,27 @@ public class MadvertiseMraidView extends WebView {
     // protected static final String STATE_DEFAULT = "default";
     // protected static final String STATE_EXPANDED = "expanded";
 
-
     private int mState;
+
     private int mIndex;
+
     private MadvertiseAd mAd;
+
     private int mPlacementType;
+
     private ViewGroup mOriginalParent;
+
     private Handler mLoadingCompletedHandler;
+
     private ExpandProperties mExpandProperties;
+
     private MadvertiseViewCallbackListener mListener;
+
     private AnimationEndListener mAnimationEndListener;
 
-
-
     public MadvertiseMraidView(Context context, AttributeSet attrs,
-            MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseAd ad) {
+            MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener,
+            Handler loadingCompletedHandler, MadvertiseAd ad) {
         this(context);
         String packageName = "http://schemas.android.com/apk/res/" + getContext().getPackageName();
         setPlacementType(attrs.getAttributeValue(packageName, "placement_type"));
@@ -92,8 +98,8 @@ public class MadvertiseMraidView extends WebView {
         this.mAnimationEndListener = animationEndListener;
         this.mListener = listener;
         this.mAd = ad;
-        
-        loadUrl(mAd.getBannerUrl());
+
+        // loadUrl(mAd.getBannerUrl());
     }
 
     public MadvertiseMraidView(Context context) {
@@ -102,16 +108,16 @@ public class MadvertiseMraidView extends WebView {
         setHorizontalScrollBarEnabled(false);
         setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 
-//        setBackgroundColor(Color.TRANSPARENT);
+        // setBackgroundColor(Color.TRANSPARENT);
 
         getSettings().setJavaScriptEnabled(true);
         addJavascriptInterface(mBridge, "mraid_bridge");
         loadJs();
-        
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+
+        final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
-        injectJs("mraid.setExpandProperties("+mExpandProperties.toJson()+");");
-        
+        injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
+
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -123,32 +129,30 @@ public class MadvertiseMraidView extends WebView {
             }
         });
     }
-    
+
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.d("TEST", "onLayout (changed="+changed+")");
+        Log.d("TEST", "onLayout (changed=" + changed + ")");
         injectJs("mraid.setViewable(true);");
         super.onLayout(changed, l, t, r, b);
     };
 
-//    protected void onWindowVisibilityChanged(int visibility) {
-//        Log.d("TEST", "onWindowVisibilityChanged "+visibility);
-//        super.onWindowVisibilityChanged(visibility);
-//    };
-//
-//    protected void onAttachedToWindow() {
-//        Log.d("TEST", "onAttachedToWindow");
-//        super.onAttachedToWindow();
-//    };
-//    
-//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        Log.d("TEST", "onMeasure");
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//    };
-
-
+    // protected void onWindowVisibilityChanged(int visibility) {
+    // Log.d("TEST", "onWindowVisibilityChanged "+visibility);
+    // super.onWindowVisibilityChanged(visibility);
+    // };
+    //
+    // protected void onAttachedToWindow() {
+    // Log.d("TEST", "onAttachedToWindow");
+    // super.onAttachedToWindow();
+    // };
+    //
+    // protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    // Log.d("TEST", "onMeasure");
+    // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    // };
 
     // to be called from the Ad (js side)
-    
+
     Object mBridge = new Object() {
 
         public void expand() {
@@ -181,13 +185,11 @@ public class MadvertiseMraidView extends WebView {
             // TODO start (ORMMA?) BrowseActivity
             mListener.onAdClicked();
         }
-        
+
         public void setExpandProperties(String json) {
             mExpandProperties.readJson(json);
         }
     };
-
-
 
     // to be called from the App (java side)
 
@@ -199,34 +201,32 @@ public class MadvertiseMraidView extends WebView {
     public void fireEvent(String event) {
         injectJs("mraid.fireEvent('" + event + "');");
     }
-    
+
     public ExpandProperties getExpandProperties() {
         return mExpandProperties;
     }
-    
+
     public String getPlacementType() {
         switch (mPlacementType) {
-        case MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL:
-            return "interstitial";
-        default:
-            return "inline";
+            case MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL:
+                return "interstitial";
+            default:
+                return "inline";
         }
     }
-    
+
     public void setPlacementType(String placementType) { // use enum here?
         if (placementType.equals("interstitial")) {
             mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL;
         } else {
             mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
         }
-        injectJs("mraid.setPlacementType("+mPlacementType+");");
+        injectJs("mraid.setPlacementType(" + mPlacementType + ");");
     }
-    
+
     private void injectJs(String jsCode) {
         loadUrl("javascript:" + jsCode);
     }
-
-
 
     public void expand(final int width, final int height) {
         final FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
@@ -286,7 +286,7 @@ public class MadvertiseMraidView extends WebView {
                 }
                 break;
             case STATE_DEFAULT:
-                //TODO: set MadvertiseView to GONE.
+                // TODO: set MadvertiseView to GONE.
                 setVisibility(View.GONE);
                 break;
         }
@@ -303,29 +303,38 @@ public class MadvertiseMraidView extends WebView {
         }
         // mBridge.setIsViewable(isVisible);
     }
-    
-//    public void setPlacementType(final String type) {
-//        mBridge.setPlacementType(type);
-//    }
 
-
-
+    // public void setPlacementType(final String type) {
+    // mBridge.setPlacementType(type);
+    // }
 
     public class ExpandProperties {
 
         private static final String WIDTH = "width";
+
         private static final String HEIGHT = "height";
+
         private static final String USE_CUSTOM_CLOSE = "useCustomClose";
+
         private static final String IS_MODAL = "isModal";
 
+        private int mMaxWidth;
+
+        private int mMaxHeight;
+
         public int width;
+
         public int height;
+
         public boolean useCustomClose;
+
         public boolean isModal;
 
-        ExpandProperties(final int width, final int height) {
+        public ExpandProperties(final int width, final int height) {
             this.width = width;
             this.height = height;
+            this.mMaxWidth = width;
+            this.mMaxHeight = height;
         }
 
         public String toJson() {
@@ -341,7 +350,7 @@ public class MadvertiseMraidView extends WebView {
             return jsonObject.toString();
         }
 
-        void readJson(final String json) {
+        public void readJson(final String json) {
             JSONObject jsonObject;
             try {
                 jsonObject = new JSONObject(json);
@@ -358,10 +367,29 @@ public class MadvertiseMraidView extends WebView {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            checkSizeParams();
+        }
+
+        private void checkSizeParams() {
+            if (width > mMaxWidth || height > mMaxHeight) {
+                final float ratio = height / (float) width;
+                // respect the ratio
+                final int diffWidth = (int)((float)(width - mMaxWidth) * ratio);
+                final int diffHeight = (int)((float)(height - mMaxHeight) * ratio);
+
+                if (diffWidth > diffHeight) {
+                    width = mMaxWidth;
+                    height = (int)(width * ratio);
+                } else {
+                    height = mMaxHeight;
+                    width = (int)(height / ratio);
+                }
+                
+                //TODO: Center the view (ScrollTo?)
+            }
         }
     }
-
-
 
     // Utility methods
     private void loadJs() {
@@ -382,7 +410,7 @@ public class MadvertiseMraidView extends WebView {
         }
         loadUrl(script);
     }
-    
+
     @Override
     protected void onAnimationEnd() {
         super.onAnimationEnd();
