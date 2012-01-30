@@ -1,19 +1,23 @@
 
 package de.madvertise.test;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import junit.framework.Assert;
-import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
-import de.madvertise.android.sdk.mraid.MadvertiseMraidView.ExpandProperties;
 import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
+import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
+import de.madvertise.android.sdk.mraid.MadvertiseMraidView.ExpandProperties;
 
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     private Activity activity;
+
     private String callback_data;
+
     private MadvertiseMraidView mraidView;
 
     public MraidTestSuite() {
@@ -75,9 +79,9 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     // initial state should be "loading"
     public void testInitialState() {
-        loadHtml("<html><head></head><body>testing initial state" +
-                "<script type=\"text/javascript\">test.callback(mraid.getState());" +
-                "</script></body></html>");
+        loadHtml("<html><head></head><body>testing initial state"
+                + "<script type=\"text/javascript\">test.callback(mraid.getState());"
+                + "</script></body></html>");
         waitForJsCallback();
         assertEquals("loading", callback_data);
     }
@@ -104,7 +108,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     public void testEventListenersListenForEvents() {
         loadHtml("<html><head></head><body>testing event listeners listen for events</body></html>");
-        mraidView.loadUrl("javascript:mraid.addEventListener('ready', function(event) { test.callback(event); });");
+        mraidView
+                .loadUrl("javascript:mraid.addEventListener('ready', function(event) { test.callback(event); });");
         mraidView.fireEvent("ready");
         waitForJsCallback();
         assertEquals("ready", callback_data);
@@ -126,7 +131,10 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         mraidView.loadUrl("javascript:var listener2 = function(event) { test.callback(event); }");
         mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener);");
         mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener2);");
-        mraidView.loadUrl("javascript:mraid.removeEventListener('ready');"); // called without second argument
+        mraidView.loadUrl("javascript:mraid.removeEventListener('ready');"); // called
+                                                                             // without
+                                                                             // second
+                                                                             // argument
         mraidView.fireEvent("ready");
         waitForTimeOut();
         assertEquals(null, callback_data);
@@ -138,18 +146,22 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         final DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
         executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
             void done(String properties) {
-                assertEquals("{\"width\":" + metrics.widthPixels + ",\"height\":" + metrics.heightPixels +
-                            ",\"useCustomClose\":false,\"isModal\":false}", properties);
+                assertEquals("{\"width\":" + metrics.widthPixels + ",\"height\":"
+                        + metrics.heightPixels + ",\"useCustomClose\":false,\"isModal\":false}",
+                        properties);
             }
         });
     }
 
     public void testExpandPropertyAccessors() {
         loadHtml("<html><head></head><body>testing getter and setter for expand properties </body></html>");
-        mraidView.loadUrl("javascript:mraid.setExpandProperties({width:42,height:23,useCustomClose:true,isModal:true});");
+        mraidView
+                .loadUrl("javascript:mraid.setExpandProperties({width:42,height:23,useCustomClose:true,isModal:true});");
         executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
             void done(String properties) {
-                assertEquals("{\"width\":42,\"height\":23,\"useCustomClose\":true,\"isModal\":false}", properties);
+                assertEquals(
+                        "{\"width\":42,\"height\":23,\"useCustomClose\":true,\"isModal\":false}",
+                        properties);
             }
         });
         ExpandProperties props = mraidView.getExpandProperties();
@@ -162,11 +174,12 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     public void testUseCustomClose() {
         loadHtml("<html><head></head><body>testing convenience setter for custom close handle </body></html>");
         mraidView.loadUrl("javascript:mraid.useCustomClose(true);");
-        executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)", new JsCallback() {
-            void done(String properties) {
-                assertEquals("true", properties);
-            }
-        });
+        executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)",
+                new JsCallback() {
+                    void done(String properties) {
+                        assertEquals("true", properties);
+                    }
+                });
         ExpandProperties props = mraidView.getExpandProperties();
         assertTrue(props.useCustomClose);
     }
@@ -185,12 +198,12 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             }
         });
     }
-    
+
     public void testIsViewable() throws Throwable {
         runTestOnUiThread(new Runnable() {
             public void run() {
                 mraidView = new MadvertiseMraidView(activity);
-//                mraidView.setVisibility(View.GONE);
+                // mraidView.setVisibility(View.GONE);
             }
         });
         getInstrumentation().waitForIdleSync();
@@ -209,12 +222,12 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
         runTestOnUiThread(new Runnable() {
             public void run() { // make it visible
-//                mraidView.setVisibility(View.VISIBLE);
+            // mraidView.setVisibility(View.VISIBLE);
                 activity.setContentView(mraidView);
             }
         });
         Thread.sleep(1500);
-//        loadHtml("<html><head></head><body>this view becomes now visible!</body></html>");
+        // loadHtml("<html><head></head><body>this view becomes now visible!</body></html>");
         executeAsyncJs("mraid.isViewable()", new JsCallback() {
             void done(String viewable) {
                 assertTrue(Boolean.parseBoolean(viewable));
@@ -222,7 +235,52 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
     }
 
+    public void testExpandPropertiesCheckSize() {
+        final ExpandProperties properties = mraidView.new ExpandProperties(480, 800);
+        final String width = "width", height = "height";
+        JSONObject json = new JSONObject();
 
+        // both fit
+        try {
+            json.put(width, 480);
+            json.put(height, 800);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        properties.readJson(json.toString());
+        assertTrue(properties.height == 800 && properties.width == 480);
+
+        // height fits, width doesn't
+        try {
+            json.put(width, 500);
+            json.put(height, 800);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        properties.readJson(json.toString());
+        assertTrue(properties.height == 768 && properties.width == 480);
+
+        // width fits, height doesn't
+        try {
+            json.put(width, 480);
+            json.put(height, 900);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        properties.readJson(json.toString());
+        assertTrue(properties.height == 800 && properties.width == 426);
+
+        // both don't fit
+        try {
+            json.put(width, 500);
+            json.put(height, 900);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        properties.readJson(json.toString());
+        assertTrue(properties.height == 800 && properties.width == 444);
+
+    }
 
     // ------------ Test util stuff ---------------------
 
@@ -274,10 +332,11 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             Assert.fail("Waiting timed out!");
         }
     }
-    
+
     private void waitForTimeOut() {
         try {
             Thread.sleep(3000);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException e) {
+        }
     }
 }
