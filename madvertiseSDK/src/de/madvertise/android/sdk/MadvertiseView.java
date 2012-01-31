@@ -519,7 +519,12 @@ public class MadvertiseView extends FrameLayout {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Refresh intervall must be higher than 60");
         }
 
-        calculateBannerDimensions();
+        try {
+            calculateBannerDimensions(null);
+        } catch (JSONException e) {
+            // this should never happen
+            e.printStackTrace();
+        }
 
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Using following attributes values:");
         MadvertiseUtil.logMessage(null, Log.DEBUG, " testMode = " + mTestMode);
@@ -550,8 +555,13 @@ public class MadvertiseView extends FrameLayout {
         if (!isTimerRequest) {
             // get a cached ad (in case of view reorientation).
             mCurrentAd = getCachedAd();
-            calculateBannerDimensions();
-        }
+
+            try {
+                calculateBannerDimensions(null);
+            } catch (JSONException e) {
+                // this should never happen
+                e.printStackTrace();
+            }        }
 
         if (mCurrentAd != null && !isTimerRequest) {
             mHandler.post(mUpdateResults);
@@ -714,7 +724,7 @@ public class MadvertiseView extends FrameLayout {
 
                                 // set type and dimensions of this view
                                 adjustAdType(json);
-                                calculateBannerDimensions();
+                                calculateBannerDimensions(json);
                             } else {
                                 if (mCallbackListener != null) {
                                     mCallbackListener
@@ -797,7 +807,7 @@ public class MadvertiseView extends FrameLayout {
         }
     }
 
-    private void calculateBannerDimensions() {
+    private void calculateBannerDimensions(final JSONObject json) throws JSONException {
         boolean bannerTypeFound = false;
 
         // set the banner width and height
@@ -844,11 +854,19 @@ public class MadvertiseView extends FrameLayout {
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
         } else if (!bannerTypeFound && mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
-            mBannerHeight = (int)(mDp * MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT + 0.5f);
-            mBannerWidth = (int)(mDp * MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT + 0.5f);
-            mBannerHeightDp = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
-            mBannerWidthDp = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {            
+            if(json != null && json.has("ad_width")) {
+                mBannerWidthDp = json.getInt("ad_width");
+            } else {
+                mBannerWidthDp = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
+            }
+            if(json != null && json.has("ad_height")) {
+                mBannerHeightDp = json.getInt("ad_height");
+            } else {
+                mBannerHeightDp = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
+            }
+            mBannerWidth = (int)(mDp * mBannerWidthDp + 0.5f);           
+            mBannerHeight = (int)(mDp * mBannerHeightDp + 0.5f);
         }
 
         mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 128;
