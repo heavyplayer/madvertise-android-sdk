@@ -121,7 +121,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         waitForJsCallback();
         assertEquals("works", callback_data);
     }
-    
+
     public void testStateChangeEventListener() {
         loadHtml("<html><head></head><body>testing 'stateChange' event listeners listen for events</body></html>");
         mraidView.loadUrl("javascript:mraid.addEventListener('stateChange', function(state) {test.callback(state);});");
@@ -129,7 +129,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         waitForJsCallback();
         assertEquals("default", callback_data);
     }
-    
+
     public void testViewableChangeEventListener() {
         loadHtml("<html><head></head><body>testing 'viewableChange' event listeners listen for events</body></html>");
         mraidView.loadUrl("javascript:mraid.addEventListener('viewableChange', function(viewable) {test.callback(viewable);});");
@@ -137,7 +137,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         waitForJsCallback();
         assertEquals("true", callback_data);
     }
-    
+
     public void testErrorEventListener() {
         loadHtml("<html><head></head><body>testing 'error' event listeners listen for events</body></html>");
         mraidView.loadUrl("javascript:mraid.addEventListener('error', function(msg, action) {test.callback(msg+action);});");

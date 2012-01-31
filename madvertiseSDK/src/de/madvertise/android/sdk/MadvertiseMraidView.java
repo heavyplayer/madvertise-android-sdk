@@ -46,13 +46,11 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
 public class MadvertiseMraidView extends WebView {
 
-    private static final int CLOSE_BUTTON_SIZE = 50;
+    private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
 
     private static final String JS_INTERFACE_NAME = "mraid";
 
-    private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
-
-    private FrameLayout mExpandLayout;
+    private static final int CLOSE_BUTTON_SIZE = 50;
 
     protected static final int STATE_LOADING = 0;
 
@@ -68,6 +66,8 @@ public class MadvertiseMraidView extends WebView {
 
     private int mPlacementType;
 
+    private FrameLayout mExpandLayout;
+
     private ViewGroup mOriginalParent;
 
     private Handler mLoadingCompletedHandler;
@@ -77,6 +77,7 @@ public class MadvertiseMraidView extends WebView {
     private MadvertiseViewCallbackListener mListener;
 
     private AnimationEndListener mAnimationEndListener;
+
 
     public MadvertiseMraidView(Context context, AttributeSet attrs,
             MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener,
@@ -144,7 +145,6 @@ public class MadvertiseMraidView extends WebView {
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d("TEST", "onPageFinished");
                 setState(STATE_DEFAULT);
                 fireEvent("ready");
                 if (mLoadingCompletedHandler != null)
@@ -189,7 +189,8 @@ public class MadvertiseMraidView extends WebView {
             post(new Runnable() {
                 @Override
                 public void run() {
-                    MadvertiseMraidView.this.resize(mExpandProperties.width,
+                    MadvertiseMraidView.this.resize(
+                            mExpandProperties.width,
                             mExpandProperties.height);
                 }
             });
