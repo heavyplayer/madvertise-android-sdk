@@ -312,10 +312,10 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     public void testExpandWithUrl() throws InterruptedException {
         loadHtml("<html><head></head><body>testing expand with</div></body></html>");
-        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:450});");
+        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:300});");
         mraidView.loadUrl("javascript:mraid.expand('http://andlabs.eu');");
         Thread.sleep(1000);
-        assertEquals(450, mraidView.getHeight());
+        assertEquals(300, mraidView.getHeight());
         Thread.sleep(9000);
     }
 
@@ -330,13 +330,15 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                 });
         ExpandProperties props = mraidView.getExpandProperties();
         assertTrue(props.useCustomClose);
-
-        mraidView.loadUrl("javascript:mraid.expand();");
+        
+        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:300});");
+        mraidView.loadUrl("javascript:mraid.expand('http://andlabs.eu');");
         Thread.sleep(1000);
-        assertEquals(230, mraidView.getHeight());
-        mraidView.loadUrl("javascript:mraid.close();");
-        Thread.sleep(1000);
-        assertEquals(53, mraidView.getHeight());
+        assertEquals(300, mraidView.getHeight());
+        
+        final ImageButton closeButton = (ImageButton)activity.findViewById(43);
+        assertTrue(closeButton.getDrawable() == null);
+        Thread.sleep(9000);
     }
 
     public void testOpenBrowserActivity() {
