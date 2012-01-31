@@ -1,18 +1,18 @@
 
 package de.madvertise.test;
 
+import junit.framework.Assert;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import junit.framework.Assert;
 import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.widget.FrameLayout;
-import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
-import de.madvertise.android.sdk.mraid.MadvertiseMraidView.ExpandProperties;
+import de.madvertise.android.sdk.MadvertiseMraidView;
+import de.madvertise.android.sdk.MadvertiseMraidView.ExpandProperties;
 
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 

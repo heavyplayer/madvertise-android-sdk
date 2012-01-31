@@ -64,7 +64,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
-import de.madvertise.android.sdk.mraid.MadvertiseMraidView;
 
 public class MadvertiseView extends FrameLayout {
 
@@ -254,11 +253,11 @@ public class MadvertiseView extends FrameLayout {
 
         if (mCurrentAd != null) {
             if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-                if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+//                if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
                     showMraidView();
-                } else {
-                    showImageView();
-                }
+//                } else {
+//                    showImageView();
+//                }
             } else {
                 showTextView();
                 // show the MadvertiseView immediately so this doesn't need to
@@ -693,7 +692,6 @@ public class MadvertiseView extends FrameLayout {
                             if (httpResponse.getLastHeader("X-Madvertise-Debug") != null) {
                                 message = httpResponse.getLastHeader("X-Madvertise-Debug")
                                         .toString();
-
                             }
 
                             if (mTestMode) {
@@ -776,7 +774,7 @@ public class MadvertiseView extends FrameLayout {
         }
     }
 
-    // used for execution in the ui main thread
+    // used for execution in the ui thread
     private final Runnable mUpdateResults = new Runnable() {
         public void run() {
             refreshView();
