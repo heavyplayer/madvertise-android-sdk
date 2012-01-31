@@ -21,6 +21,9 @@ mraid = {
   isViewable: function() {
     return viewable;
   },
+  open: function(url) {
+    return mraid_bridge.open(url);
+  },
   expand: function() {
     var url;
     url = 1 <= arguments.length ? __slice.call(arguments, 0) : [];

@@ -16,6 +16,8 @@ mraid =
 
   isViewable: -> viewable
 
+  open: (url) -> mraid_bridge.open(url)
+
   expand: (url...) ->
     if url?.length == 0
       mraid_bridge.expand()

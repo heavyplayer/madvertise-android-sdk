@@ -10,9 +10,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Setup your site token. For tests, use 'TestTokn'-->        
+        
+        <!-- open external urls -->
+        <activity android:name="de.madvertise.android.sdk.MadvertiseBrowserActivity"/>
+        
+        <!-- Setup your site token. For tests, use 'TestToken'-->
         <meta-data android:value="TestTokn" android:name="madvertise_site_token" />
         
+        <!-- Mraid TestSuite -->
         <activity android:name="android.app.Activity" />
         <uses-library android:name="android.test.runner" />
     </application>

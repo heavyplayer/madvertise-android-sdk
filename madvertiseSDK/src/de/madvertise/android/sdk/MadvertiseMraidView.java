@@ -27,7 +27,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -187,10 +189,11 @@ public class MadvertiseMraidView extends WebView {
         }
 
         public void open(String url) {
-            // TODO start (ORMMA?) BrowseActivity
             if(mListener != null) {
                 mListener.onAdClicked();
             }
+            getContext().startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(url), getContext(), MadvertiseBrowserActivity.class));
         }
 
         public void setExpandProperties(String json) {

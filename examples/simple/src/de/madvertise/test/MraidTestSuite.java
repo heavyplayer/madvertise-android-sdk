@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Instrumentation.ActivityMonitor;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -249,6 +250,15 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         Thread.sleep(1000);
         assertEquals(450, mraidView.getHeight());
         Thread.sleep(9000);
+    }
+
+    public void testOpenBrowserActivity() {
+        loadHtml("<html><head></head><body>testing open external url</div></body></html>");
+        mraidView.loadUrl("javascript:mraid.open('http://andlabs.eu');");
+        ActivityMonitor monitor = getInstrumentation().addMonitor(
+                "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, false);
+        monitor.waitForActivityWithTimeout(3000);
+        assertEquals(1, monitor.getHits());
     }
 
     public void testExpandPropertiesCheckSize() {
