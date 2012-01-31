@@ -12,8 +12,10 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import de.madvertise.android.sdk.MadvertiseMraidView;
 import de.madvertise.android.sdk.MadvertiseMraidView.ExpandProperties;
+import de.madvertise.android.sdk.MadvertiseUtil;
 
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
@@ -114,7 +116,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     public void testEventListenersListenForEvents() {
         loadHtml("<html><head></head><body>testing event listeners listen for events</body></html>");
-        mraidView.loadUrl("javascript:mraid.addEventListener('ready', function(event) {test.callback(event);});");
+        mraidView.loadUrl("javascript:mraid.addEventListener('ready', function(event){test.callback(event);});");
         mraidView.fireEvent("ready");
         waitForJsCallback();
         assertEquals("ready", callback_data);
@@ -169,18 +171,6 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertFalse(props.isModal); // because this is read-only!
     }
 
-    public void testUseCustomClose() {
-        loadHtml("<html><head></head><body>testing convenience setter for custom close handle </body></html>");
-        mraidView.loadUrl("javascript:mraid.useCustomClose(true);");
-        executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)", new JsCallback() {
-            void done(String properties) {
-                assertEquals("true", properties);
-            }
-        });
-        ExpandProperties props = mraidView.getExpandProperties();
-        assertTrue(props.useCustomClose);
-    }
-
     public void testPlacementTypeAccessor() {
         loadHtml("<html><head></head><body>testing placement type getter and setter </body></html>");
         executeAsyncJs("mraid.getPlacementType()", new JsCallback() {
@@ -188,7 +178,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                 assertEquals("inline", placementType); // default
             }
         });
-        mraidView.setPlacementType("interstitial");
+        mraidView.setPlacementType(MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL);
         executeAsyncJs("mraid.getPlacementType()", new JsCallback() {
             void done(String placementType) {
                 assertEquals("interstitial", placementType); // default
@@ -219,7 +209,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
         runTestOnUiThread(new Runnable() {
             public void run() { // make it visible
-            // mraidView.setVisibility(View.VISIBLE);
+                // mraidView.setVisibility(View.VISIBLE);
                 activity.setContentView(mraidView);
             }
         });
@@ -230,35 +220,6 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                 assertTrue(Boolean.parseBoolean(viewable));
             }
         });
-    }
-    
-    public void testExpandAndClose() throws InterruptedException {
-        loadHtml("<html><head></head><body>testing expand</div></body></html>");
-        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:230});");
-        mraidView.loadUrl("javascript:mraid.expand();");
-        Thread.sleep(1000);
-        assertEquals(230, mraidView.getHeight());
-        mraidView.loadUrl("javascript:mraid.close();");
-        Thread.sleep(1000);
-        assertEquals(53, mraidView.getHeight());
-    }
-
-    public void testExpandWithUrl() throws InterruptedException {
-        loadHtml("<html><head></head><body>testing expand with url parameter</div></body></html>");
-        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:450});");
-        mraidView.loadUrl("javascript:mraid.expand('http://andlabs.eu');");
-        Thread.sleep(1000);
-        assertEquals(450, mraidView.getHeight());
-        Thread.sleep(9000);
-    }
-
-    public void testOpenBrowserActivity() {
-        loadHtml("<html><head></head><body>testing open external url</div></body></html>");
-        mraidView.loadUrl("javascript:mraid.open('http://andlabs.eu');");
-        ActivityMonitor monitor = getInstrumentation().addMonitor(
-                "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, false);
-        monitor.waitForActivityWithTimeout(3000);
-        assertEquals(1, monitor.getHits());
     }
 
     public void testExpandPropertiesCheckSize() {
@@ -307,13 +268,86 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertTrue(properties.height == 800 && properties.width == 444);
     }
 
-
     public void testMraidExample_static() throws InterruptedException {
         mraidView.loadDataWithBaseURL("file:///android_asset/MRAID_static/src/",
-                "<html><head><script type=\"text/javascript\" src=\"ad_loader.js\"/></head><body></body></html>",
-                "text/html", "utf8", null);
-            Thread.sleep(9000);
+                        "<html><head><script type=\"text/javascript\" src=\"ad_loader.js\"/></head><body></body></html>",
+                        "text/html", "utf8", null);
+        Thread.sleep(9000);
     }
+
+    public void testExpandAndClose() throws InterruptedException {
+        loadHtml("<html><head></head><body>testing expand</div></body></html>");
+        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:230});");
+        mraidView.loadUrl("javascript:mraid.expand();");
+        Thread.sleep(1000);
+        assertEquals(230, mraidView.getHeight());
+        mraidView.loadUrl("javascript:mraid.close();");
+        Thread.sleep(1000);
+        assertEquals(53, mraidView.getHeight());
+        executeAsyncJs("mraid.getState()", new JsCallback() {
+            void done(String properties) {
+                assertEquals("default", properties);
+            }
+        });
+    }
+
+    public void testCloseButton() throws Throwable {
+        loadHtml("<html><head></head><body>testing close button </body></html>");
+        mraidView.loadUrl("javascript:mraid.expand();");
+        Thread.sleep(500);
+        final ImageButton closeButton = (ImageButton)activity.findViewById(43);
+        runTestOnUiThread(new Runnable() {
+            public void run() {
+                closeButton.performClick();
+            }
+        });
+        getInstrumentation().waitForIdleSync();
+        assertEquals(53, mraidView.getHeight());
+        executeAsyncJs("mraid.getState()", new JsCallback() {
+            void done(String properties) {
+                assertEquals("default", properties);
+            }
+        });
+    }
+
+    public void testExpandWithUrl() throws InterruptedException {
+        loadHtml("<html><head></head><body>testing expand with</div></body></html>");
+        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:450});");
+        mraidView.loadUrl("javascript:mraid.expand('http://andlabs.eu');");
+        Thread.sleep(1000);
+        assertEquals(450, mraidView.getHeight());
+        Thread.sleep(9000);
+    }
+
+    public void testUseCustomClose() throws InterruptedException {
+        loadHtml("<html><head></head><body>testing custom close </body></html>");
+        mraidView.loadUrl("javascript:mraid.useCustomClose(true);");
+        executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)",
+                new JsCallback() {
+                    void done(String properties) {
+                        assertEquals("true", properties);
+                    }
+                });
+        ExpandProperties props = mraidView.getExpandProperties();
+        assertTrue(props.useCustomClose);
+
+        mraidView.loadUrl("javascript:mraid.expand();");
+        Thread.sleep(1000);
+        assertEquals(230, mraidView.getHeight());
+        mraidView.loadUrl("javascript:mraid.close();");
+        Thread.sleep(1000);
+        assertEquals(53, mraidView.getHeight());
+    }
+
+    public void testOpenBrowserActivity() {
+        loadHtml("<html><head></head><body>testing open external url</div></body></html>");
+        mraidView.loadUrl("javascript:mraid.open('http://andlabs.eu');");
+        ActivityMonitor monitor = getInstrumentation().addMonitor(
+                "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, false);
+        monitor.waitForActivityWithTimeout(3000);
+        assertEquals(1, monitor.getHits());
+    }
+
 
 
 
