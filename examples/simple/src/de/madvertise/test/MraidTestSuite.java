@@ -295,8 +295,17 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         }
         properties.readJson(json.toString());
         assertTrue(properties.height == 800 && properties.width == 444);
-
     }
+
+
+    public void testMraidExample_static() throws InterruptedException {
+        mraidView.loadDataWithBaseURL("file:///android_asset/MRAID_static/src/",
+                "<html><head><script type=\"text/javascript\" src=\"ad_loader.js\"/></head><body></body></html>",
+                "text/html", "utf8", null);
+            Thread.sleep(9000);
+    }
+
+
 
     // ------------ Test util stuff ---------------------
 
