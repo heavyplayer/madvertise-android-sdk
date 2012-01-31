@@ -59,8 +59,8 @@ mraid =
     state = states[state_id]
     fireEvent("stateChange")
 
-  setViewable: (view_able) ->
-    viewable = view_able
+  setViewable: (is_viewable) ->
+    viewable = is_viewable
     fireEvent("viewableChange")
 
   setPlacementType: (type) ->

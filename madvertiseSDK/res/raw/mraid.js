@@ -95,8 +95,8 @@ mraid = {
     state = states[state_id];
     return fireEvent("stateChange");
   },
-  setViewable: function(view_able) {
-    viewable = view_able;
+  setViewable: function(is_viewable) {
+    viewable = is_viewable;
     return fireEvent("viewableChange");
   },
   setPlacementType: function(type) {
