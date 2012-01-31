@@ -229,12 +229,12 @@ public class MadvertiseMraidView extends WebView {
 
     // to be called from the App (java side)
 
-    private void setState(int state) {
+    public void setState(int state) {
         mState = state;
         injectJs("mraid.setState('" + state + "');");
     }
 
-    private void fireEvent(String event) {
+    public void fireEvent(String event) {
         injectJs("mraid.fireEvent('" + event + "');");
     }
 
@@ -256,13 +256,17 @@ public class MadvertiseMraidView extends WebView {
         }
     }
     
+    public ExpandProperties getExpandProperties() {
+        return mExpandProperties;
+    }
+    
     private void setViewable(final boolean isViewable) {
         injectJs("mraid.setViewable(" + isViewable + ");");
     }
 
     private void injectJs(String jsCode) {
         loadUrl("javascript:" + jsCode);
-    }
+    }       
 
     private void resize(final int width, final int height) {
         final FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
@@ -294,16 +298,24 @@ public class MadvertiseMraidView extends WebView {
         mExpandLayout.addView(this);
 
         final ImageButton closeButton = new ImageButton(getContext());
+        closeButton.setId(43);
         final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
                 CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
         closeButtonParams.gravity = Gravity.RIGHT;
         closeButton.setLayoutParams(closeButtonParams);
         closeButton.setBackgroundColor(Color.TRANSPARENT);
-        mExpandLayout.addView(closeButton);
+        closeButton.setOnClickListener(new OnClickListener() {            
+            @Override
+            public void onClick(View v) {
+                close();
+            }
+        });        
 
         if (!mExpandProperties.useCustomClose) {
             closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
         }
+        
+        mExpandLayout.addView(closeButton);
 
         content.addView(mExpandLayout);
         mOriginalParent.addView(placeholderView, mIndex);
