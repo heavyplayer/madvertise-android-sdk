@@ -364,7 +364,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         loadHtml("<html><head></head><body>testing open external url</div></body></html>");
         mraidView.loadUrl("javascript:mraid.open('http://andlabs.eu');");
         ActivityMonitor monitor = getInstrumentation().addMonitor(
-                "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, false);
+                "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, true);
         monitor.waitForActivityWithTimeout(3000);
         assertEquals(1, monitor.getHits());
     }
