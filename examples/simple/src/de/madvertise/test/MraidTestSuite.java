@@ -114,17 +114,41 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
     }
 
-    public void testEventListenersListenForEvents() {
-        loadHtml("<html><head></head><body>testing event listeners listen for events</body></html>");
-        mraidView.loadUrl("javascript:mraid.addEventListener('ready', function(event){test.callback(event);});");
+    public void testReadyEventListener() {
+        loadHtml("<html><head></head><body>testing 'ready' event listeners listen for events</body></html>");
+        mraidView.loadUrl("javascript:mraid.addEventListener('ready', function() {test.callback('works');});");
         mraidView.fireEvent("ready");
         waitForJsCallback();
-        assertEquals("ready", callback_data);
+        assertEquals("works", callback_data);
+    }
+    
+    public void testStateChangeEventListener() {
+        loadHtml("<html><head></head><body>testing 'stateChange' event listeners listen for events</body></html>");
+        mraidView.loadUrl("javascript:mraid.addEventListener('stateChange', function(state) {test.callback(state);});");
+        mraidView.fireEvent("stateChange");
+        waitForJsCallback();
+        assertEquals("default", callback_data);
+    }
+    
+    public void testViewableChangeEventListener() {
+        loadHtml("<html><head></head><body>testing 'viewableChange' event listeners listen for events</body></html>");
+        mraidView.loadUrl("javascript:mraid.addEventListener('viewableChange', function(viewable) {test.callback(viewable);});");
+        mraidView.fireEvent("viewableChange");
+        waitForJsCallback();
+        assertEquals("true", callback_data);
+    }
+    
+    public void testErrorEventListener() {
+        loadHtml("<html><head></head><body>testing 'error' event listeners listen for events</body></html>");
+        mraidView.loadUrl("javascript:mraid.addEventListener('error', function(msg, action) {test.callback(msg+action);});");
+        mraidView.fireErrorEvent("some message ", "with some action");
+        waitForJsCallback();
+        assertEquals("some message with some action", callback_data);
     }
 
     public void testRemoveEventListener() {
         loadHtml("<html><head></head><body>testing removeEventListener removes one specific listener</body></html>");
-        mraidView.loadUrl("javascript:var listener = function(event) { test.callback(event); }");
+        mraidView.loadUrl("javascript:var listener = function() { test.callback('works'); }");
         mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener);");
         mraidView.loadUrl("javascript:mraid.removeEventListener('ready', listener);");
         mraidView.fireEvent("ready");
@@ -134,7 +158,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     public void testRemoveAllEventListeners() {
         loadHtml("<html><head></head><body>testing removeEventListener removes all listener for an event</body></html>");
-        mraidView.loadUrl("javascript:var listener = function(event) { test.callback(event); }");
+        mraidView.loadUrl("javascript:var listener = function() { test.callback(event); }");
         mraidView.loadUrl("javascript:var listener2 = function(event) { test.callback(event); }");
         mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener);");
         mraidView.loadUrl("javascript:mraid.addEventListener('ready', listener2);");

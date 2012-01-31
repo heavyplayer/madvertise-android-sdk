@@ -238,6 +238,10 @@ public class MadvertiseMraidView extends WebView {
     public void fireEvent(String event) {
         injectJs("mraid.fireEvent('" + event + "');");
     }
+    
+    public void fireErrorEvent(String message, String action) {
+        injectJs("mraid.fireErrorEvent('" + message + "', '"+action+"');");
+    }
 
     public String getPlacementType() {
         switch (mPlacementType) {
