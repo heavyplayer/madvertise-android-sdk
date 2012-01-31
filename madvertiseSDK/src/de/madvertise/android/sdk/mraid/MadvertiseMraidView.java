@@ -165,12 +165,14 @@ public class MadvertiseMraidView extends WebView {
             setState(STATE_EXPANDED);
         }
 
+        @SuppressWarnings("unused")
         public void expand(String url) {
             Log.d("TEST", "expand with url");
             loadUrl(url);
             expand();
         }
 
+        @SuppressWarnings("unused")
         public void close() {
             post(new Runnable() {
                 @Override
