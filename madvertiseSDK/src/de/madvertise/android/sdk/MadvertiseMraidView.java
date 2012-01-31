@@ -64,6 +64,8 @@ public class MadvertiseMraidView extends WebView {
 
     private int mIndex;
 
+    private boolean mOnScreen;
+
     private int mPlacementType;
 
     private FrameLayout mExpandLayout;
@@ -154,32 +156,31 @@ public class MadvertiseMraidView extends WebView {
     }
 
     @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        // When the window is invisible, our view is too
-        if(visibility != View.VISIBLE) {            
-            setViewable(false);
-        }
-        super.onWindowVisibilityChanged(visibility);
-    };
-
+    protected void onAttachedToWindow() {
+        mOnScreen = true;
+        setViewability();
+    }
+    
     @Override
     protected void onDetachedFromWindow() {
-        // When not attached to a window, we are invisible
-        setViewable(false);
+        mOnScreen = false;
+        setViewability();
     }
 
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(visibility);
-        boolean isVisible;
-        if (visibility == View.VISIBLE) {
-            isVisible = true;
-        } else {
-            isVisible = false;
-        }
-        setViewable(isVisible);
+        setViewability();
     }
-    
+
+    private void setViewability() {
+        if (mOnScreen && getVisibility() == View.VISIBLE) {
+            injectJs("mraid.setViewable(true);");
+        } else {
+            injectJs("mraid.setViewable(false);");
+        }
+    }
+
 
     // to be called from the Ad (js side)
 
@@ -264,10 +265,6 @@ public class MadvertiseMraidView extends WebView {
     
     public ExpandProperties getExpandProperties() {
         return mExpandProperties;
-    }
-    
-    private void setViewable(final boolean isViewable) {
-        injectJs("mraid.setViewable(" + isViewable + ");");
     }
 
     private void injectJs(String jsCode) {

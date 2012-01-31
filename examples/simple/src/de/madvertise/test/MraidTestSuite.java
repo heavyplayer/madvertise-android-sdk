@@ -9,8 +9,11 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityMonitor;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.UiThreadTest;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import de.madvertise.android.sdk.MadvertiseMraidView;
@@ -183,6 +186,41 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
     }
 
+    @UiThreadTest
+    public void testIsViewable() throws Throwable {
+        loadHtml("<html><head></head><body>testing viewability</body></html>");
+        Thread.sleep(1500);
+        assertIsViewable();
+        ((ViewGroup) mraidView.getParent()).removeView(mraidView); // detach from screen..
+        Thread.sleep(1500); // should become non-viewable
+        assertNotViewable(); 
+        mraidView.setVisibility(View.INVISIBLE);
+        assertNotViewable(); 
+        activity.setContentView(mraidView); // re-attach to screen
+        Thread.sleep(1500); // should still not be viewable
+        assertNotViewable();
+        mraidView.setVisibility(View.VISIBLE);
+        assertIsViewable();
+        mraidView.setVisibility(View.GONE);
+        assertNotViewable();
+    }
+    // little helper
+    private void assertNotViewable() {
+        executeAsyncJs("mraid.isViewable()", new JsCallback() {
+            void done(String viewable) {
+                assertFalse(Boolean.parseBoolean(viewable));
+            }
+        });
+    }
+    // little helper
+    private void assertIsViewable() {
+        executeAsyncJs("mraid.isViewable()", new JsCallback() {
+            void done(String viewable) {
+                assertTrue(Boolean.parseBoolean(viewable));
+            }
+        });
+    }
+
     // expand properties should be set to screen dimensions by default
     public void testDefaultExpandProperties() {
         loadHtml("<html><head></head><body>testing initial default expandProperties </body></html>");
@@ -254,42 +292,6 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         }
         properties.readJson(json.toString());
         assertTrue(properties.height == 800 && properties.width == 444);
-    }
-
-    public void testIsViewable() throws Throwable {
-        runTestOnUiThread(new Runnable() {
-            public void run() {
-                mraidView = new MadvertiseMraidView(activity);
-                // mraidView.setVisibility(View.GONE);
-            }
-        });
-        getInstrumentation().waitForIdleSync();
-        mraidView.addJavascriptInterface(new Object() {
-            public void callback(String data) {
-                callback_data = data;
-                Log.d("Javascript", "called back: " + data);
-            }
-        }, "test");
-        loadHtml("<html><head></head><body>this view is not visible (yet)</body></html>");
-        Thread.sleep(1500);
-        executeAsyncJs("mraid.isViewable()", new JsCallback() {
-            void done(String viewable) {
-                assertFalse(Boolean.parseBoolean(viewable));
-            }
-        });
-        runTestOnUiThread(new Runnable() {
-            public void run() { // make it visible
-                // mraidView.setVisibility(View.VISIBLE);
-                activity.setContentView(mraidView);
-            }
-        });
-        Thread.sleep(1500);
-        // loadHtml("<html><head></head><body>this view becomes now visible!</body></html>");
-        executeAsyncJs("mraid.isViewable()", new JsCallback() {
-            void done(String viewable) {
-                assertTrue(Boolean.parseBoolean(viewable));
-            }
-        });
     }
 
     public void testExpandAndClose() throws InterruptedException {
