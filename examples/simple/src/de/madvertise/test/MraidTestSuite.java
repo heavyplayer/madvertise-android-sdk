@@ -244,7 +244,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testExpandWithUrl() throws InterruptedException {
-        loadHtml("<html><head></head><body>testing expand with</div></body></html>");
+        loadHtml("<html><head></head><body>testing expand with url parameter</div></body></html>");
         mraidView.loadUrl("javascript:mraid.setExpandProperties({height:450});");
         mraidView.loadUrl("javascript:mraid.expand('http://andlabs.eu');");
         Thread.sleep(1000);
