@@ -16,15 +16,16 @@ mraid =
 
   isViewable: -> viewable
 
+  close: -> mraid_bridge.close()
+
   open: (url) -> mraid_bridge.open(url)
 
   expand: (url...) ->
-    if url?.length == 0
-      mraid_bridge.expand()
-    else
-      mraid_bridge.expand(url[0])
-  
-  close: -> mraid_bridge.close()
+    if state == "default"
+      if url?.length == 0
+        mraid_bridge.expand()
+      else
+        mraid_bridge.expand(url[0])
 
   getPlacementType: -> placementType
 

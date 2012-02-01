@@ -21,20 +21,22 @@ mraid = {
   isViewable: function() {
     return viewable;
   },
+  close: function() {
+    return mraid_bridge.close();
+  },
   open: function(url) {
     return mraid_bridge.open(url);
   },
   expand: function() {
     var url;
     url = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    if ((url != null ? url.length : void 0) === 0) {
-      return mraid_bridge.expand();
-    } else {
-      return mraid_bridge.expand(url[0]);
+    if (state === "default") {
+      if ((url != null ? url.length : void 0) === 0) {
+        return mraid_bridge.expand();
+      } else {
+        return mraid_bridge.expand(url[0]);
+      }
     }
-  },
-  close: function() {
-    return mraid_bridge.close();
   },
   getPlacementType: function() {
     return placementType;

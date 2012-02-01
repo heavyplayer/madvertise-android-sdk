@@ -180,9 +180,7 @@ public class MadvertiseMraidView extends WebView {
         public void expand(String url) {
             Log.d("TEST", "expand with url");
             loadUrl(url);
-            if(mState == STATE_HIDDEN) {
-                expand();
-            }
+            expand();
         }
 
         @SuppressWarnings("unused") // because it IS used from the js side
