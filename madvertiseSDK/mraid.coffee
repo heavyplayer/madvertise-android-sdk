@@ -41,7 +41,8 @@ mraid =
     mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
     
   addEventListener: (event, listener) ->
-    (listeners[event] ||= []).push listener
+    if event in ["ready", "stateChange", "viewableChange", "error"]
+      (listeners[event] ||= []).push listener
 
   removeEventListener: (event, listener...) ->
     if listeners[event] && listener.length > 0 # remove one listener[0]
@@ -53,14 +54,22 @@ mraid =
   # internal functions
 
   fireEvent: (event) ->
-    listener(event) for listener in listeners[event]
+    if event == "ready"
+      listener() for listener in listeners[event]
+    else if event == "stateChange"
+      listener(state) for listener in listeners[event]
+    else if event == "viewableChange"
+      listener(viewable) for listener in listeners[event]
+
+  fireErrorEvent: (message, action) ->
+    listener(message, action) for listener in listeners["error"]
 
   setState: (state_id) ->
     state = states[state_id]
     fireEvent("stateChange")
 
-  setViewable: (view_able) ->
-    viewable = view_able
+  setViewable: (is_viewable) ->
+    viewable = is_viewable
     fireEvent("viewableChange")
 
   setPlacementType: (type) ->

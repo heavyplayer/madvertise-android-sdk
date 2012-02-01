@@ -46,11 +46,9 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
 public class MadvertiseMraidView extends WebView {
 
-    private static final int CLOSE_BUTTON_SIZE = 50;
-
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
 
-    private FrameLayout mExpandLayout;
+    private static final int CLOSE_BUTTON_SIZE = 50;
 
     protected static final int STATE_LOADING = 0;
 
@@ -64,7 +62,11 @@ public class MadvertiseMraidView extends WebView {
 
     private int mIndex;
 
+    private boolean mOnScreen;
+
     private int mPlacementType;
+
+    private FrameLayout mExpandLayout;
 
     private ViewGroup mOriginalParent;
 
@@ -75,6 +77,7 @@ public class MadvertiseMraidView extends WebView {
     private MadvertiseViewCallbackListener mListener;
 
     private AnimationEndListener mAnimationEndListener;
+
 
     public MadvertiseMraidView(Context context, AttributeSet attrs,
             MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener,
@@ -141,7 +144,6 @@ public class MadvertiseMraidView extends WebView {
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                Log.d("TEST", "onPageFinished");
                 setState(STATE_DEFAULT);
                 fireEvent("ready");
                 if (mLoadingCompletedHandler != null)
@@ -151,32 +153,31 @@ public class MadvertiseMraidView extends WebView {
     }
 
     @Override
-    protected void onWindowVisibilityChanged(int visibility) {
-        // When the window is invisible, our view is too
-        if(visibility != View.VISIBLE) {            
-            setViewable(false);
-        }
-        super.onWindowVisibilityChanged(visibility);
-    };
-
+    protected void onAttachedToWindow() {
+        mOnScreen = true;
+        setViewability();
+    }
+    
     @Override
     protected void onDetachedFromWindow() {
-        // When not attached to a window, we are invisible
-        setViewable(false);
+        mOnScreen = false;
+        setViewability();
     }
 
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(visibility);
-        boolean isVisible;
-        if (visibility == View.VISIBLE) {
-            isVisible = true;
-        } else {
-            isVisible = false;
-        }
-        setViewable(isVisible);
+        setViewability();
     }
-    
+
+    private void setViewability() {
+        if (mOnScreen && getVisibility() == View.VISIBLE) {
+            injectJs("mraid.setViewable(true);");
+        } else {
+            injectJs("mraid.setViewable(false);");
+        }
+    }
+
 
     // to be called from the Ad (js side)
 
@@ -186,7 +187,8 @@ public class MadvertiseMraidView extends WebView {
             post(new Runnable() {
                 @Override
                 public void run() {
-                    MadvertiseMraidView.this.resize(mExpandProperties.width,
+                    MadvertiseMraidView.this.resize(
+                            mExpandProperties.width,
                             mExpandProperties.height);
                 }
             });
@@ -237,6 +239,10 @@ public class MadvertiseMraidView extends WebView {
     public void fireEvent(String event) {
         injectJs("mraid.fireEvent('" + event + "');");
     }
+    
+    public void fireErrorEvent(String message, String action) {
+        injectJs("mraid.fireErrorEvent('" + message + "', '"+action+"');");
+    }
 
     public String getPlacementType() {
         switch (mPlacementType) {
@@ -258,10 +264,6 @@ public class MadvertiseMraidView extends WebView {
     
     public ExpandProperties getExpandProperties() {
         return mExpandProperties;
-    }
-    
-    private void setViewable(final boolean isViewable) {
-        injectJs("mraid.setViewable(" + isViewable + ");");
     }
 
     private void injectJs(String jsCode) {
