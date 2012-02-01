@@ -122,13 +122,13 @@ public class MadvertiseMraidView extends WebView {
         if (m.matches()) {
             String baseUrl = m.group(1);
             String jsFile = m.group(2);
-            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading MRAID javascript: "
+            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading javascript Ad: "
                                   + "baseUrl=" + baseUrl + " jsFile=" + jsFile);
             loadDataWithBaseURL(baseUrl, "<html><head><script type=\"text/javascript\" src=\""
                     + jsFile + "\"/></head><body></body></html>", "text/html", "utf8", null);
             
         } else {
-            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading MRAID html: "+url);
+            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: "+url);
             loadUrl(url);
         }
     }

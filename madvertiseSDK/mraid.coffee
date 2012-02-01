@@ -55,23 +55,25 @@ mraid =
   # internal functions
 
   fireEvent: (event) ->
-    if event == "ready"
-      listener() for listener in listeners[event]
-    else if event == "stateChange"
-      listener(state) for listener in listeners[event]
-    else if event == "viewableChange"
-      listener(viewable) for listener in listeners[event]
+    if listeners[event]
+      for listener in listeners[event]
+        if event == "ready"
+          listener()
+        if event == "stateChange"
+          listener(state)
+        if event == "viewableChange"
+          listener(viewable)
 
   fireErrorEvent: (message, action) ->
     listener(message, action) for listener in listeners["error"]
 
   setState: (state_id) ->
     state = states[state_id]
-    fireEvent("stateChange")
+    mraid.fireEvent("stateChange")
 
   setViewable: (is_viewable) ->
     viewable = is_viewable
-    fireEvent("viewableChange")
+    mraid.fireEvent("viewableChange")
 
   setPlacementType: (type) ->
     if type == 0
