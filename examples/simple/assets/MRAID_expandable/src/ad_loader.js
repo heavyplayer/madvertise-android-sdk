@@ -23,7 +23,7 @@ if (mraid.getState() != 'ready') {
  * the base ad (simple image)
  */
 function showAd() {
-	basePath = "file:///android_asset/MRAID_expandable/src/assets/";
+	basePath = "file:///android_asset/MRAID_expandable/src/";
 	registerMraidHandlers(mraid, basePath);
 	renderBaseAd(mraid, basePath);
 	/*
@@ -65,7 +65,7 @@ function renderBaseAd(mraid, basePath) {
 	baseImage.setAttribute("id", "base_img");
 	baseImage.src = imageURL;
 	baseImage.setAttribute("style", "border:0px; width:316px; height:728px;");
-	document.appendChild(baseImage);
+	document.body.appendChild(baseImage);
 
 }
 
@@ -89,7 +89,7 @@ function renderOverlayLayer(mraid, basePath) {
 					"style",
 					"width:949px;height:728px;position:absolute;right:-633px;top:0px;z-index:1000;display:none;background:url("
 							+ bkgImagePath + ")");
-	document.appendChild(overlayContainer);
+	document.body.appendChild(overlayContainer);
 	resolveVideoPath(
 			basePath + "assets/mraid_column4.mp4",
 			function(videoPath) {
