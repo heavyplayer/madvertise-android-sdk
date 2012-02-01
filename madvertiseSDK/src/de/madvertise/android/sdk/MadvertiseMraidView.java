@@ -48,8 +48,6 @@ public class MadvertiseMraidView extends WebView {
 
     private static final int CLOSE_BUTTON_SIZE = 50;
 
-    private static final String JS_INTERFACE_NAME = "mraid";
-
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
 
     private FrameLayout mExpandLayout;
@@ -122,7 +120,6 @@ public class MadvertiseMraidView extends WebView {
         } else {
             loadUrl(ad.getBannerUrl());
         }
-
     }
 
     public MadvertiseMraidView(Context context) {
