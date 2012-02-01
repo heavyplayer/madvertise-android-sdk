@@ -153,9 +153,13 @@ public class MadvertiseView extends FrameLayout {
 
     private int mMaxViewHeight;
 
+    private MadvertiseMraidView mMraidView;
+
     private boolean mFetchAdsEnabled = true;
 
     private AttributeSet mAttrs;
+
+    private int mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
 
     /**
      * Static ad cache. We use {@link SoftReference} as they are guaranteed to
@@ -253,11 +257,13 @@ public class MadvertiseView extends FrameLayout {
 
         if (mCurrentAd != null) {
             if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-//                if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
-                    showMraidView();
-//                } else {
-//                    showImageView();
-//                }
+                // if
+                // (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
+                // {
+                showMraidView();
+                // } else {
+                // showImageView();
+                // }
             } else {
                 showTextView();
                 // show the MadvertiseView immediately so this doesn't need to
@@ -278,18 +284,18 @@ public class MadvertiseView extends FrameLayout {
     private void showMraidView() {
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Add rich media banner");
 
-        MadvertiseMraidView mraidView = new MadvertiseMraidView(getContext()
-                .getApplicationContext(), mAttrs, mCallbackListener, mAnimationListener, mHandler,
-                mCurrentAd);
+        mMraidView = new MadvertiseMraidView(getContext().getApplicationContext(),
+                mCallbackListener, mAnimationListener, mHandler, mCurrentAd);
+        mMraidView.setPlacementType(mPlacementType);
 
         // animate the old views
         animateOldViews();
 
-        addView(mraidView);
+        addView(mMraidView);
 
         final Animation animation = createAnimation(false);
         if (animation != null) {
-            mraidView.startAnimation(animation);
+            mMraidView.startAnimation(animation);
         }
     }
 
@@ -297,11 +303,8 @@ public class MadvertiseView extends FrameLayout {
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Add image banner");
 
         MadvertiseImageView imageView = new MadvertiseImageView(getContext()
-                .getApplicationContext(), mBannerWidthDp, mBannerHeightDp, mCurrentAd,
-
-        mHandler
-
-        , mAnimationListener);
+                .getApplicationContext(), mBannerWidthDp, mBannerHeightDp, mCurrentAd, mHandler,
+                mAnimationListener);
 
         // animate the old views
         animateOldViews();
@@ -509,6 +512,14 @@ public class MadvertiseView extends FrameLayout {
                     MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, maxHeightDefault);
             mMaxViewWidth = attrs.getAttributeIntValue(packageName,
                     MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, maxWidthDefault);
+
+            final String placementTypeStr = attrs.getAttributeValue(packageName, "placement_type");
+            if (placementTypeStr != null && placementTypeStr.equalsIgnoreCase("inline")) {
+                mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
+            } else if (placementTypeStr != null
+                    && placementTypeStr.equalsIgnoreCase("interstitial")) {
+                mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL;
+            }
         } else {
             MadvertiseUtil.logMessage(null, Log.DEBUG,
                     "AttributeSet is null. Using default parameters");
@@ -561,7 +572,8 @@ public class MadvertiseView extends FrameLayout {
             } catch (JSONException e) {
                 // this should never happen
                 e.printStackTrace();
-            }        }
+            }
+        }
 
         if (mCurrentAd != null && !isTimerRequest) {
             mHandler.post(mUpdateResults);
@@ -854,18 +866,18 @@ public class MadvertiseView extends FrameLayout {
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
         } else if (!bannerTypeFound && mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {            
-            if(json != null && json.has("ad_width")) {
+                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+            if (json != null && json.has("ad_width")) {
                 mBannerWidthDp = json.getInt("ad_width");
             } else {
                 mBannerWidthDp = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
             }
-            if(json != null && json.has("ad_height")) {
+            if (json != null && json.has("ad_height")) {
                 mBannerHeightDp = json.getInt("ad_height");
             } else {
                 mBannerHeightDp = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
             }
-            mBannerWidth = (int)(mDp * mBannerWidthDp + 0.5f);           
+            mBannerWidth = (int)(mDp * mBannerWidthDp + 0.5f);
             mBannerHeight = (int)(mDp * mBannerHeightDp + 0.5f);
         }
 
@@ -1089,6 +1101,19 @@ public class MadvertiseView extends FrameLayout {
         sNextCachedAdCounter++;
         if (sNextCachedAdCounter == sCachedAds.size()) {
             sNextCachedAdCounter = 0;
+        }
+    }
+
+    /**
+     * Sets the placement type of a rich media ad.
+     * 
+     * @param placementType the placement type, either
+     *            <code>MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL</code> or
+     *            <code>MadvertiseUtil.PLACEMENT_TYPE_INLINE<code/>.
+     */
+    public void setPlacementType(int placementType) {
+        if (mMraidView != null) {
+            mMraidView.setPlacementType(placementType);
         }
     }
 

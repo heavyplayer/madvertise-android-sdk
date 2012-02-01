@@ -23,7 +23,7 @@ if (mraid.getState() != 'ready') {
  * the base ad (simple image)
  */
 function showAd() {
-	basePath = "http://localhost:8666/yahoo.ads.mraid_richmedia/";
+	basePath = "file:///android_asset/MRAID_expandable/src/assets/";
 	registerMraidHandlers(mraid, basePath);
 	renderBaseAd(mraid, basePath);
 	/*

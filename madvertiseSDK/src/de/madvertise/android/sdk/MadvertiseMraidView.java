@@ -31,7 +31,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -79,29 +78,10 @@ public class MadvertiseMraidView extends WebView {
     private AnimationEndListener mAnimationEndListener;
 
 
-    public MadvertiseMraidView(Context context, AttributeSet attrs,
-            MadvertiseViewCallbackListener listener, AnimationEndListener animationEndListener,
-            Handler loadingCompletedHandler, MadvertiseAd ad) {
+    public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
+            AnimationEndListener animationEndListener, Handler loadingCompletedHandler,
+            MadvertiseAd ad) {
         this(context);
-
-        int placementType = -1;
-        if (attrs != null) {
-//             TODO: this throws an exception
-//             final String packageName = "http://schemas.android.com/apk/res/"
-//             + getContext().getApplicationContext().getPackageName();
-//             final String placementTypeStr = attrs.getAttributeValue(packageName,
-//             "placement_type");
-//             if(placementTypeStr.equalsIgnoreCase("inline")) {
-//                 placementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
-//             } else if(placementTypeStr.equalsIgnoreCase("interstitial")) {
-//                 placementType = MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL;
-//             }
-        }
-        
-        if (placementType == -1) {
-            placementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
-        }        
-        setPlacementType(placementType);
 
         this.mLoadingCompletedHandler = loadingCompletedHandler;
         this.mAnimationEndListener = animationEndListener;
@@ -130,7 +110,8 @@ public class MadvertiseMraidView extends WebView {
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
         setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-
+        
+        //TODO: enable
         // setBackgroundColor(Color.TRANSPARENT);
 
         getSettings().setJavaScriptEnabled(true);
@@ -337,8 +318,9 @@ public class MadvertiseMraidView extends WebView {
                 setState(STATE_DEFAULT);
                 break;
             case STATE_DEFAULT:
-                // TODO: set MadvertiseView to GONE.
-                setVisibility(View.GONE);
+                // Set MadvertiseView to GONE. Note: This will cause this view
+                // to be GONE too.
+                ((ViewGroup)getParent()).setVisibility(View.GONE);
                 setState(STATE_HIDDEN);
                 break;
         }

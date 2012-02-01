@@ -48,6 +48,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             });
             getInstrumentation().waitForIdleSync();
             mraidView.addJavascriptInterface(new Object() {
+                @SuppressWarnings("unused")
                 public void callback(String data) {
                     callback_data = data;
                     Log.d("Javascript", "called back: " + data);
@@ -376,7 +377,12 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         Thread.sleep(9000);
     }
 
-
+    public void testMraidExample_expandable() throws InterruptedException {
+        mraidView.loadDataWithBaseURL("file:///android_asset/MRAID_expandable/src/",
+                        "<html><head><script type=\"text/javascript\" src=\"ad_loader.js\"/></head><body></body></html>",
+                        "text/html", "utf8", null);
+        Thread.sleep(9000);
+    }
 
 
     // ------------ Test util stuff ---------------------
