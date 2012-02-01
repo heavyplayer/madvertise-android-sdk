@@ -1,5 +1,5 @@
 
-package de.madvertise.test;
+package de.madvertise.android.sdk;
 
 import junit.framework.Assert;
 
@@ -29,7 +29,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     private MadvertiseMraidView mraidView;
 
     public MraidTestSuite() {
-        super("de.madvertise.test", Activity.class);
+        super("de.madvertise.android.sdk", Activity.class);
     }
 
     @Override

@@ -208,20 +208,8 @@ public class MadvertiseMraidView extends WebView {
         }
     };
 
+
     // to be called from the App (java side)
-
-    public void setState(int state) {
-        mState = state;
-        injectJs("mraid.setState('" + state + "');");
-    }
-
-    public void fireEvent(String event) {
-        injectJs("mraid.fireEvent('" + event + "');");
-    }
-    
-    public void fireErrorEvent(String message, String action) {
-        injectJs("mraid.fireErrorEvent('" + message + "', '"+action+"');");
-    }
 
     public String getPlacementType() {
         switch (mPlacementType) {
@@ -240,8 +228,21 @@ public class MadvertiseMraidView extends WebView {
             injectJs("mraid.setPlacementType(" + mPlacementType + ");");
         }
     }
+
+    protected void setState(int state) {
+        mState = state;
+        injectJs("mraid.setState('" + state + "');");
+    }
+
+    void fireEvent(String event) {
+        injectJs("mraid.fireEvent('" + event + "');");
+    }
     
-    public ExpandProperties getExpandProperties() {
+    protected void fireErrorEvent(String message, String action) {
+        injectJs("mraid.fireErrorEvent('" + message + "', '"+action+"');");
+    }
+
+    protected ExpandProperties getExpandProperties() {
         return mExpandProperties;
     }
 
