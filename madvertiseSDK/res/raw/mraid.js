@@ -97,9 +97,10 @@ mraid = {
           listener();
         }
         if (event === "stateChange") {
+          console.log("notify stateChange listener " + listener);
           listener(state);
         }
-        _results.push(event === "viewableChange" ? listener(viewable) : void 0);
+        _results.push(event === "viewableChange" ? (console.log("notify viewableChange listener " + listener), listener(viewable)) : void 0);
       }
       return _results;
     }

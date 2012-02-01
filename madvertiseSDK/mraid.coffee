@@ -61,8 +61,10 @@ mraid =
         if event == "ready"
           listener()
         if event == "stateChange"
+          console.log "notify stateChange listener "+listener
           listener(state)
         if event == "viewableChange"
+          console.log "notify viewableChange listener "+listener
           listener(viewable)
 
   fireErrorEvent: (message, action) ->
