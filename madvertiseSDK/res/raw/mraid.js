@@ -87,6 +87,7 @@ mraid = {
   },
   fireEvent: function(event) {
     var listener, _i, _len, _ref, _results;
+    console.log("fireEvent " + event);
     if (listeners[event]) {
       _ref = listeners[event];
       _results = [];
