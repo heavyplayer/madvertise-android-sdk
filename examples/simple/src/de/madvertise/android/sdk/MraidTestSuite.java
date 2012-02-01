@@ -1,6 +1,8 @@
 
 package de.madvertise.android.sdk;
 
+import java.util.regex.Matcher;
+
 import junit.framework.Assert;
 
 import org.json.JSONException;
@@ -370,21 +372,43 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertEquals(1, monitor.getHits());
     }
 
+    public void testJsUrlSplitter() {
+        Matcher m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.com/ad.html");
+        assertFalse(m.matches());
+        m = MadvertiseMraidView.sUrlSplitter.matcher("wrong://domain.com/some_ad.js");
+        assertFalse(m.matches());
+        m = MadvertiseMraidView.sUrlSplitter.matcher("http://no/domain/some_ad.js");
+        assertFalse(m.matches());
+        m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.com/some_ad.js");
+        assertTrue(m.matches());
+        assertEquals("http://domain.com/", m.group(1));
+        assertEquals("some_ad.js", m.group(2));
+        m = MadvertiseMraidView.sUrlSplitter.matcher("file:///android_asset/path/ad.js");
+        assertTrue(m.matches());
+        assertEquals("file:///android_asset/path/", m.group(1));
+        assertEquals("ad.js", m.group(2));
+        m = MadvertiseMraidView.sUrlSplitter.matcher("http://sub.domain.com/ad.js");
+        assertTrue(m.matches());
+        assertEquals("http://sub.domain.com/", m.group(1));
+        assertEquals("ad.js", m.group(2));
+        m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.de/with/long/path/ad.js");
+        assertTrue(m.matches());
+        assertEquals("http://domain.de/with/long/path/", m.group(1));
+        assertEquals("ad.js", m.group(2));
+    }
+
     public void testMraidExample_static() throws InterruptedException {
-        mraidView.loadDataWithBaseURL("file:///android_asset/MRAID_static/src/",
-                        "<html><head><script type=\"text/javascript\" src=\"ad_loader.js\"/>" +
-                        "</head><body></body></html>",
-                        "text/html", "utf8", null);
+        mraidView.loadAd("file:///android_asset/MRAID_static/src/ad_loader.js");
+        Thread.sleep(9000);
+    }
+    
+    public void testMraidExample_expandable() throws InterruptedException {
+        mraidView.loadAd("file:///android_asset/MRAID_expandable/src/ad_loader.js");
         Thread.sleep(9000);
     }
 
-    public void testMraidExample_expandable() throws InterruptedException {
-        mraidView.loadDataWithBaseURL("file:///android_asset/MRAID_expandable/src/",
-                        "<html><head><script type=\"text/javascript\" src=\"ad_loader.js\"/>" +
-                        "</head><body></body></html>",
-                        "text/html", "utf8", null);
-        Thread.sleep(9000);
-    }
+
+
 
 
     // ------------ Test util stuff ---------------------

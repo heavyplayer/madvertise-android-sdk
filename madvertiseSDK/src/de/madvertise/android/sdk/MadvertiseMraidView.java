@@ -22,10 +22,10 @@ package de.madvertise.android.sdk;
 
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -44,6 +44,8 @@ import de.madvertise.android.sdk.MadvertiseView.AnimationEndListener;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
 public class MadvertiseMraidView extends WebView {
+
+    protected static final Pattern sUrlSplitter = Pattern.compile("((?:http|file):\\/\\/.*(?:\\.|_)+.*\\/)(.*\\.js)");
 
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
 
@@ -79,30 +81,11 @@ public class MadvertiseMraidView extends WebView {
 
 
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
-            AnimationEndListener animationEndListener, Handler loadingCompletedHandler,
-            MadvertiseAd ad) {
+            AnimationEndListener animationEndListener, Handler loadingCompletedHandler) {
         this(context);
-
         this.mLoadingCompletedHandler = loadingCompletedHandler;
         this.mAnimationEndListener = animationEndListener;
         this.mListener = listener;
-
-        if (ad.getBannerUrl().endsWith(".js")) {
-            // TODO: Make this work!!!
-
-            char[] start = new char[128], end = new char[32];
-            final int sep = ad.getBannerUrl().lastIndexOf("/");
-            ad.getBannerUrl().getChars(0, sep + 1, start, 0);
-            ad.getBannerUrl().getChars(sep + 1, ad.getBannerUrl().length(), end, 0);
-
-            final String bannerStart = new String(start);
-            final String bannerEnd = new String(end);
-
-            loadDataWithBaseURL(bannerStart, "<html><head><script type=\"text/javascript\" src=\""
-                    + bannerEnd + "\"/></head><body></body></html>", "text/html", "utf8", null);
-        } else {
-            loadUrl(ad.getBannerUrl());
-        }
     }
 
     public MadvertiseMraidView(Context context) {
@@ -110,14 +93,11 @@ public class MadvertiseMraidView extends WebView {
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
         setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        
         //TODO: enable
         // setBackgroundColor(Color.TRANSPARENT);
-
         getSettings().setJavaScriptEnabled(true);
         addJavascriptInterface(mBridge, "mraid_bridge");
-        loadJs();
-
+        loadMraidJs();
         final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
         injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
@@ -131,6 +111,26 @@ public class MadvertiseMraidView extends WebView {
                     mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
+    }
+
+    protected void loadAd(MadvertiseAd ad) {
+        loadAd(ad.getBannerUrl());
+    }
+
+    protected void loadAd(String url) {
+        Matcher m = sUrlSplitter.matcher(url);
+        if (m.matches()) {
+            String baseUrl = m.group(1);
+            String jsFile = m.group(2);
+            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading MRAID javascript: "
+                                  + "baseUrl=" + baseUrl + " jsFile=" + jsFile);
+            loadDataWithBaseURL(baseUrl, "<html><head><script type=\"text/javascript\" src=\""
+                    + jsFile + "\"/></head><body></body></html>", "text/html", "utf8", null);
+            
+        } else {
+            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading MRAID html: "+url);
+            loadUrl(url);
+        }
     }
 
     @Override
@@ -408,7 +408,7 @@ public class MadvertiseMraidView extends WebView {
     }
 
     // Utility methods
-    private void loadJs() {
+    private void loadMraidJs() {
         String script = "";
         try {
             InputStream is = getContext().getResources().openRawResource(R.raw.mraid);

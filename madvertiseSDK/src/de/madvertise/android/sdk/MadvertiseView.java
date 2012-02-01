@@ -285,8 +285,9 @@ public class MadvertiseView extends FrameLayout {
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Add rich media banner");
 
         mMraidView = new MadvertiseMraidView(getContext().getApplicationContext(),
-                mCallbackListener, mAnimationListener, mHandler, mCurrentAd);
+                mCallbackListener, mAnimationListener, mHandler);
         mMraidView.setPlacementType(mPlacementType);
+        mMraidView.loadAd(mCurrentAd);
 
         // animate the old views
         animateOldViews();
