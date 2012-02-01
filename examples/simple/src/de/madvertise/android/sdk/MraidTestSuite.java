@@ -398,14 +398,14 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertEquals("ad.js", m.group(2));
     }
 
-    public void testMraidExample_static() throws InterruptedException {
+    public void testXample_static() throws InterruptedException {
         mraidView.loadAd("file:///android_asset/MRAID_static/src/ad_loader.js");
         Thread.sleep(9000);
     }
     
-    public void testMraidExample_expandable() throws InterruptedException {
+    public void testXample_expandable() throws InterruptedException {
         mraidView.loadAd("file:///android_asset/MRAID_expandable/src/ad_loader.js");
-        Thread.sleep(9000);
+        Thread.sleep(23000);
     }
 
 
