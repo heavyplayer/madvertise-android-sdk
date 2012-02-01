@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -111,6 +112,7 @@ public class MadvertiseMraidView extends WebView {
                     mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
+        setWebChromeClient(new WebChromeClient()); // enable js console.log
     }
 
     protected void loadAd(MadvertiseAd ad) {
