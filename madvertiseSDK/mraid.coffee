@@ -55,6 +55,7 @@ mraid =
   # internal functions
 
   fireEvent: (event) ->
+    console.log "fireEvent "+event
     if listeners[event]
       for listener in listeners[event]
         if event == "ready"
