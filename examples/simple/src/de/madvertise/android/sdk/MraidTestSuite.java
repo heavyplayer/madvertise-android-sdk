@@ -150,6 +150,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     public void testStateChangeEventListener() {
         loadHtml("testing 'stateChange' event listeners listen for events");
+        
         mraidView.loadUrl("javascript:mraid.addEventListener('stateChange', function(state) {test.callback(state);});");
         mraidView.setState(MadvertiseMraidView.STATE_HIDDEN);
         waitForJsCallback();
@@ -426,7 +427,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
     
     public void testXample_expandable() throws InterruptedException {
-        mraidView.loadAd("file:///android_asset/MRAID_expandable/src/ad_loader.js");
+        mraidView.loadAd("http://andlabs.info/jobs/MRAID_expandable/src/ad_loader.js");
         Thread.sleep(23000);
     }
 

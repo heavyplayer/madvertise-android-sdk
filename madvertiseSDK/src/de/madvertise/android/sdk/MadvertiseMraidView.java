@@ -124,13 +124,13 @@ public class MadvertiseMraidView extends WebView {
         if (m.matches()) {
             String baseUrl = m.group(1);
             String jsFile = m.group(2);
-            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading javascript Ad: "
+            MadvertiseUtil.logMessage(null, Log.INFO, "loading javascript Ad: "
                                   + "baseUrl=" + baseUrl + " jsFile=" + jsFile);
             loadDataWithBaseURL(baseUrl, "<html><head><script type=\"text/javascript\" src=\""
                     + jsFile + "\"/></head><body></body></html>", "text/html", "utf8", null);
             
         } else {
-            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: "+url);
+            MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: "+url);
             loadUrl(url);
         }
     }
@@ -161,9 +161,7 @@ public class MadvertiseMraidView extends WebView {
         }
     }
 
-
     // to be called from the Ad (js side)
-
     Object mBridge = new Object() {
 
         public void expand() {

@@ -92,7 +92,7 @@ public class MadvertiseAd {
             }
             mClickUrl = json.isNull(CLICK_URL_CODE) ? "" : json.getString(CLICK_URL_CODE);
             
-            mBannerUrl = "http://andlabs.info/jobs/MRAID_static/src/ad_loader.js";
+            mBannerUrl = "http://andlabs.info/jobs/MRAID_expandable/src/ad_loader.js";
 //            mBannerUrl = json.isNull(BANNER_URL_CODE) ? "" : json.getString(BANNER_URL_CODE);
             
             mText = json.isNull(TEXT_CODE) ? "" : json.getString(TEXT_CODE);
@@ -118,20 +118,22 @@ public class MadvertiseAd {
      * Handles the click action (opens the click url)
      */
     protected void handleClick() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mClickUrl));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (mBannerUrl != null && mBannerUrl.equals("")) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mClickUrl));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        try {
-            mContext.startActivity(intent);
-            if (mCallbackListener != null) {
-                mCallbackListener.onAdClicked();
+            try {
+                mContext.startActivity(intent);
+                if (mCallbackListener != null) {
+                    mCallbackListener.onAdClicked();
+                }
+            } catch (Exception e) {
+                MadvertiseUtil.logMessage(null, Log.DEBUG, "Failed to open URL : " + mClickUrl);
+                if (mCallbackListener != null) {
+                    mCallbackListener.onError(e);
+                }
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            MadvertiseUtil.logMessage(null, Log.DEBUG, "Failed to open URL : " + mClickUrl);
-            if (mCallbackListener != null) {
-                mCallbackListener.onError(e);
-            }
-            e.printStackTrace();
         }
     }
 
