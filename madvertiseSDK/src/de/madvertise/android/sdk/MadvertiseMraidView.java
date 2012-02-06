@@ -90,6 +90,7 @@ public class MadvertiseMraidView extends WebView {
     }
 
     public MadvertiseMraidView(Context context) {
+                
         super(context);
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
@@ -111,17 +112,19 @@ public class MadvertiseMraidView extends WebView {
                 if (mLoadingCompletedHandler != null)
                     mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
-
+           
             @Override
             public void onLoadResource(WebView view, String url) {
                 if (!url.endsWith("mraid.js")) {
+                   
                     MadvertiseUtil.logMessage(TAG, Log.DEBUG, "loading "+url);
+                    view.stopLoading();
                     super.onLoadResource(view, url);
                 } else {
                     MadvertiseUtil.logMessage(TAG, Log.DEBUG, "NOT loading "+url);
                     // ToDo identifcation
                 }
-            }
+            }           
         });
         setWebChromeClient(new WebChromeClient()); // enable js console.log
     }
