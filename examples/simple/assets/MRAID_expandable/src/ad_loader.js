@@ -11,7 +11,7 @@ document.write("<script src=\"mraid.js\"></script>");
  * Checking for the state of the mraid client library and subscribing to the ready event if necessary 
  * When the client library is ready call the showAd method to render the ad
  */
-if (mraid.getState() != 'ready') {
+if (mraid.getState() != 'default') {
 	console.log("MRAID Ad: adding event listener for ready");
 	mraid.addEventListener('ready', showAd);
 } else {

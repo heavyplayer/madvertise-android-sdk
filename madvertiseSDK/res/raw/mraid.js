@@ -1,4 +1,4 @@
-var expandProperties, listeners, mraid, placementType, state, states, viewable;
+var expandProperties, listeners, monkeyPatch, mraid, placementType, state, states, viewable;
 var __slice = Array.prototype.slice;
 expandProperties = {
   width: 320,
@@ -130,4 +130,13 @@ mraid = {
       return placementType = "interstitial";
     }
   }
+};
+monkeyPatch = function() {
+  document.originalWrite = document.write;
+  return document.write = function(html) {
+    console.log("PATCHED document.write: " + html);
+    if (!html.match(/<script.*mraid.js.*>/)) {
+      return this.originalWrite(html);
+    }
+  };
 };

@@ -364,12 +364,13 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         Thread.sleep(9000);
     }
 
-    public void testOpenBrowserActivity() {
-        loadHtml("testing open external url</div>");
+    public void testOpenBrowserActivity() throws InterruptedException {
+        loadHtml("testing open external url");
         mraidView.loadUrl("javascript:mraid.open('http://andlabs.eu');");
         ActivityMonitor monitor = getInstrumentation().addMonitor(
                 "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, true);
         monitor.waitForActivityWithTimeout(3000);
+        Thread.sleep(1000);
         assertEquals(1, monitor.getHits());
     }
 
@@ -399,13 +400,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testXample_static() throws InterruptedException {
+//        mraidView.loadAd("http://andlabs.info/jobs/MRAID_static/src/ad_loader.js");
         mraidView.loadAd("file:///android_asset/MRAID_static/src/ad_loader.js");
-        Thread.sleep(9000);
+        Thread.sleep(23000);
     }
     
     public void testXample_expandable() throws InterruptedException {
+//        mraidView.loadAd("http://andlabs.info/jobs/MRAID_expandable/src/ad_loader.js");
         mraidView.loadAd("file:///android_asset/MRAID_expandable/src/ad_loader.js");
-        Thread.sleep(23000);
+        Thread.sleep(42000);
+        
     }
 
 

@@ -80,6 +80,8 @@ public class MadvertiseMraidView extends WebView {
 
     private AnimationEndListener mAnimationEndListener;
 
+    private String mJsFile;
+
 
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
             AnimationEndListener animationEndListener, Handler loadingCompletedHandler) {
@@ -98,32 +100,28 @@ public class MadvertiseMraidView extends WebView {
         // setBackgroundColor(Color.TRANSPARENT);
         getSettings().setJavaScriptEnabled(true);
         addJavascriptInterface(mBridge, "mraid_bridge");
+        
         loadMraidJs();
-        final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
-        injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
-
+        
+        setWebChromeClient(new WebChromeClient()); // enable js console.log
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
-                setState(STATE_DEFAULT);
+                MadvertiseUtil.logMessage(TAG, Log.DEBUG, "finsished loading "+url);
+                final DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+                mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
+                injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
+                injectJs("monkeyPatch();");
+                if (mJsFile != null) {
+                    injectJs("document.write(\"<body></body><script type=\\\"text/javascript\\\" src=\\\""+ mJsFile + "\\\"/>\");");
+                }
+                setViewability();
                 fireEvent("ready");
+                setState(STATE_DEFAULT);
                 if (mLoadingCompletedHandler != null)
                     mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
-
-            @Override
-            public void onLoadResource(WebView view, String url) {
-                if (!url.endsWith("mraid.js")) {
-                    MadvertiseUtil.logMessage(TAG, Log.DEBUG, "loading "+url);
-                    super.onLoadResource(view, url);
-                } else {
-                    MadvertiseUtil.logMessage(TAG, Log.DEBUG, "NOT loading "+url);
-                    // ToDo identifcation
-                }
-            }
         });
-        setWebChromeClient(new WebChromeClient()); // enable js console.log
     }
 
     protected void loadAd(MadvertiseAd ad) {
@@ -133,13 +131,11 @@ public class MadvertiseMraidView extends WebView {
     protected void loadAd(String url) {
         Matcher m = sUrlSplitter.matcher(url);
         if (m.matches()) {
-            String baseUrl = m.group(1);
-            String jsFile = m.group(2);
+            mJsFile = m.group(2);
+            final String baseUrl = m.group(1);
             MadvertiseUtil.logMessage(TAG, Log.INFO, "loading javascript Ad: "
-                                  + "baseUrl=" + baseUrl + " jsFile=" + jsFile);
-            loadDataWithBaseURL(baseUrl, "<html><head><script type=\"text/javascript\" src=\""
-                    + jsFile + "\"/></head><body></body></html>", "text/html", "utf8", null);
-            
+                                  + "baseUrl=" + baseUrl + " jsFile=" + mJsFile);
+            loadDataWithBaseURL(baseUrl, "<html><head></head><body>MRAID Ad</body></html>", "text/html", "utf8", null);
         } else {
             MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: "+url);
             loadUrl(url);

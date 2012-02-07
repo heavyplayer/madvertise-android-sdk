@@ -84,3 +84,11 @@ mraid =
     else if type == 1
       placementType = "interstitial"
 
+
+
+monkeyPatch = () ->
+  document.originalWrite = document.write
+  document.write = (html) ->
+    console.log "PATCHED document.write: " + html
+    this.originalWrite(html) unless html.match(/<script.*mraid.js.*>/)
+
