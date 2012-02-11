@@ -123,16 +123,16 @@ public class MadvertiseMraidView extends WebView {
                     mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
-//        setPictureListener(new PictureListener() {
-//            
-//            @Override // scroll to center
-//            public void onNewPicture(WebView wv, Picture pic) {
-//                int y = (pic.getHeight() - wv.getHeight()) / 2;
-//                int x = (pic.getWidth() - wv.getWidth()) / 2;
+        setPictureListener(new PictureListener() {
+            
+            @Override // scroll to center
+            public void onNewPicture(WebView wv, Picture pic) {
+                int y = (pic.getHeight() - wv.getHeight()) / 2;
+                int x = (pic.getWidth() - wv.getWidth()) / 2;
 //                Log.d("Center", "scrollTo x="+x+", y="+y);
-//                wv.scrollTo(x, y);
-//            }
-//        });
+                wv.scrollTo(x, y);
+            }
+        });
     }
 
     protected void loadAd(MadvertiseAd ad) {

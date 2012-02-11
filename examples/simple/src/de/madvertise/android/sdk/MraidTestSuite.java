@@ -369,8 +369,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         mraidView.loadUrl("javascript:mraid.open('http://andlabs.eu');");
         ActivityMonitor monitor = getInstrumentation().addMonitor(
                 "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, true);
-        monitor.waitForActivityWithTimeout(3000);
-        Thread.sleep(1000);
+//        monitor.waitForActivityWithTimeout(3000);
+        Thread.sleep(3000);
         assertEquals(1, monitor.getHits());
     }
 
