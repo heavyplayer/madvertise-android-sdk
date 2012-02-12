@@ -26,8 +26,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.net.Uri;
@@ -38,10 +41,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebChromeClient.CustomViewCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.VideoView;
 import de.madvertise.android.sdk.MadvertiseView.AnimationEndListener;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
@@ -104,7 +109,45 @@ public class MadvertiseMraidView extends WebView {
         
         loadMraidJs();
         
-        setWebChromeClient(new WebChromeClient()); // enable js console.log
+        getSettings().setPluginsEnabled(true);
+        setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public Bitmap getDefaultVideoPoster() {
+                Log.d("Video", "getDefVideoPoster");
+                return super.getDefaultVideoPoster();
+            }
+
+            @Override
+            public View getVideoLoadingProgressView() {
+                Log.d("Video", "getVideoProg");
+                return super.getVideoLoadingProgressView();
+            }
+
+            @Override
+            public void onHideCustomView() {
+                Log.d("Video", "onHide");
+                super.onHideCustomView();
+            }
+
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+                Log.d("Video", "onShow");
+                super.onShowCustomView(view, callback);
+                if (view instanceof FrameLayout){
+                    Log.d("Video", "is Framelayout");
+                    FrameLayout frame = (FrameLayout) view;
+                    if (frame.getFocusedChild() instanceof VideoView){
+                        VideoView video = (VideoView) frame.getFocusedChild();
+                        frame.removeView(video);
+                        ((Activity)getContext()).setContentView(video);
+//                        video.setOnCompletionListener(this);
+//                        video.setOnErrorListener(this);
+                        video.start();
+                    }
+                }
+            }
+        });
         setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
