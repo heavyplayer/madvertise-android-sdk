@@ -11,7 +11,7 @@ document.write("<script src=\"mraid.js\"></script>");
  * Checking for the state of the mraid client library and subscribing to the ready event if necessary 
  * When the client library is ready call the showAd method to render the ad
  */
-if (mraid.getState() != 'ready') {
+if (mraid.getState() != 'default') {
 	console.log("MRAID Ad: adding event listener for ready");
 	mraid.addEventListener('ready', showAd);
 } else {
@@ -25,7 +25,11 @@ if (mraid.getState() != 'ready') {
 function showAd() {
 	basePath = "file:///android_asset/MRAID_expandable/src/";
 	registerMraidHandlers(mraid, basePath);
-	renderBaseAd(mraid, basePath);
+	if (mraid.getState() === 'default') {
+		renderOverlayLayer(mraid, basePath);
+	} else {
+		renderBaseAd(mraid, basePath);
+	}
 	/*
 	 * set the expand properties to use the custom close method since the ad
 	 * renders it's own close button in the expanded layer
