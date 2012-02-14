@@ -3,12 +3,9 @@ package de.madvertise.android.sdk;
 
 import java.io.File;
 import java.util.regex.Matcher;
-
 import junit.framework.Assert;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.Instrumentation.ActivityMonitor;
 import android.test.ActivityInstrumentationTestCase2;
@@ -25,11 +22,8 @@ import de.madvertise.android.sdk.MadvertiseMraidView.ExpandProperties;
 public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     private MadvertiseMraidView mraidView;
-
     private Activity testActivity;
-
     private String callback_data;
-
     private boolean go;
 
 

@@ -26,10 +26,8 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -56,45 +54,25 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 public class MadvertiseMraidView extends WebView {
 
     protected static final Pattern sUrlSplitter = Pattern.compile("((?:http|file):\\/\\/.*(?:\\.|_)+.*\\/)(.*\\.js)");
-
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
-
     private static String sCachePath;
-
     private static final int CLOSE_BUTTON_SIZE = 50;
-
     protected static final int STATE_LOADING = 0;
-
     protected static final int STATE_HIDDEN = 1;
-
     protected static final int STATE_DEFAULT = 2;
-
     protected static final int STATE_EXPANDED = 3;
-
     private boolean mJavaIsReady;
-
     private boolean mJsIsReady;
-
     private int mState;
-
     private int mIndex;
-
     private boolean mOnScreen;
-
     private int mPlacementType;
-
     private FrameLayout mExpandLayout;
-
     private ViewGroup mOriginalParent;
-
     private Handler mLoadingCompletedHandler;
-
     private ExpandProperties mExpandProperties;
-
     private MadvertiseViewCallbackListener mListener;
-
     private AnimationEndListener mAnimationEndListener;
-
     private boolean mViewable;
 
 
@@ -339,18 +317,14 @@ public class MadvertiseMraidView extends WebView {
 
     private void resize(final int width, final int height) {
         final FrameLayout content = (FrameLayout)getRootView().findViewById(android.R.id.content);
-
         final FrameLayout.LayoutParams adParams = new FrameLayout.LayoutParams(width, height);
-
         final View placeholderView = new View(getContext());
         placeholderView.setLayoutParams(getLayoutParams());
-
         mExpandLayout = new FrameLayout(getContext());
         final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.CENTER;
         mExpandLayout.setLayoutParams(layoutParams);
-
         mOriginalParent = (ViewGroup)getParent();
 
         int index = 0;
@@ -444,23 +418,14 @@ public class MadvertiseMraidView extends WebView {
     public class ExpandProperties {
 
         private static final String WIDTH = "width";
-
         private static final String HEIGHT = "height";
-
         private static final String USE_CUSTOM_CLOSE = "useCustomClose";
-
         private static final String IS_MODAL = "isModal";
-
         private int mMaxWidth;
-
         private int mMaxHeight;
-
         public int width;
-
         public int height;
-
         public boolean useCustomClose;
-
         public boolean isModal;
 
         public ExpandProperties(final int width, final int height) {
@@ -500,7 +465,6 @@ public class MadvertiseMraidView extends WebView {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             checkSizeParams();
         }
 
