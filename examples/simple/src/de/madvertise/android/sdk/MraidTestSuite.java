@@ -433,8 +433,12 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     public void testXample_expandable() throws InterruptedException {
 //        mraidView.loadAd("http://andlabs.info/jobs/MRAID_expandable/src/ad_loader.js");
         mraidView.loadAd("file:///android_asset/MRAID_expandable/src/ad_loader.js");
+        Thread.sleep(23000);
+    }
+
+    public void testXample_xHTML5_Ad() throws InterruptedException {
+        mraidView.loadAd("file:///android_asset/MRAID_andlabs_html_ad/banner.html");
         Thread.sleep(42000);
-        
     }
 
 

@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <script type="text/javascript" src="mraid.js"></script>
+  </head>
+  <body>
+    <img id="img" src="small.png"  style="width:100%;height:90%;"/>
+    <script type="text/javascript">
+
+      if (mraid.getState() != 'default') {
+        mraid.addEventListener('ready', showAd);
+      } else {
+        showAd();
+      }
+
+      function showAd() {
+        mraid.setExpandProperties({
+          useCustomClose: true,
+          height: 420
+        });
+        var img = document.getElementById("img");
+        img.onclick = function() {
+          this.src = "big.png";
+          mraid.expand();
+        };
+      }
+    </script>
+  </body>
+</html>
