@@ -79,7 +79,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     // getVersion should return "1.0"
     public void testGetVersion() {
-        loadHtml("testing getVersion()");
+        loadHtml("getVersion() should return '1.0'");
         executeAsyncJs("mraid.getVersion()", new JsCallback() {
             void done(String version) {
                 assertEquals("1.0", version);
@@ -88,16 +88,15 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testInitialState() {
-        mraidView.loadData("<html><head></head><body>testing initial state"
-                + "<script type=\"text/javascript\">test.callback(mraid.getState());"
-                + "</script></bod></html>", "text/html", "utf8");
+        loadHtml("getState() should initially return 'loading' " +
+                    "<script type=\"text/javascript\"> test.callback(mraid.getState()); </script>");
         waitForJsCallback();
         assertEquals("loading", callback_data);
     }
 
-    // state should be "default" when 'ready'
-    public void testStateAfterInitialization() {
-        loadHtml("testing state after initialization");
+    public void testStateAfterInitialization() throws InterruptedException {
+        loadHtml("getState() should return 'default' after mraid is ready");
+        Thread.sleep(1000);
         executeAsyncJs("mraid.getState()", new JsCallback() {
             void done(String version) {
                 assertEquals("default", version);
@@ -106,7 +105,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testAddEventListenerFunctionExists() {
-        loadHtml("testing event listener function exists");
+        loadHtml("addEventListener() function should exists");
         executeAsyncJs("typeof mraid.addEventListener", new JsCallback() {
             void done(String type) {
                 assertEquals("function", type);
@@ -115,16 +114,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testReadyEventListener() {
-        loadHtml("testing 'ready' event listeners listen for events");
-        mraidView.loadUrl("javascript:mraid.addEventListener('ready', function() {test.callback('works');});");
+        loadHtml("event listeners should be able to listen for 'ready' events");
+        mraidView.injectJs("mraid.addEventListener('ready', function() {test.callback('works');});");
         mraidView.fireEvent("ready");
         waitForJsCallback();
         assertEquals("works", callback_data);
     }
 
     public void testStateChangeEventListener() {
-        loadHtml("testing 'stateChange' event listeners listen for events");
-        mraidView.loadUrl("javascript:mraid.addEventListener('stateChange', function(state) {test.callback(state);});");
+        loadHtml("event listeners should be able to listen for 'stateChange' events");
+        mraidView.injectJs("mraid.addEventListener('stateChange', function(state) {test.callback(state);});");
         mraidView.setState(MadvertiseMraidView.STATE_HIDDEN);
         waitForJsCallback();
         assertEquals("hidden", callback_data);
@@ -132,16 +131,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     @UiThreadTest
     public void testViewableChangeEventListener() {
-        loadHtml("testing 'viewableChange' event listeners listen for events");
-        mraidView.loadUrl("javascript:mraid.addEventListener('viewableChange', function(viewable) {test.callback(viewable);});");
+        loadHtml("event listeners should be able to listen for 'viewableChange' events");
+        mraidView.injectJs("mraid.addEventListener('viewableChange', function(viewable) {test.callback(viewable);});");
         mraidView.setVisibility(View.INVISIBLE);
         waitForJsCallback();
         assertEquals("false", callback_data);
     }
 
     public void testErrorEventListener() {
-        loadHtml("testing 'error' event listeners listen for events");
-        mraidView.loadUrl("javascript:mraid.addEventListener('error', function(msg, action) {test.callback(msg+action);});");
+        loadHtml("event listeners should be able to listen for 'error' events");
+        mraidView.injectJs("mraid.addEventListener('error', function(msg, action) {test.callback(msg+action);});");
         mraidView.fireErrorEvent("some message ", "with some action");
         waitForJsCallback();
         assertEquals("some message with some action", callback_data);
@@ -172,7 +171,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testPlacementTypeAccessors() {
-        loadHtml("testing placement type getter and setter ");
+        loadHtml("getPlacementType should be accessible");
         executeAsyncJs("mraid.getPlacementType()", new JsCallback() {
             void done(String placementType) {
                 assertEquals("inline", placementType); // default
@@ -187,7 +186,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testIsViewable() throws Throwable {
-        loadHtml("testing viewability");
+        loadHtml("isViewable() should tell if the ad is visible");
         Thread.sleep(1500);
         assertIsViewable();
         runTestOnUiThread(new Runnable() {
@@ -242,10 +241,9 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
     }
 
-    // expand properties should be set to screen dimensions by default
     public void testDefaultExpandProperties() {
-        loadHtml("testing initial default expandProperties ");
-        final DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+        loadHtml("expand properties should be set to screen dimensions by default");
+        final DisplayMetrics metrics = testActivity.getResources().getDisplayMetrics();
         executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
             void done(String properties) {
                 assertEquals("{\"width\":" + metrics.widthPixels + ",\"height\":"
@@ -255,8 +253,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testExpandPropertyAccessors() {
-        loadHtml("testing getter and setter for expand properties ");
-        mraidView.loadUrl("javascript:mraid.setExpandProperties({width:42,height:23,useCustomClose:true,isModal:true});");
+        loadHtml("expand properties should be accessible"); 
+        mraidView.injectJs("mraid.setExpandProperties({width:42,height:23,useCustomClose:true,isModal:true});");
         executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
             void done(String properties) {
                 assertEquals("{\"width\":42,\"height\":23,\"useCustomClose\":true,\"isModal\":false}", properties);
@@ -312,9 +310,9 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testExpandAndClose() throws InterruptedException {
-        loadHtml("testing expand</div>");
-        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:230});");
-        mraidView.loadUrl("javascript:mraid.expand();");
+        loadHtml("expand() and close() should do what their names imply");
+        mraidView.injectJs("mraid.setExpandProperties({height:230});");
+        mraidView.injectJs("mraid.expand();");
         Thread.sleep(1000);
         assertEquals(230, mraidView.getHeight());
         mraidView.injectJs("mraid.close();");
@@ -366,9 +364,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                 });
         ExpandProperties props = mraidView.getExpandProperties();
         assertTrue(props.useCustomClose);
-        
-        mraidView.loadUrl("javascript:mraid.setExpandProperties({height:300});");
-        mraidView.loadUrl("javascript:mraid.expand('http://andlabs.eu');");
+        mraidView.injectJs("mraid.setExpandProperties({height:300});");
+        mraidView.injectJs("mraid.expand('http://andlabs.eu');");
         Thread.sleep(1000);
         assertEquals(300, mraidView.getHeight());
         final ImageButton closeButton = (ImageButton)testActivity.findViewById(43);
@@ -385,8 +382,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testOpenBrowserActivity() throws InterruptedException {
-        loadHtml("testing open external url");
-        mraidView.loadUrl("javascript:mraid.open('http://andlabs.eu');");
+        loadHtml("open(url) should start browser activity");
+        mraidView.injectJs("mraid.open('http://andlabs.eu');");
         ActivityMonitor monitor = getInstrumentation().addMonitor(
                 "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, true);
         monitor.waitForActivityWithTimeout(3000);
