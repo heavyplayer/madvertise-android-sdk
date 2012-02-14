@@ -1,6 +1,7 @@
 
 package de.madvertise.android.sdk;
 
+import java.io.File;
 import java.util.regex.Matcher;
 
 import junit.framework.Assert;
@@ -68,8 +69,9 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         }
     }
 
-    public void testAdControllerExists() {
-        loadHtml("testing Ad Controller exists");
+    
+    public void testCacheHack() {
+        loadHtml("mraid.js should be loaded out of cache");
         executeAsyncJs("typeof mraid", new JsCallback() {
             void done(String type) {
                 assertEquals("object", type);
@@ -77,7 +79,14 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
     }
 
-    // getVersion should return "1.0"
+    public void testMraidCacheFileCopy() {
+        File mraid = new File("/data/data/" + testActivity.getPackageName() + "/cache/webviewCache/mraid");
+        mraid.delete();
+        loadHtml("mraid.js should be copied to cache directory");
+        assertTrue(mraid.exists());
+//        Log.d("cache", ""+CacheManager.getCacheFile("http://foo.bar/mraid.js", headers));
+    }
+
     public void testGetVersion() {
         loadHtml("getVersion() should return '1.0'");
         executeAsyncJs("mraid.getVersion()", new JsCallback() {
