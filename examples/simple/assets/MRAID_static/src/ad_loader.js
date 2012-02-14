@@ -11,8 +11,8 @@ document.write("<script src=\"mraid.js\"></script>");
  * Checking for the state of the mraid client library and subscribing to the ready event if necessary 
  * When the client library is ready call the showAd method to render the ad
  */
-if (mraid.getState() != 'ready') {
-	console.log("MRAID Ad: adding event listener for ready");
+if ((state=mraid.getState()) != 'default') {
+	console.log("MRAID Ad: adding event listener for ready because state is "+state);
 	mraid.addEventListener('ready', showAd);
 } else {
 	showAd();
@@ -23,7 +23,7 @@ if (mraid.getState() != 'ready') {
  * the base ad (simple image)
  */
 function showAd() {
-	basePath = "http://localhost:8666/yahoo.ads.mraid_static/";
+	basePath = "file:///android_asset/MRAID_static/src/";
 	registerMraidHandlers(mraid, basePath);
 	renderBaseAd(mraid, basePath);
 	/*
