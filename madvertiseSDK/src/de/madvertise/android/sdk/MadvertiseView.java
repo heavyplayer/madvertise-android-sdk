@@ -157,8 +157,6 @@ public class MadvertiseView extends FrameLayout {
 
     private boolean mFetchAdsEnabled = true;
 
-    private AttributeSet mAttrs;
-
     private int mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
 
     /**
@@ -200,8 +198,6 @@ public class MadvertiseView extends FrameLayout {
      */
     public MadvertiseView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-
-        this.mAttrs = attrs;
 
         // report launch
         if (reportLauch) {

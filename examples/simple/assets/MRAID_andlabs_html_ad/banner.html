@@ -8,20 +8,38 @@
 
       if (mraid.getState() != 'default') {
         mraid.addEventListener('ready', showAd);
-      } else {
+      } else {      
         showAd();
       }
 
-      function showAd() {
+      function showAd() {                    
         mraid.setExpandProperties({
-          useCustomClose: true,
-          height: 420
+          useCustomClose: false,
+          height: 320
         });
         var img = document.getElementById("img");
         img.onclick = function() {
+          mraid.addEventListener('stateChange', stateChanged);
           this.src = "big.png";
           mraid.expand();
         };
+      }
+      
+      function stateChanged() {    
+      	var img = document.getElementById("img");
+      	if(mraid.getState() === "expanded") {
+        	img.onclick = function() {
+        		mraid.open("http://www.andlabs.eu");
+        	};
+      	} 
+      	
+      	if(mraid.getState() === "default") {
+      		img.src = "small.png";
+            img.onclick = function() {
+              this.src = "big.png";
+              mraid.expand();
+            };
+      	}
       }
     </script>
   </body>
