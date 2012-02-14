@@ -66,6 +66,10 @@ public class MadvertiseMraidView extends WebView {
 
     protected static final int STATE_EXPANDED = 3;
 
+    private boolean mJavaIsReady;
+
+    private boolean mJsIsReady;
+
     private int mState;
 
     private int mIndex;
@@ -86,7 +90,8 @@ public class MadvertiseMraidView extends WebView {
 
     private AnimationEndListener mAnimationEndListener;
 
-    private String mJsFile;
+    private boolean mViewable;
+
 
 
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
@@ -99,71 +104,29 @@ public class MadvertiseMraidView extends WebView {
 
     public MadvertiseMraidView(Context context) {
         super(context);
+        sCachePath = "/data/data/" + getContext().getPackageName() + "/cache/webviewCache/mraid";
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
         setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        //TODO: enable
-        // setBackgroundColor(Color.TRANSPARENT);
-        getSettings().setJavaScriptEnabled(true);
-        addJavascriptInterface(mBridge, "mraid_bridge");
-        
-        loadMraidJs();
-        
-        getSettings().setPluginsEnabled(true);
+        setBackgroundColor(Color.TRANSPARENT);
+        WebSettings settings = getSettings();
+        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setJavaScriptEnabled(true);
+        settings.setPluginsEnabled(true);
         setWebChromeClient(new WebChromeClient() {
-
-            @Override
-            public Bitmap getDefaultVideoPoster() {
-                Log.d("Video", "getDefVideoPoster");
-                return super.getDefaultVideoPoster();
-            }
-
-            @Override
-            public View getVideoLoadingProgressView() {
-                Log.d("Video", "getVideoProg");
-                return super.getVideoLoadingProgressView();
-            }
-
-            @Override
-            public void onHideCustomView() {
-                Log.d("Video", "onHide");
-                super.onHideCustomView();
-            }
-
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 Log.d("Video", "onShow");
                 super.onShowCustomView(view, callback);
                 if (view instanceof FrameLayout){
-                    Log.d("Video", "is Framelayout");
                     FrameLayout frame = (FrameLayout) view;
                     if (frame.getFocusedChild() instanceof VideoView){
                         VideoView video = (VideoView) frame.getFocusedChild();
                         frame.removeView(video);
                         ((Activity)getContext()).setContentView(video);
-//                        video.setOnCompletionListener(this);
-//                        video.setOnErrorListener(this);
                         video.start();
                     }
                 }
-            }
-        });
-        setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                MadvertiseUtil.logMessage(TAG, Log.DEBUG, "finsished loading "+url);
-                final DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-                mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
-                injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
-                injectJs("monkeyPatch();");
-                if (mJsFile != null) {
-                    injectJs("document.write(\"<body></body><script type=\\\"text/javascript\\\" src=\\\""+ mJsFile + "\\\"/>\");");
-                }
-                setViewability();
-                fireEvent("ready");
-                setState(STATE_DEFAULT);
-                if (mLoadingCompletedHandler != null)
-                    mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
             }
         });
         setPictureListener(new PictureListener() {
@@ -172,10 +135,10 @@ public class MadvertiseMraidView extends WebView {
             public void onNewPicture(WebView wv, Picture pic) {
                 int y = (pic.getHeight() - wv.getHeight()) / 2;
                 int x = (pic.getWidth() - wv.getWidth()) / 2;
-//                Log.d("Center", "scrollTo x="+x+", y="+y);
-                wv.scrollTo(x, y);
+//                wv.scrollTo(x, y);
             }
         });
+        addJavascriptInterface(mBridge, "mraid_bridge");
     }
 
     protected void loadAd(MadvertiseAd ad) {
@@ -185,11 +148,13 @@ public class MadvertiseMraidView extends WebView {
     protected void loadAd(String url) {
         Matcher m = sUrlSplitter.matcher(url);
         if (m.matches()) {
-            mJsFile = m.group(2);
+            final String jsFile = m.group(2);
             final String baseUrl = m.group(1);
-            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading javascript Ad: "
-                                  + "baseUrl=" + baseUrl + " jsFile=" + mJsFile);
-            loadDataWithBaseURL(baseUrl, "<html><head></head><body>MRAID Ad</body></html>", "text/html", "utf8", null);
+            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading javascript Ad: baseUrl=" + baseUrl + " jsFile=" + jsFile);
+            loadDataWithBaseURL(baseUrl, "<html><head>" +
+                        "<script type=\"text/javascript\" src=\"mraid.js\"/>" +
+                        "<script type=\"text/javascript\" src=\"" + jsFile + "\"/>" +
+                        "</head><body>MRAID Ad</body></html>", "text/html", "utf8", null);
         } else {
             MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: "+url);
             loadUrl(url);
@@ -201,7 +166,7 @@ public class MadvertiseMraidView extends WebView {
         mOnScreen = true;
         setViewability();
     }
-    
+
     @Override
     protected void onDetachedFromWindow() {
         mOnScreen = false;
@@ -214,18 +179,30 @@ public class MadvertiseMraidView extends WebView {
         setViewability();
     }
 
-    private void setViewability() {
+    private void checkViewable() {
+        boolean viewable;
         if (mOnScreen && getVisibility() == View.VISIBLE) {
-            injectJs("mraid.setViewable(true);");
+            viewable = true;
         } else {
-            injectJs("mraid.setViewable(false);");
+            viewable = false;
+        }
+        if (viewable != mViewable && mState == STATE_DEFAULT) {
+            mViewable = viewable;
+            injectJs("mraid.setViewable(" + mViewable + ");");
         }
     }
+
 
 
     // to be called from the Ad (js side)
 
     Object mBridge = new Object() {
+
+        @SuppressWarnings("unused") // because it IS used from the js side
+        public void notifyReady() {
+            mJsIsReady = true;
+            checkReady();
+        }
 
         public void expand() {
             post(new Runnable() {
@@ -241,9 +218,8 @@ public class MadvertiseMraidView extends WebView {
 
         @SuppressWarnings("unused") // because it IS used from the js side
         public void expand(String url) {
-            Log.d("TEST", "expand with url");
-            loadUrl(url);
             expand();
+            loadUrl(url);
         }
 
         @SuppressWarnings("unused") // because it IS used from the js side
@@ -272,6 +248,7 @@ public class MadvertiseMraidView extends WebView {
     };
 
 
+
     // to be called from the App (java side)
 
     public String getPlacementType() {
@@ -297,7 +274,7 @@ public class MadvertiseMraidView extends WebView {
         injectJs("mraid.setState('" + state + "');");
     }
 
-    void fireEvent(String event) {
+    protected void fireEvent(String event) {
         injectJs("mraid.fireEvent('" + event + "');");
     }
     
@@ -309,7 +286,7 @@ public class MadvertiseMraidView extends WebView {
         return mExpandProperties;
     }
 
-    private void injectJs(String jsCode) {
+    protected void injectJs(String jsCode) {
         loadUrl("javascript:" + jsCode);
     }
 
@@ -387,6 +364,35 @@ public class MadvertiseMraidView extends WebView {
                 break;
         }
     }
+
+
+    @Override
+    protected void onAttachedToWindow() {
+        mOnScreen = true;
+        checkViewable();
+    }
+    
+    @Override
+    protected void onDetachedFromWindow() {
+        mOnScreen = false;
+        checkViewable();
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+        checkViewable();
+    }
+
+    @Override
+    protected void onAnimationEnd() {
+        super.onAnimationEnd();
+        if (mAnimationEndListener != null) {
+            mAnimationEndListener.onAnimationEnd();
+        }
+    }
+
+
 
     public class ExpandProperties {
 
