@@ -430,6 +430,11 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         Thread.sleep(23000);
     }
 
+    public void testXample_video() throws InterruptedException {
+        mraidView.loadAd("file:///android_asset/MRAID_video/video.html");
+        Thread.sleep(42000);
+    }
+
     public void testXample_xHTML5_Ad() throws InterruptedException {
         mraidView.loadAd("file:///android_asset/MRAID_andlabs_html_ad/banner.html");
         Thread.sleep(42000);
