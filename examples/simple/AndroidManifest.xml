@@ -12,7 +12,7 @@
         </activity>
         
         <!-- open external urls -->
-        <activity android:name="de.madvertise.android.sdk.MadvertiseBrowserActivity"/>
+        <activity android:name="de.madvertise.android.sdk.MadvertiseActivity"/>
         
         <!-- Setup your site token. For tests, use 'TestToken'-->
         <meta-data android:value="TestTokn" android:name="madvertise_site_token" />

@@ -219,9 +219,16 @@ public class MadvertiseView extends FrameLayout {
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** Missing internet permissions! *** ");
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Missing internet permission!");
         }
 
+        if( !MadvertiseUtil.checkForBrowserDeclaration(getContext()) ) {
+            MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
+            MadvertiseUtil.logMessage(null, Log.DEBUG, " *** You must declare the activity de.madvertise.android.sdk.MadvertiseActivity in your manifest! *** ");
+            MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
+            throw new IllegalArgumentException("Missing Activity declaration!");
+        }
+        
         initParameters(attrs);
 
         final DisplayMetrics displayMetrics = context.getApplicationContext().getResources()

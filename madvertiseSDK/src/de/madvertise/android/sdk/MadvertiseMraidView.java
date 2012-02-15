@@ -259,7 +259,7 @@ public class MadvertiseMraidView extends WebView {
 					}
 					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url),
 							getContext().getApplicationContext(),
-							MadvertiseBrowserActivity.class);
+							MadvertiseActivity.class);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					getContext().startActivity(intent);					
 				}
