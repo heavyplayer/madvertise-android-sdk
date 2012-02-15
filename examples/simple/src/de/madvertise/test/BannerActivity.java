@@ -154,4 +154,10 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         mMadView.setFetchingAdsEnabled(false);
         mMadView.setVisibility(View.GONE);
     }
+
+	@Override
+	public void onApplicationPause() {
+		//called when a rich media ad is expanded. Should then call onPause().
+		this.onPause();		
+	}
 }

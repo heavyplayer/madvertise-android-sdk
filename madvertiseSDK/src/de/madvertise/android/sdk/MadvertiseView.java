@@ -1219,5 +1219,11 @@ public class MadvertiseView extends FrameLayout {
          * Notifies the listener when an ad is clicked
          */
         public void onAdClicked();
+
+		/**
+		 * Notifies the listener when a rich media ad is expanded so that the
+		 * application can be paused.
+		 */
+		public void onApplicationPause();
     }
 }
