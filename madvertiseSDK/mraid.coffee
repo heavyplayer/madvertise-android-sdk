@@ -54,14 +54,16 @@ mraid =
   # internal functions
 
   fireEvent: (event) ->
-    # console.log "fireEvent "+event
+    console.log "fireEvent "+event
     if listeners[event]
       for listener in listeners[event]
         if event == "ready"
           listener()
         if event == "stateChange"
+          console.log "notify stateChange listener "+listener
           listener(state)
         if event == "viewableChange"
+          console.log "notify viewableChange listener "+listener
           listener(viewable)
 
   fireErrorEvent: (message, action) ->
@@ -80,6 +82,3 @@ mraid =
       placementType = "inline"
     else if type == 1
       placementType = "interstitial"
-
-
-mraid_bridge.notifyReady()
