@@ -267,14 +267,10 @@ public class MadvertiseMraidView extends WebView {
 
         @SuppressWarnings("unused") // because it IS used from the js side
         public void expand(final String url) {
-            expand();  
+            expand();
             post(new Runnable() {
                 @Override
                 public void run() {
-                    MadvertiseMraidView.this.resize(
-                            mExpandProperties.width,
-                            mExpandProperties.height);
-
                     loadUrl(url);
                     scrollBy(mExpandProperties.scrollX, mExpandProperties.scrollY);
                 }
