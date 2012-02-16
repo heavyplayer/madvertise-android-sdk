@@ -35,6 +35,8 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Picture;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -98,14 +100,22 @@ public class MadvertiseMraidView extends WebView {
         setWebChromeClient(new WebChromeClient() {
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
-                Log.d("Video", "onShow");
+                MadvertiseUtil.logMessage(TAG, Log.INFO, "showing VideoView");
                 super.onShowCustomView(view, callback);
                 if (view instanceof FrameLayout){
                     FrameLayout frame = (FrameLayout) view;
                     if (frame.getFocusedChild() instanceof VideoView){
-                        VideoView video = (VideoView) frame.getFocusedChild();
+                        final VideoView video = (VideoView) ((FrameLayout) view).getFocusedChild();
                         frame.removeView(video);
-                        ((Activity)getContext()).setContentView(video);
+                        mExpandLayout.addView(video);
+                        video.setOnCompletionListener(new OnCompletionListener() {
+                            
+                            @Override
+                            public void onCompletion(MediaPlayer player) {
+                                mExpandLayout.removeView(video);
+                                player.stop();
+                            }
+                        });
                         video.start();
                     }
                 }
@@ -137,7 +147,6 @@ public class MadvertiseMraidView extends WebView {
     //TODO: We can't use this since it's only available since 2.2
     @Override
     public void loadUrl(String url, Map<String, String> extraHeaders) {
-        MadvertiseUtil.logMessage(TAG, Log.INFO, "loadURL "+url);
         if (!url.startsWith("javascript:")) {
             prepareMraid(url.substring(0, url.lastIndexOf("/") - 1));
         }
@@ -176,8 +185,6 @@ public class MadvertiseMraidView extends WebView {
             cache.close();
             MadvertiseUtil.logMessage(TAG, Log.DEBUG, "prepared mraid.js for " + url);
             // TODO further long running (mraid 2.0) initialization here..
-            mJavaIsReady = true;
-            checkReady();
         }
         mJavaIsReady = true;
         checkReady();

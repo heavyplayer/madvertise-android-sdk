@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <script type="text/javascript" src="mraid.js"></script>
+  </head>
+
+  <body>
+    <a id="play" href="#">Play Video</a>
+
+  <div style="text-align: center;">
+    <video id="v1" width="176" height="144"> 
+      <source src="1984mac.3gp">
+      html5 video
+    </video>
+  </div>
+
+  <script type="text/javascript">
+
+    var video = document.getElementsByTagName('video')[0];
+    
+    if (mraid.getState() != 'default') {
+      mraid.addEventListener('ready', showAd);
+    } else {
+      showAd();
+    }
+
+    function showAd() {
+      document.getElementById("play").onclick = function() {
+        mraid.expand();
+        video.play();
+      };
+    }
+  </script>
+
+</body>
+
+</html>
