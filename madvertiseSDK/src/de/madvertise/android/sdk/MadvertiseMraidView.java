@@ -26,15 +26,15 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.app.Activity;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.graphics.Picture;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
@@ -45,8 +45,10 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.VideoView;
@@ -97,7 +99,8 @@ public class MadvertiseMraidView extends WebView {
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setJavaScriptEnabled(true);
         settings.setPluginsEnabled(true);
-        setWebChromeClient(new WebChromeClient() {
+        setWebChromeClient(new WebChromeClient() {      	
+        	
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 MadvertiseUtil.logMessage(TAG, Log.INFO, "showing VideoView");
@@ -120,8 +123,29 @@ public class MadvertiseMraidView extends WebView {
                     }
                 }
             }
+            
         });        
         addJavascriptInterface(mBridge, "mraid_bridge");
+
+		if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+			// for Android 3.0+, we need to intercept the mraid.js-request
+			setWebViewClient(new WebViewClient() {
+				@Override
+				public WebResourceResponse shouldInterceptRequest(WebView view,
+						String url) {
+					if(url.endsWith("mraid.js")) {						
+	                    final InputStream in = getContext().getResources().openRawResource(de.madvertise.android.sdk.R.raw.mraid);
+						final WebResourceResponse response = new WebResourceResponse("application/JavaScript", "utf-8", in);						
+						
+						return response;
+					}
+
+					return super.shouldInterceptRequest(view, url);
+				}
+			});
+
+	        mJavaIsReady = true;
+		}
     }
 
     protected void loadAd(MadvertiseAd ad) {
@@ -146,7 +170,7 @@ public class MadvertiseMraidView extends WebView {
 
     //TODO: We can't use this since it's only available since 2.2
     @Override
-    public void loadUrl(String url, Map<String, String> extraHeaders) {
+    public void loadUrl(String url, Map<String, String> extraHeaders) {    	
         if (!url.startsWith("javascript:")) {
             prepareMraid(url.substring(0, url.lastIndexOf("/") - 1));
         }
@@ -161,33 +185,37 @@ public class MadvertiseMraidView extends WebView {
     }
 
     private void prepareMraid(String baseUrl) {
-        if (baseUrl.startsWith("http:")) { // because cache hack works only for online resources
-            File mraid = new File(sCachePath);
-            if (!mraid.exists()) {
-                try { // copy mraid.js to cache directory
-                    int read;
-                    byte[] buffer = new byte[1024];
-                    FileOutputStream out = new FileOutputStream(mraid);
-                    InputStream in = getContext().getResources().openRawResource(de.madvertise.android.sdk.R.raw.mraid);
-                    while((read = in.read(buffer)) != -1) out.write(buffer, 0, read);
-                } catch (Exception e) {
-                    MadvertiseUtil.logMessage(TAG, Log.ERROR, e + " while copying mraid.js to cache directory");
-                }
-            }
-            SQLiteDatabase cache = getContext().openOrCreateDatabase("webviewCache.db", SQLiteDatabase.OPEN_READWRITE, null);
-            ContentValues entry = new ContentValues();
-            String url = baseUrl + "mraid.js";
-            entry.put("url", url);
-            entry.put("filepath", "mraid");
-            entry.put("mimetype", "text/javascript");
-            entry.put("contentlength", mraid.length());
-            cache.insert("cache", null, entry);
-            cache.close();
-            MadvertiseUtil.logMessage(TAG, Log.DEBUG, "prepared mraid.js for " + url);
-            // TODO further long running (mraid 2.0) initialization here..
-        }
-        mJavaIsReady = true;
-        checkReady();
+    	// For android 2.3.3 and before we need to trick the cache a little
+    	if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+	        if (baseUrl.startsWith("http:")) { // because cache hack works only for online resources
+	            File mraid = new File(sCachePath);
+	            if (!mraid.exists()) {
+	                try { // copy mraid.js to cache directory
+	                    int read;
+	                    byte[] buffer = new byte[1024];
+	                    FileOutputStream out = new FileOutputStream(mraid);
+	                    InputStream in = getContext().getResources().openRawResource(de.madvertise.android.sdk.R.raw.mraid);
+	                    while((read = in.read(buffer)) != -1) out.write(buffer, 0, read);
+	                } catch (Exception e) {
+	                    MadvertiseUtil.logMessage(TAG, Log.ERROR, e + " while copying mraid.js to cache directory");
+	                }
+	            }
+	            SQLiteDatabase cache = getContext().openOrCreateDatabase("webviewCache.db", SQLiteDatabase.OPEN_READWRITE, null);
+	            ContentValues entry = new ContentValues();
+	            String url = baseUrl + "mraid.js";
+	            entry.put("url", url);
+	            entry.put("filepath", "mraid");
+	            entry.put("mimetype", "text/javascript");
+	            entry.put("contentlength", mraid.length());
+	            cache.insert("cache", null, entry);
+	            cache.close();
+	            MadvertiseUtil.logMessage(TAG, Log.DEBUG, "prepared mraid.js for " + url);
+	            // TODO further long running (mraid 2.0) initialization here..
+	        }
+	        mJavaIsReady = true;
+    	}
+	    checkReady();
+    	
     }
 
     private void checkReady() {
@@ -238,10 +266,19 @@ public class MadvertiseMraidView extends WebView {
         }
 
         @SuppressWarnings("unused") // because it IS used from the js side
-        public void expand(String url) {
-            expand();            
-            loadUrl(url);
-            scrollBy(mExpandProperties.scrollX, mExpandProperties.scrollY);
+        public void expand(final String url) {
+            expand();  
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    MadvertiseMraidView.this.resize(
+                            mExpandProperties.width,
+                            mExpandProperties.height);
+
+                    loadUrl(url);
+                    scrollBy(mExpandProperties.scrollX, mExpandProperties.scrollY);
+                }
+            });
         }
 
         @SuppressWarnings("unused") // because it IS used from the js side

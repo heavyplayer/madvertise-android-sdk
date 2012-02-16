@@ -53,7 +53,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                     callback_data = data;
                     Log.d("Javascript", "called back: " + data);
                 }
-                public void go() {
+                @SuppressWarnings("unused")
+				public void go() {
                     go = true;
                 }
             }, "test");
@@ -73,11 +74,14 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testMraidCacheFileCopy() {
-        File mraid = new File("/data/data/" + testActivity.getPackageName() + "/cache/webviewCache/mraid");
-        mraid.delete();
-        loadHtml("mraid.js should be copied to cache directory");
-        assertTrue(mraid.exists());
-//        Log.d("cache", ""+CacheManager.getCacheFile("http://foo.bar/mraid.js", headers));
+    	if(android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+	        File mraid = new File("/data/data/" + testActivity.getPackageName() + "/cache/webviewCache/mraid");
+	        mraid.delete();
+	        loadHtml("mraid.js should be copied to cache directory");
+	        assertTrue(mraid.exists());
+	//        Log.d("cache", ""+CacheManager.getCacheFile("http://foo.bar/mraid.js", headers));
+    	}   
+    	
     }
 
     public void testGetVersion() {
@@ -327,13 +331,23 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
     }
 
-    public void testExpandWithUrl() throws InterruptedException {
-        loadHtml("testing expand with</div>");
-        mraidView.injectJs("mraid.setExpandProperties({height:300});");
-        mraidView.injectJs("mraid.expand('http://andlabs.eu');");
-        Thread.sleep(1000);
-        assertEquals(300, mraidView.getHeight());
-        Thread.sleep(9000);
+    public void testExpandWithUrl() throws Throwable {
+    	runTestOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+			        loadHtml("testing expand with</div>");
+			        mraidView.injectJs("mraid.setExpandProperties({height:300});");
+			        mraidView.injectJs("mraid.expand('http://andlabs.eu');");
+			        Thread.sleep(1000);
+			        assertEquals(300, mraidView.getHeight());
+			        Thread.sleep(9000);	
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			}
+		});
     }
 
     public void testCloseButton() throws Throwable {
@@ -356,24 +370,29 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testUseCustomClose() throws Throwable {
-        loadHtml("useCustomClose(true) should make the close button invisible (but still clickable)");
-        mraidView.injectJs("mraid.useCustomClose(true);");
-        executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)",
-                new JsCallback() {
-                    void done(String properties) {
-                        assertEquals("true", properties);
-                    }
-                });
-        ExpandProperties props = mraidView.getExpandProperties();
-        assertTrue(props.useCustomClose);
-        mraidView.injectJs("mraid.setExpandProperties({height:300});");
-        mraidView.injectJs("mraid.expand('http://andlabs.eu');");
-        Thread.sleep(1000);
-        assertEquals(300, mraidView.getHeight());
-        final ImageButton closeButton = (ImageButton)testActivity.findViewById(43);
-        assertTrue(closeButton.getDrawable() == null);
+        
         runTestOnUiThread(new Runnable() {
             public void run() {
+            	loadHtml("useCustomClose(true) should make the close button invisible (but still clickable)");
+                mraidView.injectJs("mraid.useCustomClose(true);");
+                executeAsyncJs("JSON.stringify(mraid.getExpandProperties().useCustomClose)",
+                        new JsCallback() {
+                            void done(String properties) {
+                                assertEquals("true", properties);
+                            }
+                        });
+                ExpandProperties props = mraidView.getExpandProperties();
+                assertTrue(props.useCustomClose);
+                mraidView.injectJs("mraid.setExpandProperties({height:300});");
+                mraidView.injectJs("mraid.expand('http://andlabs.eu');");
+                try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e.getMessage(), e);
+				}
+                assertEquals(300, mraidView.getHeight());
+                final ImageButton closeButton = (ImageButton)testActivity.findViewById(43);
+                assertTrue(closeButton.getDrawable() == null);
                 closeButton.performClick();
             }
         });
