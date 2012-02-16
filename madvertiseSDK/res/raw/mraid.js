@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 var expandProperties, listeners, mraid, placementType, state, states, viewable;
 var __slice = Array.prototype.slice;
 expandProperties = {
@@ -89,7 +87,6 @@ mraid = {
   },
   fireEvent: function(event) {
     var listener, _i, _len, _ref, _results;
-    console.log("fireEvent " + event);
     if (listeners[event]) {
       _ref = listeners[event];
       _results = [];
@@ -99,10 +96,9 @@ mraid = {
           listener();
         }
         if (event === "stateChange") {
-          console.log("notify stateChange listener " + listener);
           listener(state);
         }
-        _results.push(event === "viewableChange" ? (console.log("notify viewableChange listener " + listener), listener(viewable)) : void 0);
+        _results.push(event === "viewableChange" ? listener(viewable) : void 0);
       }
       return _results;
     }
@@ -132,3 +128,5 @@ mraid = {
       return placementType = "interstitial";
     }
   }
+};
+mraid_bridge.notifyReady();
