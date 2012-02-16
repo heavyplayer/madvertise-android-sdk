@@ -74,7 +74,6 @@ public class MadvertiseMraidView extends WebView {
     private MadvertiseViewCallbackListener mListener;
     private AnimationEndListener mAnimationEndListener;
     private boolean mViewable;
-    private Handler mHandler;
 
 
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
@@ -87,7 +86,6 @@ public class MadvertiseMraidView extends WebView {
 
     public MadvertiseMraidView(Context context) {
         super(context);
-        mHandler = new Handler();
         sCachePath = "/data/data/" + getContext().getPackageName() + "/cache/webviewCache/mraid";
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
