@@ -35,8 +35,10 @@ import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -457,6 +459,13 @@ public class MadvertiseUtil {
 
         return sUA;
     }
+    
+	static boolean checkForBrowserDeclaration(final Context context) {
+		PackageManager pm = context.getPackageManager();
+		Intent mainIntent = new Intent(context, MadvertiseActivity.class);
+		List<ResolveInfo> returnList = pm.queryIntentActivities(mainIntent, 0);	
+		return returnList.size() > 0;
+	}
 
     /**
      * Simple logging helper to prevent producing duplicate code blocks.

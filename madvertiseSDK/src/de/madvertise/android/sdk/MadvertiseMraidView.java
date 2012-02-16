@@ -78,7 +78,6 @@ public class MadvertiseMraidView extends WebView {
     private boolean mViewable;
 
 
-
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
             AnimationEndListener animationEndListener, Handler loadingCompletedHandler) {
         this(context);
@@ -121,16 +120,7 @@ public class MadvertiseMraidView extends WebView {
                     }
                 }
             }
-        });
-        setPictureListener(new PictureListener() {
-            
-            @Override // scroll to center
-            public void onNewPicture(WebView wv, Picture pic) {
-                int y = (pic.getHeight() - wv.getHeight()) / 2;
-                int x = (pic.getWidth() - wv.getWidth()) / 2;
-//                wv.scrollTo(x, y);
-            }
-        });
+        });        
         addJavascriptInterface(mBridge, "mraid_bridge");
     }
 
@@ -154,11 +144,13 @@ public class MadvertiseMraidView extends WebView {
         }
     }
 
+    //TODO: We can't use this since it's only available since 2.2
     @Override
     public void loadUrl(String url, Map<String, String> extraHeaders) {
         if (!url.startsWith("javascript:")) {
             prepareMraid(url.substring(0, url.lastIndexOf("/") - 1));
         }
+        //TODO: We can't use this since it's only available since 2.2
         super.loadUrl(url, extraHeaders);
     }
 
@@ -224,10 +216,7 @@ public class MadvertiseMraidView extends WebView {
         }
     }
 
-
-
     // to be called from the Ad (js side)
-
     Object mBridge = new Object() {
 
         @SuppressWarnings("unused") // because it IS used from the js side
@@ -250,8 +239,9 @@ public class MadvertiseMraidView extends WebView {
 
         @SuppressWarnings("unused") // because it IS used from the js side
         public void expand(String url) {
-            expand();
+            expand();            
             loadUrl(url);
+            scrollBy(mExpandProperties.scrollX, mExpandProperties.scrollY);
         }
 
         @SuppressWarnings("unused") // because it IS used from the js side
@@ -264,14 +254,22 @@ public class MadvertiseMraidView extends WebView {
             });
         }
 
-        @SuppressWarnings("unused") // because it IS used from the js side
-        public void open(String url) {
-            if(mListener != null) {
-                mListener.onAdClicked();
-            }
-            getContext().startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(url), getContext(), MadvertiseBrowserActivity.class));
-        }
+		@SuppressWarnings("unused")	// because it IS used from the js side
+		public void open(final String url) {
+			post(new Runnable() {
+				@Override
+				public void run() {
+					if (mListener != null) {
+						mListener.onAdClicked();
+					}
+					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url),
+							getContext().getApplicationContext(),
+							MadvertiseActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					getContext().startActivity(intent);					
+				}
+			});
+		}
 
         @SuppressWarnings("unused") // because it IS used from the js side
         public void setExpandProperties(String json) {
@@ -282,14 +280,8 @@ public class MadvertiseMraidView extends WebView {
 
 
     // to be called from the App (java side)
-
-    public String getPlacementType() {
-        switch (mPlacementType) {
-            case MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL:
-                return "interstitial";
-            default:
-                return "inline";
-        }
+    public int getPlacementType() {
+        return mPlacementType;        
     }
 
     public void setPlacementType(int placementType) { 
@@ -430,6 +422,8 @@ public class MadvertiseMraidView extends WebView {
         private static final String IS_MODAL = "isModal";
         private int mMaxWidth;
         private int mMaxHeight;
+        public int scrollX;
+        public int scrollY;
         public int width;
         public int height;
         public boolean useCustomClose;
@@ -476,6 +470,9 @@ public class MadvertiseMraidView extends WebView {
         }
 
         private void checkSizeParams() {
+        	scrollX = width / 2;
+        	scrollY = height / 2;
+        	
             if (width > mMaxWidth || height > mMaxHeight) {
                 final float ratio = height / (float)width;
                 // respect the ratio
@@ -489,7 +486,6 @@ public class MadvertiseMraidView extends WebView {
                     height = mMaxHeight;
                     width = (int)(height / ratio);
                 }
-                // TODO: Center the view (ScrollTo?)
             }
         }
     }
