@@ -31,7 +31,6 @@ import de.madvertise.android.sdk.MadvertiseTracker;
 import de.madvertise.android.sdk.MadvertiseView;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
-
 /**
  * BannerActivity.java Example activity that shows how the madvertise SDK can be
  * integrated. It shows a list view containing some countries and the madvertise
@@ -41,7 +40,7 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 public class BannerActivity extends Activity implements MadvertiseViewCallbackListener {
 
     private MadvertiseTracker mTracker;
-    
+
     private MadvertiseView mMadView;
 
     /** Called when the activity is first created. */
@@ -57,9 +56,9 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         setContentView(R.layout.main);
 
         // set the callback listener, to receive a message when an ad was loaded
-        mMadView = (MadvertiseView)findViewById(R.id.madad);
+        mMadView = (MadvertiseView) findViewById(R.id.madad);
         mMadView.setMadvertiseViewCallbackListener(this);
-        
+
         // prepare the list adapter with some countries
         String[] countries = new String[] {
                 "French Southern Territories", "Gabon", "Georgia", "Germany", "Ghana", "Gibraltar",
@@ -72,12 +71,12 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         ListAdapter adapter = new ArrayAdapter<String>(this, R.layout.list_item, countries);
 
         // get list reference from layout file for action and adapter settings
-        ListView listView = (ListView)findViewById(R.id.country_list);
+        ListView listView = (ListView) findViewById(R.id.country_list);
 
         // show a small popup, when an item is clicked
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), ((TextView)view).getText(),
+                Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
                         Toast.LENGTH_SHORT).show();
             }
         });
@@ -86,7 +85,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         listView.setAdapter(adapter);
 
         // Retrieve a new instance of the a MadvertiseTracker
-        mTracker = MadvertiseTracker.getInstance(this);        
+        mTracker = MadvertiseTracker.getInstance(this);
 
         // Report the application's start.
         mTracker.reportLaunch();
@@ -155,9 +154,15 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         mMadView.setVisibility(View.GONE);
     }
 
-	@Override
-	public void onApplicationPause() {
-		//called when a rich media ad is expanded. Should then call onPause().
-		this.onPause();		
-	}
+    @Override
+    public void onApplicationPause() {
+        // called when a rich media ad is expanded. Should then call onPause().
+        this.onPause();
+    }
+
+    @Override
+    public void onApplicationResume() {
+        // called when a rich media ad is expanded. Should then call onPause().
+        this.onResume();
+    }
 }

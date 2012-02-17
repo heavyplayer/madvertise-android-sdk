@@ -36,14 +36,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-
 public class MadvertiseActivity extends Activity {
 
     /** Extra Constants **/
     public static final String SHOW_BACK_EXTRA = "open_show_back";
     public static final String SHOW_FORWARD_EXTRA = "open_show_forward";
     public static final String SHOW_REFRESH_EXTRA = "open_show_refresh";
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,16 +83,18 @@ public class MadvertiseActivity extends Activity {
         bll.addView(backButton, lp2);
         if (!getIntent().getBooleanExtra(SHOW_BACK_EXTRA, true))
             backButton.setVisibility(ViewGroup.GONE);
-        
-//        backButton.setImageBitmap(bitmapFromJar("bitmaps/leftarrow.png"));
+
+        // backButton.setImageBitmap(bitmapFromJar("bitmaps/leftarrow.png"));
         backButton.setImageResource(R.drawable.ic_menu_back);
 
         backButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                if (webview.canGoBack()) webview.goBack();
-                else MadvertiseActivity.this.finish();
+                if (webview.canGoBack())
+                    webview.goBack();
+                else
+                    MadvertiseActivity.this.finish();
             }
         });
 
@@ -117,7 +117,7 @@ public class MadvertiseActivity extends Activity {
         });
 
         ImageButton refreshButton = new ImageButton(this);
-//        refreshButton.setImageBitmap(bitmapFromJar("bitmaps/refresh.png"));
+        // refreshButton.setImageBitmap(bitmapFromJar("bitmaps/refresh.png"));
         refreshButton.setImageResource(R.drawable.ic_menu_refresh);
         lp2 = new LinearLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -138,7 +138,7 @@ public class MadvertiseActivity extends Activity {
         });
 
         ImageButton closeButton = new ImageButton(this);
-//        closeButton.setImageBitmap(bitmapFromJar("bitmaps/close.png"));
+        // closeButton.setImageBitmap(bitmapFromJar("bitmaps/close.png"));
         closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
         lp2 = new LinearLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -163,7 +163,7 @@ public class MadvertiseActivity extends Activity {
         CookieSyncManager.getInstance().startSync();
         webview.getSettings().setJavaScriptEnabled(true);
         webview.loadUrl(getIntent().getDataString());
-        Log.d("MadvertiseBrowser", "loading "+getIntent().getDataString());
+        Log.d("MadvertiseBrowser", "loading " + getIntent().getDataString());
 
         webview.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode,
@@ -214,7 +214,6 @@ public class MadvertiseActivity extends Activity {
 
     /*
      * (non-Javadoc)
-     * 
      * @see android.app.Activity#onPause()
      */
     @Override
@@ -225,7 +224,6 @@ public class MadvertiseActivity extends Activity {
 
     /*
      * (non-Javadoc)
-     * 
      * @see android.app.Activity#onResume()
      */
     @Override

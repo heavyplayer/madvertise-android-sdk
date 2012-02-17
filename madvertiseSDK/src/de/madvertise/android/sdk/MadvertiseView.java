@@ -70,7 +70,7 @@ public class MadvertiseView extends FrameLayout {
     private static final boolean IS_TESTMODE_DEFAULT = false;
 
     // parameters for shine effect of the textview banner
-    private final int GRADIENT_TOP_ALPHA = (int)(255 * 0.50);
+    private final int GRADIENT_TOP_ALPHA = (int) (255 * 0.50);
 
     private final double GRADIENT_STOP = 0.7375;
 
@@ -222,13 +222,17 @@ public class MadvertiseView extends FrameLayout {
             throw new IllegalArgumentException("Missing internet permission!");
         }
 
-        if( !MadvertiseUtil.checkForBrowserDeclaration(getContext()) ) {
+        if (!MadvertiseUtil.checkForBrowserDeclaration(getContext())) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
-            MadvertiseUtil.logMessage(null, Log.DEBUG, " *** You must declare the activity de.madvertise.android.sdk.MadvertiseActivity in your manifest! *** ");
+            MadvertiseUtil
+                    .logMessage(
+                            null,
+                            Log.DEBUG,
+                            " *** You must declare the activity de.madvertise.android.sdk.MadvertiseActivity in your manifest! *** ");
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
             throw new IllegalArgumentException("Missing Activity declaration!");
         }
-        
+
         initParameters(attrs);
 
         final DisplayMetrics displayMetrics = context.getApplicationContext().getResources()
@@ -648,7 +652,7 @@ public class MadvertiseView extends FrameLayout {
                     if (sGender != null && !sGender.equals("")) {
                         parameterList.add(new BasicNameValuePair("gender", sGender));
                     }
-                    final Display display = ((WindowManager)getContext().getApplicationContext()
+                    final Display display = ((WindowManager) getContext().getApplicationContext()
                             .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
                     String orientation;
                     if (display.getWidth() > display.getHeight()) {
@@ -834,43 +838,43 @@ public class MadvertiseView extends FrameLayout {
         if (!bannerTypeFound
                 && (mBannerType != null && mBannerType
                         .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE))) {
-            mBannerHeight = (int)(mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int)(mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
+            mBannerHeight = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
+            mBannerWidth = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH;
             bannerTypeFound = true;
         } else if (!bannerTypeFound && mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
-            mBannerHeight = (int)(mDp * MadvertiseUtil.MMA_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int)(mDp * MadvertiseUtil.MMA_BANNER_WIDTH + 0.5f);
+            mBannerHeight = (int) (mDp * MadvertiseUtil.MMA_BANNER_HEIGHT + 0.5f);
+            mBannerWidth = (int) (mDp * MadvertiseUtil.MMA_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MMA_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MMA_BANNER_WIDTH;
             bannerTypeFound = true;
         } else if (!bannerTypeFound && mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
-            mBannerHeight = (int)(mDp * MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int)(mDp * MadvertiseUtil.FULLSCREEN_BANNER_WIDTH + 0.5f);
+            mBannerHeight = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT + 0.5f);
+            mBannerWidth = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.FULLSCREEN_BANNER_WIDTH;
             bannerTypeFound = true;
         } else if (!bannerTypeFound && mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
-            mBannerHeight = (int)(mDp * MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int)(mDp * MadvertiseUtil.LANDSCAPE_BANNER_WIDTH + 0.5f);
+            mBannerHeight = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT + 0.5f);
+            mBannerWidth = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LANDSCAPE_BANNER_WIDTH;
             bannerTypeFound = true;
         } else if (!bannerTypeFound && mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
-            mBannerHeight = (int)(mDp * MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int)(mDp * MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 0.5f);
+            mBannerHeight = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT + 0.5f);
+            mBannerWidth = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH;
             bannerTypeFound = true;
         } else if (!bannerTypeFound && mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
-            mBannerHeight = (int)(mDp * MadvertiseUtil.PORTRAIT_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int)(mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
+            mBannerHeight = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_HEIGHT + 0.5f);
+            mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
         } else if (!bannerTypeFound && mBannerType != null
@@ -885,8 +889,8 @@ public class MadvertiseView extends FrameLayout {
             } else {
                 mBannerHeightDp = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
             }
-            mBannerWidth = (int)(mDp * mBannerWidthDp + 0.5f);
-            mBannerHeight = (int)(mDp * mBannerHeightDp + 0.5f);
+            mBannerWidth = (int) (mDp * mBannerWidthDp + 0.5f);
+            mBannerHeight = (int) (mDp * mBannerHeightDp + 0.5f);
         }
 
         mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 128;
@@ -909,28 +913,28 @@ public class MadvertiseView extends FrameLayout {
             if (tempHeight < tempWidth) {
                 mBannerWidth = tempHeight;
                 mBannerHeight = tempHeight;
-                mBannerWidthDp = (int)(tempHeight / mDp);
-                mBannerHeightDp = (int)(tempHeight / mDp);
+                mBannerWidthDp = (int) (tempHeight / mDp);
+                mBannerHeightDp = (int) (tempHeight / mDp);
             } else {
                 mBannerWidth = tempWidth;
                 mBannerHeight = tempWidth;
-                mBannerWidthDp = (int)(tempWidth / mDp);
-                mBannerHeightDp = (int)(tempWidth / mDp);
+                mBannerWidthDp = (int) (tempWidth / mDp);
+                mBannerHeightDp = (int) (tempWidth / mDp);
             }
         } else {
-            float heightRatio = mBannerHeight / (float)tempHeight;
-            float widthRatio = mBannerWidth / (float)tempWidth;
+            float heightRatio = mBannerHeight / (float) tempHeight;
+            float widthRatio = mBannerWidth / (float) tempWidth;
 
             if (heightRatio > widthRatio) {
-                mBannerWidth = (int)(mBannerWidth / heightRatio);
+                mBannerWidth = (int) (mBannerWidth / heightRatio);
                 mBannerHeight = tempHeight;
-                mBannerWidthDp = (int)(mBannerWidth / mDp);
-                mBannerHeightDp = (int)(tempHeight / mDp);
+                mBannerWidthDp = (int) (mBannerWidth / mDp);
+                mBannerHeightDp = (int) (tempHeight / mDp);
             } else {
                 mBannerWidth = tempWidth;
-                mBannerHeight = (int)(mBannerHeight / widthRatio);
-                mBannerWidthDp = (int)(tempWidth / mDp);
-                mBannerHeightDp = (int)(mBannerHeight / mDp);
+                mBannerHeight = (int) (mBannerHeight / widthRatio);
+                mBannerWidthDp = (int) (tempWidth / mDp);
+                mBannerHeightDp = (int) (mBannerHeight / mDp);
             }
         }
     }
@@ -1001,7 +1005,7 @@ public class MadvertiseView extends FrameLayout {
         GradientDrawable gradientDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM, gradientColors);
 
-        int stop = (int)(rectangle.height() * GRADIENT_STOP) + rectangle.top;
+        int stop = (int) (rectangle.height() * GRADIENT_STOP) + rectangle.top;
         gradientDrawable.setBounds(rectangle.left, rectangle.top, rectangle.right, stop);
         gradientDrawable.draw(canvas);
 
@@ -1033,7 +1037,7 @@ public class MadvertiseView extends FrameLayout {
                             MadvertiseUtil.logMessage(null, Log.DEBUG, "Refreshing ad ...");
                             requestNewAd(true);
                         }
-                    }, (long)mSecondsToRefreshAd * 1000, (long)mSecondsToRefreshAd * 1000);
+                    }, (long) mSecondsToRefreshAd * 1000, (long) mSecondsToRefreshAd * 1000);
                 }
             } else {
                 if (mAdTimer != null) {
@@ -1227,10 +1231,16 @@ public class MadvertiseView extends FrameLayout {
          */
         public void onAdClicked();
 
-		/**
-		 * Notifies the listener when a rich media ad is expanded so that the
-		 * application can be paused.
-		 */
-		public void onApplicationPause();
+        /**
+         * Notifies the listener when a rich media ad is expanded so that the
+         * application can be paused.
+         */
+        public void onApplicationPause();
+
+        /**
+         * Notifies the listener when a rich media ad is closed so that the
+         * application can resume.
+         */
+        public void onApplicationResume();
     }
 }

@@ -62,8 +62,8 @@ class MadvertiseTextView extends RelativeLayout {
 
         addView(adTextView);
 
-        final int bannerWidth = (int)(MadvertiseUtil.MMA_BANNER_WIDTH * mDp);
-        final int bannerHeight = (int)(MadvertiseUtil.MMA_BANNER_HEIGHT * mDp);
+        final int bannerWidth = (int) (MadvertiseUtil.MMA_BANNER_WIDTH * mDp);
+        final int bannerHeight = (int) (MadvertiseUtil.MMA_BANNER_HEIGHT * mDp);
         final Paint paint = new Paint();
         paint.setTextSize(textSize);
         mLineCount = 1;
@@ -84,8 +84,8 @@ class MadvertiseTextView extends RelativeLayout {
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        params.leftMargin = (int)(235 * mDp);
-        params.topMargin = (int)(39 * mDp);
+        params.leftMargin = (int) (235 * mDp);
+        params.topMargin = (int) (39 * mDp);
 
         final TextView providerTextView = new TextView(getContext().getApplicationContext());
         providerTextView.setText(MadvertiseUtil.AD_PROVIDER_TEXT);
@@ -97,10 +97,10 @@ class MadvertiseTextView extends RelativeLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        
+
         // This view type will only be shown in MMA-banners.
-        int width = (int)(MadvertiseUtil.MMA_BANNER_WIDTH * mDp);
-        int height = (int)(MadvertiseUtil.MMA_BANNER_WIDTH * mDp);
+        int width = (int) (MadvertiseUtil.MMA_BANNER_WIDTH * mDp);
+        int height = (int) (MadvertiseUtil.MMA_BANNER_WIDTH * mDp);
         setMeasuredDimension(width, height);
     }
 

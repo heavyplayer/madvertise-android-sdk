@@ -91,10 +91,11 @@ public class MadvertiseAd {
                 }
             }
             mClickUrl = json.isNull(CLICK_URL_CODE) ? "" : json.getString(CLICK_URL_CODE);
-            
+
             mBannerUrl = "file:///android_asset/MRAID_andlabs_html_ad/banner.html";
-//            mBannerUrl = json.isNull(BANNER_URL_CODE) ? "" : json.getString(BANNER_URL_CODE);
-            
+            // mBannerUrl = json.isNull(BANNER_URL_CODE) ? "" :
+            // json.getString(BANNER_URL_CODE);
+
             mText = json.isNull(TEXT_CODE) ? "" : json.getString(TEXT_CODE);
             mDownloadBanner = Boolean.parseBoolean(json.isNull(HAS_BANNER_CODE) ? "true" : json
                     .getString(HAS_BANNER_CODE));

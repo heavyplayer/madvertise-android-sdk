@@ -81,7 +81,8 @@ public class MadvertiseTracker {
 
     /**
      * Start a new session for this Instance. This method has to be called only
-     * once in an app's lifetime and is invoced by <code>getInstance()</code> automatically.
+     * once in an app's lifetime and is invoced by <code>getInstance()</code>
+     * automatically.
      * 
      * @param context
      */
@@ -252,18 +253,18 @@ public class MadvertiseTracker {
                                 if (isFirstLaunch()) {
                                     onFirstLaunch();
                                 }
-                            } 
+                            }
                         } catch (ClientProtocolException e) {
                             MadvertiseUtil.logMessage(null, Log.DEBUG,
-                                    "Error in HTTP request / protocol");                          
+                                    "Error in HTTP request / protocol");
                             e.printStackTrace();
                         } catch (IOException e) {
                             MadvertiseUtil.logMessage(null, Log.DEBUG,
-                                    "Could not receive a http response on an report-request");                           
+                                    "Could not receive a http response on an report-request");
                             e.printStackTrace();
                         } catch (Exception e) {
-                        	MadvertiseUtil.logMessage(null, Log.DEBUG,
-                                    "Could not receive a http response on an report-request");                           
+                            MadvertiseUtil.logMessage(null, Log.DEBUG,
+                                    "Could not receive a http response on an report-request");
                             e.printStackTrace();
                         }
                     }

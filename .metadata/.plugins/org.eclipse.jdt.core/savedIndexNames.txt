@@ -1,0 +1,10 @@
+INDEX VERSION 1.126+/Users/johannesborchardt/Dropbox/Code/madvertise-android-sdk/.metadata/.plugins/org.eclipse.jdt.core
+2063202374.index
+3440367801.index
+3684566462.index
+2128675797.index
+2809424993.index
+1234803559.index
+2519093169.index
+2089930718.index
+3995090577.index

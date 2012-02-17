@@ -35,15 +35,16 @@ class MadvertiseImageView extends WebView {
     private MadvertiseAd mImageAd;
 
     private AnimationEndListener mAnimationListener;
-    
+
     public MadvertiseImageView(final Context context, final int newWidth, final int newHeight,
-            final MadvertiseAd ad, final Handler  loadingCompletedHandler, final AnimationEndListener animationListener) {
+            final MadvertiseAd ad, final Handler loadingCompletedHandler,
+            final AnimationEndListener animationListener) {
         super(context);
-        
+
         mAnimationListener = animationListener;
 
-        mImageAd = ad;       
-        
+        mImageAd = ad;
+
         // Remove the ScrollBar so that we have no padding.
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
@@ -68,7 +69,7 @@ class MadvertiseImageView extends WebView {
                 .append("<img src=\"" + mImageAd.getBannerUrl() + "\" height=\"" + newHeight
                         + "\" width=\"" + newWidth + "\"/>").append("</html></head>");
 
-        loadDataWithBaseURL(null, content.toString(), "text/html", "UTF-8", null);        
+        loadDataWithBaseURL(null, content.toString(), "text/html", "UTF-8", null);
     }
 
     @Override
@@ -79,8 +80,8 @@ class MadvertiseImageView extends WebView {
         }
         return super.dispatchTouchEvent(event);
     }
-    
-      /**
+
+    /**
      * This is needed because of a sad Android-Bug: onAnimationEnd() will not be
      * called in the {@link Animation.AnimationListener}, so we have to listen
      * to this event in the views
@@ -88,7 +89,8 @@ class MadvertiseImageView extends WebView {
     @Override
     protected void onAnimationEnd() {
         super.onAnimationEnd();
-        if(mAnimationListener != null){
+        if (mAnimationListener != null) {
             mAnimationListener.onAnimationEnd();
-        }        
-    }}
+        }
+    }
+}

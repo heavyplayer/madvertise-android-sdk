@@ -70,7 +70,7 @@ public class MadvertiseUtil {
     static final int TEXT_COLOR_DEFAULT = 0xffffffff;
 
     static final int BACKGROUND_COLOR_DEFAULT = 0x000000;
-    
+
     static final String BANNER_TYPE_RICH_MEDIA = "rich_media";
 
     static final String BANNER_TYPE_MEDIUM_RECTANGLE = "medium_rectangle";
@@ -94,9 +94,9 @@ public class MadvertiseUtil {
     static final String ANIMATION_TYPE_TOP_DOWN = "top_down";
 
     static final String ANIMATION_TYPE_FADE = "fade";
-    
+
     static final String ANIMATION_TYPE_DEFAULT = ANIMATION_TYPE_FADE;
-    
+
     static final String RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT = "max_view_height";
 
     static final String RICH_MEDIA_ATTRIBUTE_MAX_WIDTH = "max_view_width";
@@ -139,15 +139,15 @@ public class MadvertiseUtil {
     static final int MEDIUM_RECTANGLE_BANNER_HEIGHT = 250;
 
     static final int RICH_MEDIA_BANNER_WIDTH_DEFAULT = MMA_BANNER_WIDTH;
-    
+
     static final int RICH_MEDIA_BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
-    
+
     static final int BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
-    
+
     public static final int PLACEMENT_TYPE_INLINE = 0;
 
     public static final int PLACEMENT_TYPE_INTERSTITIAL = 1;
-    
+
     private static final String MADVERTISE_SITE_TOKEN = "madvertise_site_token";
 
     private static String sUA;
@@ -340,7 +340,7 @@ public class MadvertiseUtil {
             }
 
             // return (null) if we can't get a location manager
-            LocationManager locationManager = (LocationManager)context
+            LocationManager locationManager = (LocationManager) context
                     .getSystemService(Context.LOCATION_SERVICE);
             if (locationManager == null) {
                 if (PRINT_LOG)
@@ -459,13 +459,13 @@ public class MadvertiseUtil {
 
         return sUA;
     }
-    
-	static boolean checkForBrowserDeclaration(final Context context) {
-		PackageManager pm = context.getPackageManager();
-		Intent mainIntent = new Intent(context, MadvertiseActivity.class);
-		List<ResolveInfo> returnList = pm.queryIntentActivities(mainIntent, 0);	
-		return returnList.size() > 0;
-	}
+
+    static boolean checkForBrowserDeclaration(final Context context) {
+        PackageManager pm = context.getPackageManager();
+        Intent mainIntent = new Intent(context, MadvertiseActivity.class);
+        List<ResolveInfo> returnList = pm.queryIntentActivities(mainIntent, 0);
+        return returnList.size() > 0;
+    }
 
     /**
      * Simple logging helper to prevent producing duplicate code blocks.
@@ -478,7 +478,7 @@ public class MadvertiseUtil {
      * @param message
      * @see android.util.Log
      */
-    public static void logMessage(final String tag, final int level, String message) {    	
+    public static void logMessage(final String tag, final int level, String message) {
         String logTag = tag;
         if (!PRINT_LOG) {
             if (!Log.isLoggable(logTag, level))
@@ -487,11 +487,11 @@ public class MadvertiseUtil {
         if (tag == null) {
             logTag = MadvertiseUtil.LOG;
         }
-        
-    	if (message == null) {
-    		message = "";
-    	}
-        
+
+        if (message == null) {
+            message = "";
+        }
+
         String fullClassName = Thread.currentThread().getStackTrace()[3].getClassName();
         String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
         String methodName = Thread.currentThread().getStackTrace()[3].getMethodName();

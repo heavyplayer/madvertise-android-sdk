@@ -1,10 +1,14 @@
+
 package de.madvertise.android.sdk;
 
 import java.io.File;
 import java.util.regex.Matcher;
+
 import junit.framework.Assert;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.Instrumentation.ActivityMonitor;
 import android.test.ActivityInstrumentationTestCase2;
@@ -25,12 +29,9 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     private String callback_data;
     private boolean go;
 
-
-
     public MraidTestSuite() {
         super("de.madvertise.android.sdk", Activity.class);
     }
-
 
     @Override
     protected void setUp() {
@@ -53,8 +54,9 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                     callback_data = data;
                     Log.d("Javascript", "called back: " + data);
                 }
+
                 @SuppressWarnings("unused")
-				public void go() {
+                public void go() {
                     go = true;
                 }
             }, "test");
@@ -63,7 +65,6 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         }
     }
 
-    
     public void testCacheHack() {
         loadHtml("mraid.js should be loaded out of cache");
         executeAsyncJs("typeof mraid", new JsCallback() {
@@ -74,14 +75,17 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testMraidCacheFileCopy() {
-    	if(android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-	        File mraid = new File("/data/data/" + testActivity.getPackageName() + "/cache/webviewCache/mraid");
-	        mraid.delete();
-	        loadHtml("mraid.js should be copied to cache directory");
-	        assertTrue(mraid.exists());
-	//        Log.d("cache", ""+CacheManager.getCacheFile("http://foo.bar/mraid.js", headers));
-    	}   
-    	
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+            File mraid = new File("/data/data/" + testActivity.getPackageName()
+                    + "/cache/webviewCache/mraid");
+            mraid.delete();
+            loadHtml("mraid.js should be copied to cache directory");
+            assertTrue(mraid.exists());
+            // Log.d("cache",
+            // ""+CacheManager.getCacheFile("http://foo.bar/mraid.js",
+            // headers));
+        }
+
     }
 
     public void testGetVersion() {
@@ -95,7 +99,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
 
     public void testInitialState() {
         loadHtml("getState() should initially return 'loading' " +
-                    "<script type=\"text/javascript\"> test.callback(mraid.getState()); </script>");
+                "<script type=\"text/javascript\"> test.callback(mraid.getState()); </script>");
         waitForJsCallback();
         assertEquals("loading", callback_data);
     }
@@ -155,8 +159,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     public void testRemoveEventListener() throws InterruptedException {
         loadHtml("removeEventListener('ready', aListener) should remove aListener");
         mraidView.injectJs("var listener = function() { test.callback('works'); }" +
-                          "mraid.addEventListener('ready', listener);" +
-                          "mraid.removeEventListener('ready', listener);");
+                "mraid.addEventListener('ready', listener);" +
+                "mraid.removeEventListener('ready', listener);");
         callback_data = null;
         mraidView.fireEvent("ready");
         Thread.sleep(3000);
@@ -166,10 +170,13 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     public void testRemoveAllEventListeners() throws InterruptedException {
         loadHtml("removeEventListener('ready') should remove all listeners");
         mraidView.injectJs("var listener = function() { test.callback(event); } " +
-                        "var listener2 = function(event) { test.callback(event); } " +
-                        "mraid.addEventListener('ready', listener1);" +
-                        "mraid.addEventListener('ready', listener2);");
-        mraidView.injectJs("mraid.removeEventListener('ready');"); // called without second argument
+                "var listener2 = function(event) { test.callback(event); } " +
+                "mraid.addEventListener('ready', listener1);" +
+                "mraid.addEventListener('ready', listener2);");
+        mraidView.injectJs("mraid.removeEventListener('ready');"); // called
+                                                                   // without
+                                                                   // second
+                                                                   // argument
         callback_data = null;
         mraidView.fireEvent("ready");
         Thread.sleep(3000);
@@ -198,7 +205,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         runTestOnUiThread(new Runnable() {
             public void run() {
                 ((ViewGroup) mraidView.getParent()).removeView(mraidView); // detach from screen..
-                Toast.makeText(testActivity, "now it should NOT be 'viewable'", Toast.LENGTH_LONG).show();
+                Toast.makeText(testActivity, "now it should NOT be 'viewable'", Toast.LENGTH_LONG)
+                        .show();
             }
         });
         Thread.sleep(1500); // should become non-viewable
@@ -230,6 +238,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         });
         assertNotViewable();
     }
+
     // helper
     private void assertNotViewable() {
         executeAsyncJs("mraid.isViewable()", new JsCallback() {
@@ -238,6 +247,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             }
         });
     }
+
     // helper
     private void assertIsViewable() {
         executeAsyncJs("mraid.isViewable()", new JsCallback() {
@@ -253,17 +263,20 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
             void done(String properties) {
                 assertEquals("{\"width\":" + metrics.widthPixels + ",\"height\":"
-                        + metrics.heightPixels + ",\"useCustomClose\":false,\"isModal\":false}", properties);
+                        + metrics.heightPixels + ",\"useCustomClose\":false,\"isModal\":false}",
+                        properties);
             }
         });
     }
 
     public void testExpandPropertyAccessors() {
-        loadHtml("expand properties should be accessible"); 
+        loadHtml("expand properties should be accessible");
         mraidView.injectJs("mraid.setExpandProperties({width:42,height:23,useCustomClose:true,isModal:true});");
         executeAsyncJs("JSON.stringify(mraid.getExpandProperties())", new JsCallback() {
             void done(String properties) {
-                assertEquals("{\"width\":42,\"height\":23,\"useCustomClose\":true,\"isModal\":false}", properties);
+                assertEquals(
+                        "{\"width\":42,\"height\":23,\"useCustomClose\":true,\"isModal\":false}",
+                        properties);
             }
         });
         ExpandProperties props = mraidView.getExpandProperties();
@@ -337,14 +350,14 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         mraidView.injectJs("mraid.expand('http://andlabs.eu');");
         Thread.sleep(1000);
         assertEquals(300, mraidView.getHeight());
-    	Thread.sleep(9000);	
+        Thread.sleep(9000);
     }
 
     public void testCloseButton() throws Throwable {
         loadHtml("a close button should always be present");
         mraidView.injectJs("mraid.expand();");
         Thread.sleep(500);
-        final ImageButton closeButton = (ImageButton)testActivity.findViewById(43);
+        final ImageButton closeButton = (ImageButton) testActivity.findViewById(43);
         runTestOnUiThread(new Runnable() {
             public void run() {
                 closeButton.performClick();
@@ -399,7 +412,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         ActivityMonitor monitor = getInstrumentation().addMonitor(
                 "de.madvertise.android.sdk.MadvertiseBrowserActivity", null, true);
         monitor.waitForActivityWithTimeout(3000);
-//        assertEquals(1, monitor.getHits());
+        // assertEquals(1, monitor.getHits());
     }
 
     public void testJsUrlSplitter() {
@@ -428,13 +441,13 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     }
 
     public void testXample_static() throws InterruptedException {
-//        mraidView.loadAd("http://andlabs.info/jobs/MRAID_static/src/ad_loader.js");
+        // mraidView.loadAd("http://andlabs.info/jobs/MRAID_static/src/ad_loader.js");
         mraidView.loadAd("file:///android_asset/MRAID_static/src/ad_loader.js");
         Thread.sleep(23000);
     }
 
     public void testXample_expandable() throws InterruptedException {
-//        mraidView.loadAd("http://andlabs.info/jobs/MRAID_expandable/src/ad_loader.js");
+        // mraidView.loadAd("http://andlabs.info/jobs/MRAID_expandable/src/ad_loader.js");
         mraidView.loadAd("file:///android_asset/MRAID_expandable/src/ad_loader.js");
         Thread.sleep(23000);
     }
@@ -449,20 +462,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         Thread.sleep(42000);
     }
 
-
-
-
-
     // ------------ Test util stuff ---------------------
 
     private void loadHtml(String html) {
         mraidView.loadDataWithBaseURL("http://foo.bar/", "<html><head>" +
-                            "<script src=\"mraid.js\"></script>" +
-                            "<style type=\"text/css\">" +
-                            "body { color: white; }" +
-                            "</style></head>" +
-                            "<body onload=\"test.go();\">"+html+"</body>" +
-                            "</html>", "text/html", "utf8", null);
+                "<script src=\"mraid.js\"></script>" +
+                "<style type=\"text/css\">" +
+                "body { color: white; }" +
+                "</style></head>" +
+                "<body onload=\"test.go();\">" + html + "</body>" +
+                "</html>", "text/html", "utf8", null);
         new WaitFor() {
             boolean check() {
                 return go;
