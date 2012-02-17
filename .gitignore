@@ -3,9 +3,12 @@ examples/simple/.settings
 examples/simple/.project
 examples/simple/bin/
 examples/simple/gen/
+examples/simple/.DS_Store
 madvertiseSDK/.classpath
 madvertiseSDK/.settings
 madvertiseSDK/.project
 madvertiseSDK/bin/
 madvertiseSDK/gen/
+madvertiseSDK/.DS_Store
 .metadata
+.DS_Store
