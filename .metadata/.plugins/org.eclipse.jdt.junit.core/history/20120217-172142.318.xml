@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testrun name="MraidTestSuite.testXample_xHTML5_Ad" project="madvertise example" tests="1" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="de.madvertise.android.sdk.MraidTestSuite" time="43.246">
-    <testcase name="testXample_xHTML5_Ad" classname="de.madvertise.android.sdk.MraidTestSuite" time="43.246"/>
-  </testsuite>
-</testrun>
