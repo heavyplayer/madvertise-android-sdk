@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.provider.Settings.Secure;
 import android.util.Log;
 
 /**
@@ -145,17 +144,23 @@ public class MadvertiseTracker {
      * @param actionType
      */
     private void reportAction(final String actionType) {
-        if (actionType.equals(ACTION_TYPE_ACTIVE) || actionType.equals(ACTION_TYPE_INACTIVE)
-                || actionType.equals(ACTION_TYPE_LAUNCH) || actionType.equals(ACTION_TYPE_STOP)
-                && isSessionEnabled()) {
+        if (
+        		(
+        			actionType.equals(ACTION_TYPE_ACTIVE) ||
+        			actionType.equals(ACTION_TYPE_INACTIVE) ||
+        			actionType.equals(ACTION_TYPE_LAUNCH) ||
+        			actionType.equals(ACTION_TYPE_STOP)
+        		)
+        		&&
+        		isSessionEnabled()
+           ) {
             new Thread(new Runnable() {
                 public void run() {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "Reporting action " + actionType);
 
                     // read all parameters, that we need for the request
                     // get site token from manifest xml file
-                    String siteToken = MadvertiseUtil.getToken(mContext.getApplicationContext(),
-                            null);
+                    String siteToken = MadvertiseUtil.getToken(mContext, null);
                     if (siteToken == null) {
                         siteToken = "";
                         MadvertiseUtil.logMessage(null, Log.DEBUG,
@@ -165,13 +170,8 @@ public class MadvertiseTracker {
                     }
 
                     // get uid (does not work in emulator)
-                    String uid = Secure.getString(mContext.getApplicationContext()
-                            .getContentResolver(), Secure.ANDROID_ID);
-                    if (uid == null) {
-                        uid = "";
-                    } else {
-                        uid = MadvertiseUtil.getMD5Hash(uid);
-                    }
+                    String uid = MadvertiseUtil.getHashedAndroidID(mContext);
+
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "uid = " + uid);
 
                     // create post request
@@ -188,10 +188,9 @@ public class MadvertiseTracker {
                     parameterList.add(new BasicNameValuePair("ip", MadvertiseUtil
                             .getLocalIpAddress(null)));
                     parameterList.add(new BasicNameValuePair("uid", uid));
-                    final int labelId = mContext.getApplicationContext().getApplicationInfo().labelRes;
+                    final int labelId = mContext.getApplicationInfo().labelRes;
                     if (labelId != 0) {
-                        parameterList.add(new BasicNameValuePair("app_name", mContext
-                                .getApplicationContext().getString(labelId)));
+                        parameterList.add(new BasicNameValuePair("app_name", mContext.getString(labelId)));
                     }
                     try {
                         parameterList.add(new BasicNameValuePair("app_version",

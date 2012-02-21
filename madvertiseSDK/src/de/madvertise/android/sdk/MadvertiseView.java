@@ -203,13 +203,15 @@ public class MadvertiseView extends FrameLayout {
 
         this.mAttrs = attrs;
 
+        
+        MadvertiseUtil.logMessage(null, Log.DEBUG, "** Constructor for mad view called **");
+        
         // report launch
         if (reportLauch) {
             MadvertiseTracker.getInstance(context).reportLaunch();
             reportLauch = false;
         }
-
-        MadvertiseUtil.logMessage(null, Log.DEBUG, "** Constructor for mad view called **");
+       
         // We use GONE instead of INVISIBLE because GONE doesn't allocate space
         // in
         // the layout.
@@ -268,13 +270,13 @@ public class MadvertiseView extends FrameLayout {
 
         if (mCurrentAd != null) {
             if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-                // if
-                // (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
-                // {
+                 if
+                 (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
+                 {
                 showMraidView();
-                // } else {
-                // showImageView();
-                // }
+                 } else {
+                 showImageView();
+                 }
             } else {
                 showTextView();
                 // show the MadvertiseView immediately so this doesn't need to
@@ -461,8 +463,7 @@ public class MadvertiseView extends FrameLayout {
      * @param attrs attribute set for the view
      */
     private void initParameters(final AttributeSet attrs) {
-        mDp = getContext().getApplicationContext().getApplicationContext().getResources()
-                .getDisplayMetrics().density;
+        mDp = getContext().getApplicationContext().getResources().getDisplayMetrics().density;
 
         if (attrs != null) {
             String packageName = "http://schemas.android.com/apk/res/"
@@ -555,8 +556,12 @@ public class MadvertiseView extends FrameLayout {
         MadvertiseUtil.logMessage(null, Log.DEBUG, " backgroundColor = " + mBackgroundColor);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " secondsToRefreshAd = " + mSecondsToRefreshAd);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerType = " + mBannerType);
+        MadvertiseUtil.logMessage(null, Log.DEBUG, " animationType = " + mAnimationType);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " deliverOnlyText = " + mDeliverOnlyText);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " textSize = " + mTextSize);
+        MadvertiseUtil.logMessage(null, Log.DEBUG, " maxViewHeight = " + mMaxViewHeight);
+        MadvertiseUtil.logMessage(null, Log.DEBUG, " MaxViewWidth = " + mMaxViewWidth);
+        MadvertiseUtil.logMessage(null, Log.DEBUG, " placementType = " + mPlacementType);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerWidth = " + mBannerWidth);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerHeight = " + mBannerHeight);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerWidthDp = " + mBannerWidthDp);
@@ -605,13 +610,7 @@ public class MadvertiseView extends FrameLayout {
                     }
 
                     // get uid (does not work in emulator)
-                    String uid = Secure.getString(getContext().getApplicationContext()
-                            .getContentResolver(), Secure.ANDROID_ID);
-                    if (uid == null) {
-                        uid = "";
-                    } else {
-                        uid = MadvertiseUtil.getMD5Hash(uid);
-                    }
+                    String uid = MadvertiseUtil.getHashedAndroidID(getContext());
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "uid = " + uid);
 
                     // create post request
@@ -832,52 +831,44 @@ public class MadvertiseView extends FrameLayout {
     }
 
     private void calculateBannerDimensions(final JSONObject json) throws JSONException {
-        boolean bannerTypeFound = false;
-
         // set the banner width and height
-        if (!bannerTypeFound
-                && (mBannerType != null && mBannerType
-                        .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE))) {
+        if (mBannerType != null && mBannerType
+                        .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
             mBannerHeight = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH;
-            bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null
+        } else if (mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
             mBannerHeight = (int) (mDp * MadvertiseUtil.MMA_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int) (mDp * MadvertiseUtil.MMA_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MMA_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.MMA_BANNER_WIDTH;
-            bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null
+        } else if (mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
             mBannerHeight = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.FULLSCREEN_BANNER_WIDTH;
-            bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null
+        } else if (mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
             mBannerHeight = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LANDSCAPE_BANNER_WIDTH;
-            bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null
+        } else if (mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
             mBannerHeight = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH;
-            bannerTypeFound = true;
-        } else if (!bannerTypeFound && mBannerType != null
+        } else if (mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
             mBannerHeight = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
-        } else if (!bannerTypeFound && mBannerType != null
+        } else if (mBannerType != null
                 && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
             if (json != null && json.has("ad_width")) {
                 mBannerWidthDp = json.getInt("ad_width");
@@ -896,7 +887,7 @@ public class MadvertiseView extends FrameLayout {
         mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 128;
 
         // adjust width and height to fit the screen
-        final DisplayMetrics displayMetrics = getContext().getApplicationContext()
+        final DisplayMetrics displayMetrics = getContext()
                 .getApplicationContext().getResources().getDisplayMetrics();
         int tempHeight = mBannerHeight;
         int tempWidth = mBannerWidth;

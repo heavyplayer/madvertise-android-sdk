@@ -45,6 +45,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
@@ -63,9 +64,9 @@ public class MadvertiseUtil {
 
     static final boolean PRINT_LOG = true;
 
-    static final String MAD_SERVER = "http://ad.madvertise.de";
+	static final String MAD_SERVER = "http://ad.madvertise.de";
 
-    static final int CONNECTION_TIMEOUT = 10000;
+    static final int CONNECTION_TIMEOUT = 5000;
 
     static final int TEXT_COLOR_DEFAULT = 0xffffffff;
 
@@ -156,6 +157,17 @@ public class MadvertiseUtil {
 
     private static Location sCurrentLocation = null;
 
+    
+    static String getHashedAndroidID(Context context) {
+    	String id = Secure.getString(context.getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+        if (id == null) {
+            id = "";
+        } else {
+            id = MadvertiseUtil.getMD5Hash(id);
+        }
+        return id;
+    }
+    
     /**
      * Returns the madvertise token
      * 
@@ -300,20 +312,17 @@ public class MadvertiseUtil {
      * @param context application context
      */
     static void refreshCoordinates(final Context context) {
-        if (PRINT_LOG)
-            Log.d(LOG, "Trying to refresh location");
+    	MadvertiseUtil.logMessage(null, Log.DEBUG, "Trying to refresh location");
 
         if (context == null) {
-            if (PRINT_LOG)
-                Log.d(LOG, "Context not set - quit location refresh");
+           	MadvertiseUtil.logMessage(null, Log.DEBUG, "Context not set - quit location refresh");
             return;
         }
 
         // check if we need a regular update
         if ((sLocationUpdateTimestamp + MadvertiseUtil.SECONDS_TO_REFRESH_LOCATION * 1000) > System
                 .currentTimeMillis()) {
-            if (PRINT_LOG)
-                Log.d(LOG, "It's not time yet for refreshing the location");
+        	MadvertiseUtil.logMessage(null, Log.DEBUG, "It's not time yet for refreshing the location");
             return;
         }
 
@@ -322,8 +331,7 @@ public class MadvertiseUtil {
             // paused
             if ((sLocationUpdateTimestamp + MadvertiseUtil.SECONDS_TO_REFRESH_LOCATION * 1000) > System
                     .currentTimeMillis()) {
-                if (PRINT_LOG)
-                    Log.d(LOG, "Another thread updated the loation already");
+            	MadvertiseUtil.logMessage(null, Log.DEBUG, "Another thread updated the loation already");
                 return;
             }
 
@@ -334,8 +342,7 @@ public class MadvertiseUtil {
 
             // return (null) if we do not have any permissions
             if (!permissionCoarseLocation && !permissionFineLocation) {
-                if (PRINT_LOG)
-                    Log.d(LOG, "No permissions for requesting the location");
+            	MadvertiseUtil.logMessage(null, Log.DEBUG, "No permissions for requesting the location");
                 return;
             }
 
@@ -343,8 +350,7 @@ public class MadvertiseUtil {
             LocationManager locationManager = (LocationManager) context
                     .getSystemService(Context.LOCATION_SERVICE);
             if (locationManager == null) {
-                if (PRINT_LOG)
-                    Log.d(LOG, "Unable to fetch a location manger");
+            	MadvertiseUtil.logMessage(null, Log.DEBUG, "Unable to fetch a location manger");
                 return;
             }
 
@@ -366,8 +372,7 @@ public class MadvertiseUtil {
 
             // still no provider, return (null)
             if (provider == null) {
-                if (PRINT_LOG)
-                    Log.d(LOG, "Unable to fetch a location provider");
+            	MadvertiseUtil.logMessage(null, Log.DEBUG, "Unable to fetch a location provider");
                 return;
             }
 
@@ -377,8 +382,7 @@ public class MadvertiseUtil {
             sLocationUpdateTimestamp = System.currentTimeMillis();
             locationManager.requestLocationUpdates(provider, 0, 0, new LocationListener() {
                 public void onLocationChanged(Location location) {
-                    if (PRINT_LOG)
-                        Log.d(LOG, "Refreshing location");
+                	MadvertiseUtil.logMessage(null, Log.DEBUG, "Refreshing location");
                     sCurrentLocation = location;
                     sLocationUpdateTimestamp = System.currentTimeMillis();
                     // stop draining battery life
@@ -417,47 +421,49 @@ public class MadvertiseUtil {
      * @return
      */
     static String getUA() {
-        if (sUA != null)
-            return sUA;
-
-        StringBuffer arg = new StringBuffer();
-
-        final String version = Build.VERSION.RELEASE;
-        if (version.length() > 0) {
-            arg.append(version);
-        } else {
-            arg.append("1.0");
-        }
-        arg.append("; ");
-
-        final Locale l = Locale.getDefault();
-        final String language = l.getLanguage();
-        if (language != null) {
-            arg.append(language.toLowerCase());
-            final String country = l.getCountry();
-            if (country != null) {
-                arg.append("-");
-                arg.append(country.toLowerCase());
-            }
-        } else {
-            arg.append("de");
-        }
-        final String model = Build.MODEL;
-        if (model.length() > 0) {
-            arg.append("; ");
-            arg.append(model);
-        }
-        final String id = Build.ID;
-        if (id.length() > 0) {
-            arg.append(" Build/");
-            arg.append(id);
-        }
-
-        // TODO: add version detection for AppleWebKit, Version and Safari
-        final String rawUA = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2";
-        sUA = String.format(rawUA, arg);
-
-        return sUA;
+    	//TODO: only for testing!!
+    	return "Mozilla/5.0 (Linux; U; Android 2.1-update1; de-de; SonyEricssonU20i Build/2.1.1.A.0.16) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+//        if (sUA != null)
+//            return sUA;
+//
+//        StringBuffer arg = new StringBuffer();
+//
+//        final String version = Build.VERSION.RELEASE;
+//        if (version.length() > 0) {
+//            arg.append(version);
+//        } else {
+//            arg.append("1.0");
+//        }
+//        arg.append("; ");
+//
+//        final Locale l = Locale.getDefault();
+//        final String language = l.getLanguage();
+//        if (language != null) {
+//            arg.append(language.toLowerCase());
+//            final String country = l.getCountry();
+//            if (country != null) {
+//                arg.append("-");
+//                arg.append(country.toLowerCase());
+//            }
+//        } else {
+//            arg.append("de");
+//        }
+//        final String model = Build.MODEL;
+//        if (model.length() > 0) {
+//            arg.append("; ");
+//            arg.append(model);
+//        }
+//        final String id = Build.ID;
+//        if (id.length() > 0) {
+//            arg.append(" Build/");
+//            arg.append(id);
+//        }
+//
+//        // TODO: add version detection for AppleWebKit, Version and Safari
+//        final String rawUA = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2";
+//        sUA = String.format(rawUA, arg);
+//
+//        return sUA;  
     }
 
     static boolean checkForBrowserDeclaration(final Context context) {
@@ -481,9 +487,13 @@ public class MadvertiseUtil {
     public static void logMessage(final String tag, final int level, String message) {
         String logTag = tag;
         if (!PRINT_LOG) {
-            if (!Log.isLoggable(logTag, level))
-                return;
+        	return;
+        }	
+        
+        if (!Log.isLoggable(logTag, level)) {
+        	return;
         }
+        
         if (tag == null) {
             logTag = MadvertiseUtil.LOG;
         }
@@ -494,11 +504,11 @@ public class MadvertiseUtil {
 
         String fullClassName = Thread.currentThread().getStackTrace()[3].getClassName();
         String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-        String methodName = Thread.currentThread().getStackTrace()[3].getMethodName();
+//        String methodName = Thread.currentThread().getStackTrace()[3].getMethodName();
         int lineNumber = Thread.currentThread().getStackTrace()[3].getLineNumber();
 
-        String logMessage = message + "\n at " + fullClassName + "." + methodName + " ("
-                + className + ":" + lineNumber + ")";
+//        String logMessage = message + "\n at " + fullClassName + "." + methodName + " (" + className + ":" + lineNumber + ")";
+        String logMessage = "(" + className + ":" + lineNumber + ")" + message;
         Log.println(level, logTag, logMessage);
     }
 }
