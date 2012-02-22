@@ -489,10 +489,11 @@ public class MadvertiseUtil {
         if (!PRINT_LOG) {
         	return;
         }	
-        
-        if (!Log.isLoggable(logTag, level)) {
-        	return;
-        }
+
+        //TODO: what is this for?
+//        if (!Log.isLoggable(logTag, level)) {
+//        	return;
+//        }
         
         if (tag == null) {
             logTag = MadvertiseUtil.LOG;
@@ -508,7 +509,7 @@ public class MadvertiseUtil {
         int lineNumber = Thread.currentThread().getStackTrace()[3].getLineNumber();
 
 //        String logMessage = message + "\n at " + fullClassName + "." + methodName + " (" + className + ":" + lineNumber + ")";
-        String logMessage = "(" + className + ":" + lineNumber + ")" + message;
+        String logMessage = "(" + className + ":" + lineNumber + ") : " + message;
         Log.println(level, logTag, logMessage);
     }
 }

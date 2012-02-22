@@ -269,22 +269,24 @@ public class MadvertiseView extends FrameLayout {
         setBackgroundDrawable(mInitialBackground);
 
         if (mCurrentAd != null) {
-            if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-                 if
-                 (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
-                 {
-                showMraidView();
-                 } else {
-                 showImageView();
-                 }
-            } else {
-                showTextView();
-                // show the MadvertiseView immediately so this doesn't need to
-                // be done
-                // programmatically. The image banner will be shown after its
-                // contents have been loaded.
-                setVisibility(View.VISIBLE);
-            }
+        	showMraidView();
+//            if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
+//            	
+//                 if
+//                 (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
+//                 {
+//                showMraidView();
+//                 } else {
+//                 showImageView();
+//                 }
+//            } else {
+//                showTextView();
+//                // show the MadvertiseView immediately so this doesn't need to
+//                // be done
+//                // programmatically. The image banner will be shown after its
+//                // contents have been loaded.
+//                setVisibility(View.VISIBLE);
+//            }
 
             notifyListener(true);
         } else {
