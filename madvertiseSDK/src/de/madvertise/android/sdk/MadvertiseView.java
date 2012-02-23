@@ -527,6 +527,8 @@ public class MadvertiseView extends FrameLayout {
                     MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, maxHeightDefault);
             mMaxViewWidth = attrs.getAttributeIntValue(packageName,
                     MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, maxWidthDefault);
+            if (mMaxViewHeight == 0) mMaxViewHeight = maxHeightDefault;
+            if (mMaxViewWidth == 0) mMaxViewWidth = maxWidthDefault;
 
             final String placementTypeStr = attrs.getAttributeValue(packageName, "placement_type");
             if (placementTypeStr != null && placementTypeStr.equalsIgnoreCase("inline")) {
