@@ -65,6 +65,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         }
     }
 
+    public void testGlobalVariableScope() {
+        loadHtml("mraid should not polute the global scope with variables");
+        mraidView.injectJs("var state = 'Ad state';"); // Ad-Dev uses same variable name
+        executeAsyncJs("mraid.getState()", new JsCallback() {
+            void done(String state) {
+                assertEquals("default", state); // should not interfere  
+            }
+        });
+    }
+
     public void testCacheHack() {
         loadHtml("mraid.js should be loaded out of cache");
         executeAsyncJs("typeof mraid", new JsCallback() {

@@ -1,3 +1,4 @@
+# 'private' scope
 expandProperties = width: 320, height: 480, useCustomClose: false, isModal: false
 states = ["loading", "hidden", "default", "expanded"]
 placementType = "inline"
@@ -5,9 +6,7 @@ state = "loading"
 viewable = false
 listeners = {}
 
-mraid =
-
-  # public mraid API
+this.mraid =      # export public API to global scope
 
   getVersion: -> "1.0"
 
