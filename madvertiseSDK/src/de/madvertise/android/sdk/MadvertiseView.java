@@ -546,7 +546,8 @@ public class MadvertiseView extends FrameLayout {
             mSecondsToRefreshAd = MadvertiseUtil.SECONDS_TO_REFRESH_AD_DEFAULT;
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Refresh intervall must be higher than 60");
         }
-
+        
+ 
         try {
             calculateBannerDimensions(null);
         } catch (JSONException e) {

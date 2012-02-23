@@ -132,7 +132,9 @@ public class MadvertiseMraidView extends WebView {
             @Override
             // scroll to center
             public void onNewPicture(WebView wv, Picture pic) {
-                wv.scrollTo(mExpandProperties.scrollX, mExpandProperties.scrollY);
+                int y = (pic.getHeight() - wv.getHeight()) / 2;
+                int x = (pic.getWidth() - wv.getWidth());
+                wv.scrollTo(x, y);
             }
         });
 
