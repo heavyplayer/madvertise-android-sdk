@@ -34,6 +34,8 @@
             mad:textSize="20"
             mad:deliverOnlyText="false"
             mad:placement_type="interstitial"
+            mad:max_view_width="200"
+            mad:max_view_height="100"
 		/>
        
 		<ListView
