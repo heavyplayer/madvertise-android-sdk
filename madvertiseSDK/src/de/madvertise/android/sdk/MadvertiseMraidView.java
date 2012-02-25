@@ -127,16 +127,16 @@ public class MadvertiseMraidView extends WebView {
 
         });
 
-        setPictureListener(new PictureListener() {
-
-            @Override
-            // scroll to center
-            public void onNewPicture(WebView wv, Picture pic) {
-                int y = (pic.getHeight() - wv.getHeight()) / 2;
-                int x = (pic.getWidth() - wv.getWidth());
-                wv.scrollTo(x, y);
-            }
-        });
+//        setPictureListener(new PictureListener() {
+// TODO scrolling to center interferes with ad creatives animation
+//            @Override
+//            // scroll to center
+//            public void onNewPicture(WebView wv, Picture pic) {
+//                int y = (pic.getHeight() - wv.getHeight()) / 2;
+//                int x = (pic.getWidth() - wv.getWidth());
+//                wv.scrollTo(x, y);
+//            }
+//        });
 
         addJavascriptInterface(mBridge, "mraid_bridge");
 
