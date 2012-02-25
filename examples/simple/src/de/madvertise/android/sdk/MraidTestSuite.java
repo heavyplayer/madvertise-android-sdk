@@ -42,7 +42,8 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                 public void run() {
                     mraidView = new MadvertiseMraidView(testActivity);
                     FrameLayout layout = new FrameLayout(testActivity);
-                    mraidView.setLayoutParams(new FrameLayout.LayoutParams(320, 53));
+                    final float scale = testActivity.getResources().getDisplayMetrics().density;
+                    mraidView.setLayoutParams(new FrameLayout.LayoutParams((int) (300 * scale), (int) (53 * scale)));
                     layout.addView(mraidView);
                     testActivity.setContentView(layout);
                 }
