@@ -28,6 +28,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
     private Activity testActivity;
     private String callback_data;
     private boolean go;
+    private float scale;
 
     public MraidTestSuite() {
         super("de.madvertise.android.sdk", Activity.class);
@@ -42,7 +43,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
                 public void run() {
                     mraidView = new MadvertiseMraidView(testActivity);
                     FrameLayout layout = new FrameLayout(testActivity);
-                    final float scale = testActivity.getResources().getDisplayMetrics().density;
+                    scale = testActivity.getResources().getDisplayMetrics().density;
                     mraidView.setLayoutParams(new FrameLayout.LayoutParams((int) (300 * scale), (int) (53 * scale)));
                     layout.addView(mraidView);
                     testActivity.setContentView(layout);
@@ -347,7 +348,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertEquals(230, mraidView.getHeight());
         mraidView.injectJs("mraid.close();");
         Thread.sleep(1000);
-        assertEquals(53, mraidView.getHeight());
+        assertEquals((int) (53 * scale), mraidView.getHeight());
         executeAsyncJs("mraid.getState()", new JsCallback() {
             void done(String properties) {
                 assertEquals("default", properties);
@@ -375,7 +376,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
             }
         });
         getInstrumentation().waitForIdleSync();
-        assertEquals(53, mraidView.getHeight());
+        assertEquals((int) (53 * scale), mraidView.getHeight());
         executeAsyncJs("mraid.getState()", new JsCallback() {
             void done(String properties) {
                 assertEquals("default", properties);
