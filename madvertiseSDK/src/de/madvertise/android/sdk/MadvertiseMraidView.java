@@ -79,14 +79,16 @@ public class MadvertiseMraidView extends WebView {
     private ExpandProperties mExpandProperties;
     private MadvertiseViewCallbackListener mListener;
     private AnimationEndListener mAnimationEndListener;
+    private MadvertiseView mMadView;
     private boolean mViewable;
 
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
-            AnimationEndListener animationEndListener, Handler loadingCompletedHandler) {
+            AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseView madView) {
         this(context);
         this.mLoadingCompletedHandler = loadingCompletedHandler;
         this.mAnimationEndListener = animationEndListener;
         this.mListener = listener;
+        this.mMadView = madView;
     }
 
     public MadvertiseMraidView(Context context) {
@@ -284,6 +286,9 @@ public class MadvertiseMraidView extends WebView {
                 }
             });
             setState(STATE_EXPANDED);
+            if(mMadView != null) {
+                mMadView.setFetchingAdsEnabled(false);
+            }
         }
 
         @SuppressWarnings("unused")
@@ -368,8 +373,13 @@ public class MadvertiseMraidView extends WebView {
         return mExpandProperties;
     }
 
-    protected void injectJs(String jsCode) {
-        loadUrl("javascript:" + jsCode);
+    protected void injectJs(final String jsCode) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                loadUrl("javascript:" + jsCode);                
+            } 
+        });
     }
 
     private void resize(final int width, final int height) {
@@ -435,6 +445,9 @@ public class MadvertiseMraidView extends WebView {
                 setState(STATE_DEFAULT);
                 if (mListener != null) {
                     mListener.onApplicationResume();
+                }
+                if(mMadView != null) {
+                    mMadView.setFetchingAdsEnabled(true);
                 }
                 break;
             case STATE_DEFAULT:

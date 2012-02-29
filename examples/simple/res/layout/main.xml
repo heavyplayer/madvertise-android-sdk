@@ -28,7 +28,7 @@
 			android:layout_height="wrap_content"
 			mad:backgroundColor="#555"
 			mad:textColor="#FF1F1F"
-			mad:bannerType="medium_rectangle"
+			mad:bannerType="rich_media"
             mad:animation="top_down"
             mad:isTestMode="true"
             mad:textSize="20"

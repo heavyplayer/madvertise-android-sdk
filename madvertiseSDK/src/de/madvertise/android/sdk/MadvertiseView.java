@@ -157,8 +157,6 @@ public class MadvertiseView extends FrameLayout {
 
     private boolean mFetchAdsEnabled = true;
 
-    private AttributeSet mAttrs;
-
     private int mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
 
     /**
@@ -200,9 +198,6 @@ public class MadvertiseView extends FrameLayout {
      */
     public MadvertiseView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-
-        this.mAttrs = attrs;
-
         
         MadvertiseUtil.logMessage(null, Log.DEBUG, "** Constructor for mad view called **");
         
@@ -226,8 +221,7 @@ public class MadvertiseView extends FrameLayout {
 
         if (!MadvertiseUtil.checkForBrowserDeclaration(getContext())) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
-            MadvertiseUtil
-                    .logMessage(
+            MadvertiseUtil.logMessage(
                             null,
                             Log.DEBUG,
                             " *** You must declare the activity de.madvertise.android.sdk.MadvertiseActivity in your manifest! *** ");
@@ -300,7 +294,7 @@ public class MadvertiseView extends FrameLayout {
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Add rich media banner");
 
         mMraidView = new MadvertiseMraidView(getContext().getApplicationContext(),
-                mCallbackListener, mAnimationListener, mHandler);
+                mCallbackListener, mAnimationListener, mHandler, this);
         mMraidView.setPlacementType(mPlacementType);
         mMraidView.loadAd(mCurrentAd);
 
@@ -549,7 +543,7 @@ public class MadvertiseView extends FrameLayout {
         
  
         try {
-            calculateBannerDimensions(null);
+            calculateBannerDimensions();
         } catch (JSONException e) {
             // this should never happen
             e.printStackTrace();
@@ -590,7 +584,7 @@ public class MadvertiseView extends FrameLayout {
             mCurrentAd = getCachedAd();
 
             try {
-                calculateBannerDimensions(null);
+                calculateBannerDimensions();
             } catch (JSONException e) {
                 // this should never happen
                 e.printStackTrace();
@@ -710,7 +704,6 @@ public class MadvertiseView extends FrameLayout {
                         HttpClient httpClient = new DefaultHttpClient();
                         HttpResponse httpResponse = null;
                         InputStream inputStream = null;
-                        boolean jsonFetched = false;
                         JSONObject json = null;
 
                         try {
@@ -748,11 +741,15 @@ public class MadvertiseView extends FrameLayout {
                                 MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => "
                                         + resultString);
                                 json = new JSONObject(resultString);
-                                jsonFetched = true;
 
                                 // set type and dimensions of this view
                                 adjustAdType(json);
-                                calculateBannerDimensions(json);
+
+                                // create ad
+                                mCurrentAd = new MadvertiseAd(getContext().getApplicationContext(),
+                                            json, mCallbackListener, mBannerType);
+                                
+                                calculateBannerDimensions();
                             } else {
                                 if (mCallbackListener != null) {
                                     mCallbackListener
@@ -798,12 +795,6 @@ public class MadvertiseView extends FrameLayout {
                                 }
                             }
                         }
-
-                        // create ad, this is a blocking call
-                        if (jsonFetched) {
-                            mCurrentAd = new MadvertiseAd(getContext().getApplicationContext(),
-                                    json, mCallbackListener, mBannerType);
-                        }
                     }
                     mHandler.post(mUpdateResults);
                 }
@@ -835,7 +826,7 @@ public class MadvertiseView extends FrameLayout {
         }
     }
 
-    private void calculateBannerDimensions(final JSONObject json) throws JSONException {
+    private void calculateBannerDimensions() throws JSONException {
         // set the banner width and height
         if (mBannerType != null && mBannerType
                         .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
@@ -874,14 +865,14 @@ public class MadvertiseView extends FrameLayout {
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
         } else if (mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
-            if (json != null && json.has("ad_width")) {
-                mBannerWidthDp = json.getInt("ad_width");
+                ) {
+            if (mCurrentAd != null && mCurrentAd.getBannerWidth() != 0) {
+                mBannerWidthDp = mCurrentAd.getBannerWidth();
             } else {
                 mBannerWidthDp = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
             }
-            if (json != null && json.has("ad_height")) {
-                mBannerHeightDp = json.getInt("ad_height");
+            if (mCurrentAd != null && mCurrentAd.getBannerHeight() != 0) {
+                mBannerHeightDp = mCurrentAd.getBannerHeight();
             } else {
                 mBannerHeightDp = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
             }
@@ -1162,8 +1153,15 @@ public class MadvertiseView extends FrameLayout {
      */
     public void setFetchingAdsEnabled(final boolean isEnabled) {
         mFetchAdsEnabled = isEnabled;
+        
+        MadvertiseUtil.logMessage(null, Log.DEBUG, "Set Fetching Ads to " + isEnabled);
+        
         if (!isEnabled) {
             stopRequestThread();
+        } else {
+            if(mRequestThread == null || !mRequestThread.isAlive()) {
+                onViewCallback(true);
+            }
         }
     }
 

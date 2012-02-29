@@ -53,6 +53,10 @@ public class MadvertiseAd {
     private boolean mDownloadBanner;
 
     private boolean mHasBanner;
+    
+    private int mBannerHeight = 0;
+    
+    private int mBannerWidth = 0;
 
     private JSONArray mJsonNames;
 
@@ -98,6 +102,13 @@ public class MadvertiseAd {
             mText = json.isNull(TEXT_CODE) ? "" : json.getString(TEXT_CODE);
             mDownloadBanner = Boolean.parseBoolean(json.isNull(HAS_BANNER_CODE) ? "true" : json
                     .getString(HAS_BANNER_CODE));
+            
+            if (json != null && json.has("ad_width")) {
+                mBannerWidth = json.getInt("ad_width");
+            }
+            if (json != null && json.has("ad_height")) {
+                mBannerHeight = json.getInt("ad_height");
+            }
 
             if (mDownloadBanner) {
                 mHasBanner = mBannerUrl != null && !mBannerUrl.equals("");
@@ -159,5 +170,13 @@ public class MadvertiseAd {
 
     protected String getBannerType() {
         return mBannerType;
+    }
+    
+    public int getBannerHeight() {
+        return mBannerHeight;
+    }
+
+    public int getBannerWidth() {
+        return mBannerWidth;
     }
 }
