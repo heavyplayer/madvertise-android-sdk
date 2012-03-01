@@ -16,15 +16,6 @@
 
 package de.madvertise.android.sdk;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.ref.SoftReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -50,7 +41,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
-import android.provider.Settings.Secure;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -64,6 +54,15 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.ref.SoftReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MadvertiseView extends FrameLayout {
 
@@ -263,24 +262,20 @@ public class MadvertiseView extends FrameLayout {
         setBackgroundDrawable(mInitialBackground);
 
         if (mCurrentAd != null) {
-        	showMraidView();
-//            if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-//            	
-//                 if
-//                 (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
-//                 {
-//                showMraidView();
-//                 } else {
-//                 showImageView();
-//                 }
-//            } else {
-//                showTextView();
-//                // show the MadvertiseView immediately so this doesn't need to
-//                // be done
-//                // programmatically. The image banner will be shown after its
-//                // contents have been loaded.
-//                setVisibility(View.VISIBLE);
-//            }
+            if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
+                 if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+                     showMraidView();
+                 } else {
+                     showImageView();
+                 }
+            } else {
+                showTextView();
+                // show the MadvertiseView immediately so this doesn't need to
+                // be done
+                // programmatically. The image banner will be shown after its
+                // contents have been loaded.
+                setVisibility(View.VISIBLE);
+            }
 
             notifyListener(true);
         } else {
@@ -626,7 +621,7 @@ public class MadvertiseView extends FrameLayout {
                             .getLocalIpAddress(mCallbackListener)));
                     parameterList.add(new BasicNameValuePair("format", "json"));
                     parameterList.add(new BasicNameValuePair("requester", "android_sdk"));
-                    parameterList.add(new BasicNameValuePair("version", "2.0"));
+                    parameterList.add(new BasicNameValuePair("version", "3.0"));
                     parameterList.add(new BasicNameValuePair("uid", uid));
                     parameterList.add(new BasicNameValuePair("banner_type", mBannerType));
                     parameterList.add(new BasicNameValuePair("deliver_only_text", Boolean
@@ -734,13 +729,15 @@ public class MadvertiseView extends FrameLayout {
 
                             HttpEntity entity = httpResponse.getEntity();
 
-                            if (responseCode == 200 && entity != null) {
-                                inputStream = entity.getContent();
-                                String resultString = MadvertiseUtil
-                                        .convertStreamToString(inputStream);
-                                MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => "
-                                        + resultString);
-                                json = new JSONObject(resultString);
+//                            if (responseCode == 200 && entity != null) {
+                            if (responseCode == 200 || responseCode == 204) {
+//                                inputStream = entity.getContent();
+//                                String resultString = MadvertiseUtil
+//                                        .convertStreamToString(inputStream);
+//                                MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => "
+//                                        + resultString);
+//                                json = new JSONObject(resultString);
+                                json = new JSONObject("{\"text\":\"MMA Test Banner\",\"banner\":{\"banner_type\":\"rich_media\",\"banner_url\":\"http://dl.dropbox.com/u/44264257/MRAID_static_expand/src/ad_loader.js\",\"mraid\":true},\"has_banner\":true,\"cookies\":{\"madvertise\":\"UUMP-rgtyixhe\",\"mad_history\":\"gc0MbZIBzk9LYbY=\n\"},\"should_open_in_app\":true,\"tracking\":[\"http://ed1.9001.ad.madvertise.de/voxel.gif?lfn5o6yp\"],\"click_url\":\"http://ed1.9001.ad.madvertise.de/track/lfn5o6yp/site/TestTokn/ad/McSUHrsJ\",\"ad_width\":320,\"ad_height\":200}\"");
 
                                 // set type and dimensions of this view
                                 adjustAdType(json);

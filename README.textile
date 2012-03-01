@@ -53,6 +53,7 @@ h4. Edit your AndroidManifest.xml file
 
 # Add internet (required) and location (optional) permissions
 # Add meta data called madvertise_site_token
+# Add the Activity de.madvertise.android.sdk.MadvertiseActivity 
 # Finally, your manifest file should look something like "this":https://github.com/madvertise/madvertise-android-sdk/blob/master/examples/simple/AndroidManifest.xml#L1-21
 
 h4. Prepare view configuration
