@@ -631,7 +631,7 @@ public class MadvertiseView extends FrameLayout {
                     
                     parameterList.add(new BasicNameValuePair("format", "json"));
                     parameterList.add(new BasicNameValuePair("requester", "android_sdk"));
-                    parameterList.add(new BasicNameValuePair("version", "2.0"));
+                    parameterList.add(new BasicNameValuePair("version", "3.0"));
                     parameterList.add(new BasicNameValuePair("uid", uid));
                     parameterList.add(new BasicNameValuePair("banner_type", mBannerType));
                     parameterList.add(new BasicNameValuePair("deliver_only_text", Boolean

@@ -182,6 +182,7 @@ public class MadvertiseMraidView extends WebView {
                     "</head><body>MRAID Ad</body></html>", "text/html", "utf8", null);
         } else {
             MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: " + url);
+            // TODO : This is a problem, if paths in the html ad are relative! there is no basepath
             loadUrl(url);
         }
     }
