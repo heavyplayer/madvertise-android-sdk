@@ -151,11 +151,16 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertEquals("hidden", callback_data);
     }
 
-    @UiThreadTest
-    public void testViewableChangeEventListener() {
+    public void testViewableChangeEventListener() throws Throwable {
         loadHtml("event listeners should be able to listen for 'viewableChange' events");
         mraidView.injectJs("mraid.addEventListener('viewableChange', function(viewable) {test.callback(viewable);});");
-        mraidView.setVisibility(View.INVISIBLE);
+        runTestOnUiThread(new Runnable() {
+            
+            @Override
+            public void run() {
+                mraidView.setVisibility(View.INVISIBLE);
+            }
+        });
         waitForJsCallback();
         assertEquals("false", callback_data);
     }
@@ -216,7 +221,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertIsViewable();
         runTestOnUiThread(new Runnable() {
             public void run() {
-                ((ViewGroup) mraidView.getParent()).removeView(mraidView); // detach from screen..
+//                ((ViewGroup) mraidView.getParent()).removeView(mraidView); // detach from screen..
                 Toast.makeText(testActivity, "now it should NOT be 'viewable'", Toast.LENGTH_LONG)
                         .show();
             }
@@ -232,7 +237,7 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         assertNotViewable();
         runTestOnUiThread(new Runnable() {
             public void run() {
-                testActivity.setContentView(mraidView); // re-attach to screen
+//                testActivity.setContentView(mraidView); // re-attach to screen
             }
         });
         Thread.sleep(1500); // should still not be viewable
