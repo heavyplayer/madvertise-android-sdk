@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
+import de.madvertise.android.sdk.MadvertiseUtil;
 
 /**
  * Defines an ad from a JSON object, that contains all necessary information
@@ -36,11 +37,9 @@ public class MadvertiseAd {
 
     private final String CLICK_URL_CODE = "click_url";
 
-    private final String BANNER_URL_CODE = "banner_url";
+    private final String BANNER_URL_CODE = "url";
 
     private final String TEXT_CODE = "text";
-
-    private final String HAS_BANNER_CODE = "has_banner";
 
     private String mClickUrl;
 
@@ -50,9 +49,7 @@ public class MadvertiseAd {
 
     private String mBannerType;
 
-    private boolean mDownloadBanner;
-
-    private boolean mHasBanner;
+    private boolean mHasBanner = false;
     
     private int mBannerHeight = 0;
     
@@ -94,28 +91,36 @@ public class MadvertiseAd {
                             + " Value => " + mJsonValues.getString(i));
                 }
             }
-            mClickUrl = json.isNull(CLICK_URL_CODE) ? "" : json.getString(CLICK_URL_CODE);
-
-            mBannerUrl = "file:///android_asset/MRAID_andlabs_html_ad/banner.html";
-//            mBannerUrl = json.isNull(BANNER_URL_CODE) ? "" : json.getString(BANNER_URL_CODE);
-
-            mText = json.isNull(TEXT_CODE) ? "" : json.getString(TEXT_CODE);
-            mDownloadBanner = Boolean.parseBoolean(json.isNull(HAS_BANNER_CODE) ? "true" : json
-                    .getString(HAS_BANNER_CODE));
             
-            if (json != null && json.has("ad_width")) {
-                mBannerWidth = json.getInt("ad_width");
-            }
-            if (json != null && json.has("ad_height")) {
-                mBannerHeight = json.getInt("ad_height");
-            }
+            // first get not nested values
+            mClickUrl = MadvertiseUtil.getJSONValue(json, CLICK_URL_CODE);
+            mText = MadvertiseUtil.getJSONValue(json, TEXT_CODE);
 
-            if (mDownloadBanner) {
-                mHasBanner = mBannerUrl != null && !mBannerUrl.equals("");
-            } else {
-                mHasBanner = false;
-                MadvertiseUtil.logMessage(null, Log.DEBUG, "No banner link in json found");
+            // check, if we have a banner
+            JSONObject bannerJson = MadvertiseUtil.getJSONObject(json, "banner");
+            if (bannerJson == null) {
+            	return;
             }
+            
+            // logic for new ad response
+            mBannerUrl = MadvertiseUtil.getJSONValue(bannerJson, BANNER_URL_CODE);
+            mHasBanner = true;
+        	
+            // check, if rich media banner
+            JSONObject richMediaJson = MadvertiseUtil.getJSONObject(bannerJson, "rich_media"); 
+            if (richMediaJson == null) {
+        		return;
+        	}
+            
+            // overwrite banner url
+            mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
+            // mBannerUrl = "file:///android_asset/MRAID_andlabs_html_ad/banner.html";
+            mBannerUrl = "http://dl.dropbox.com/u/44264257/MRAID_static_expand/src/ad_loader.js";
+            
+            // get sizes for rich media ad
+            mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
+            mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();
+
         } catch (JSONException e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Error in json string");
             if (mCallbackListener != null) {

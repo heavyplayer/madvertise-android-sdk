@@ -33,6 +33,8 @@ import java.util.Locale;
 
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
@@ -123,7 +125,7 @@ public class MadvertiseUtil {
 
     static final int MMA_BANNER_WIDTH = 320;
 
-    static final int MEDIUM_RECTANGLE_BANNER_WIDTH = 320;
+    static final int MEDIUM_RECTANGLE_BANNER_WIDTH = 300;
 
     static final int BANNER_WIDTH_DEFAULT = MMA_BANNER_WIDTH;
 
@@ -422,7 +424,8 @@ public class MadvertiseUtil {
      */
     static String getUA() {
     	//TODO: only for testing!!
-    	return "Mozilla/5.0 (Linux; U; Android 2.1-update1; de-de; SonyEricssonU20i Build/2.1.1.A.0.16) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+//    	return "Mozilla/5.0 (Linux; U; Android 2.1-update1; de-de; SonyEricssonU20i Build/2.1.1.A.0.16) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
+    	return "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5";
 //        if (sUA != null)
 //            return sUA;
 //
@@ -505,11 +508,24 @@ public class MadvertiseUtil {
 
         String fullClassName = Thread.currentThread().getStackTrace()[3].getClassName();
         String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-//        String methodName = Thread.currentThread().getStackTrace()[3].getMethodName();
         int lineNumber = Thread.currentThread().getStackTrace()[3].getLineNumber();
 
-//        String logMessage = message + "\n at " + fullClassName + "." + methodName + " (" + className + ":" + lineNumber + ")";
         String logMessage = "(" + className + ":" + lineNumber + ") : " + message;
         Log.println(level, logTag, logMessage);
     }
+    
+    public static String getJSONValue(JSONObject json, String key) throws JSONException {
+    	if (json == null || key.equals("")) {
+    		throw new JSONException("Empty JSON or key");
+    	}
+    	return json.has(key) ? json.getString(key) : "";
+    }
+    
+    public static JSONObject getJSONObject(JSONObject json, String key) throws JSONException {
+    	if (json == null || key.equals("")) {
+    		throw new JSONException("Empty JSON or key");
+    	}
+    	return json.has(key) ? json.getJSONObject(key) : null;
+    }
+    
 }

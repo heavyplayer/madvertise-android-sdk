@@ -18,7 +18,7 @@
         secondsToRefresh [integer], the time after which a new ad will be loaded. Minimum is 30.
         bannerType [mma|leaderboard|fullscreen|portrait|landscape|medium_rectangle], the ad type of your banner. 
                     You can also chain types like that: 'mma,portrait,landscape'. 
-                    The sizes are: mma 320x53, leaderboard 728x90, fullcreen 768x768, portrait 766x66, landscape 1024x66, medium_rectangle 320x200.                    
+                    The sizes are: mma 320x53, leaderboard 728x90, fullcreen 768x768, portrait 766x66, landscape 1024x66, medium_rectangle 300x250.                    
         animation [fade|left_to_right|top_down], the way new ads will be animated. 'fade' is default.
         deliverOnlyText [true|false], whether your ad only displays text or not. This only has effect on mma type banners.
         -->
@@ -28,7 +28,7 @@
 			android:layout_height="wrap_content"
 			mad:backgroundColor="#555"
 			mad:textColor="#FF1F1F"
-			mad:bannerType="rich_media"
+			mad:bannerType="rm"
             mad:animation="top_down"
             mad:isTestMode="true"
             mad:textSize="20"

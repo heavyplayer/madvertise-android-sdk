@@ -64,6 +64,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import de.madvertise.android.sdk.MadvertiseUtil;
 
 public class MadvertiseView extends FrameLayout {
 
@@ -263,24 +264,24 @@ public class MadvertiseView extends FrameLayout {
         setBackgroundDrawable(mInitialBackground);
 
         if (mCurrentAd != null) {
-        	showMraidView();
-//            if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-//            	
-//                 if
-//                 (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
-//                 {
-//                showMraidView();
-//                 } else {
-//                 showImageView();
-//                 }
-//            } else {
-//                showTextView();
-//                // show the MadvertiseView immediately so this doesn't need to
-//                // be done
-//                // programmatically. The image banner will be shown after its
-//                // contents have been loaded.
-//                setVisibility(View.VISIBLE);
-//            }
+//        	showMraidView();
+            if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
+            	
+                 if
+                 (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA))
+                 {
+                showMraidView();
+                 } else {
+                 showImageView();
+                 }
+            } else {
+                showTextView();
+                // show the MadvertiseView immediately so this doesn't need to
+                // be done
+                // programmatically. The image banner will be shown after its
+                // contents have been loaded.
+                setVisibility(View.VISIBLE);
+            }
 
             notifyListener(true);
         } else {
@@ -559,7 +560,7 @@ public class MadvertiseView extends FrameLayout {
         MadvertiseUtil.logMessage(null, Log.DEBUG, " deliverOnlyText = " + mDeliverOnlyText);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " textSize = " + mTextSize);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " maxViewHeight = " + mMaxViewHeight);
-        MadvertiseUtil.logMessage(null, Log.DEBUG, " MaxViewWidth = " + mMaxViewWidth);
+        MadvertiseUtil.logMessage(null, Log.DEBUG, " maxViewWidth = " + mMaxViewWidth);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " placementType = " + mPlacementType);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerWidth = " + mBannerWidth);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerHeight = " + mBannerHeight);
@@ -623,8 +624,11 @@ public class MadvertiseView extends FrameLayout {
                     parameterList.add(new BasicNameValuePair("ua", MadvertiseUtil.getUA()));
                     parameterList.add(new BasicNameValuePair("app", "true"));
                     parameterList.add(new BasicNameValuePair("debug", Boolean.toString(mTestMode)));
-                    parameterList.add(new BasicNameValuePair("ip", MadvertiseUtil
-                            .getLocalIpAddress(mCallbackListener)));
+//                    parameterList.add(new BasicNameValuePair("ip", MadvertiseUtil
+//                            .getLocalIpAddress(mCallbackListener)));
+                    parameterList.add(new BasicNameValuePair("ip", "79.195.236.168"));
+                    
+                    
                     parameterList.add(new BasicNameValuePair("format", "json"));
                     parameterList.add(new BasicNameValuePair("requester", "android_sdk"));
                     parameterList.add(new BasicNameValuePair("version", "2.0"));
@@ -816,15 +820,13 @@ public class MadvertiseView extends FrameLayout {
      * response.
      */
     private void adjustAdType(JSONObject json) {
-
-        if (json.has("banner_type")) {
-            try {
-                mBannerType = json.getString("banner_type");
-            } catch (JSONException e) {
-                // this should never happen
-                e.printStackTrace();
-            }
-        }
+    	try {
+    	  JSONObject bannerJson = MadvertiseUtil.getJSONObject(json, "banner");
+    	  String updatedBannerType = MadvertiseUtil.getJSONValue(bannerJson, "type");
+    	  mBannerType = !updatedBannerType.equals("") ? updatedBannerType : mBannerType;
+    	} catch (JSONException e) {
+    		MadvertiseUtil.logMessage(null, Log.DEBUG, "Could not parse JSON and adjust banner_type. ");
+    	}
     }
 
     private void calculateBannerDimensions() throws JSONException {
