@@ -614,10 +614,11 @@ public class MadvertiseView extends FrameLayout {
 
                     // create post request
                     HttpPost postRequest = new HttpPost(MadvertiseUtil.MAD_SERVER + "/site/"
-                            + siteToken);
+                    		+ siteToken);
                     postRequest.setHeader("Content-Type",
                             "application/x-www-form-urlencoded; charset=utf-8");
-
+                    // new ad response version, that supports rich media
+                    postRequest.addHeader("Accept", "application/vnd.madad+json; version=3");
                     List<NameValuePair> parameterList = new ArrayList<NameValuePair>();
                     parameterList.add(new BasicNameValuePair("ua", MadvertiseUtil.getUA()));
                     parameterList.add(new BasicNameValuePair("app", "true"));
