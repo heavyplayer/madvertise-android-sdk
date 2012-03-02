@@ -522,4 +522,30 @@ public class MadvertiseUtil {
     	return json.has(key) ? json.getJSONObject(key) : null;
     }
     
+    public static String[] splitURL(String url)   {  
+        String str[] = new String[2];  
+        if(url.lastIndexOf("/") == url.length() || countOccurrences(url, "/") <= 2) {  
+            str[0] = null;  
+            str[1] = url;  
+        }  
+        else {  
+            str[0]  = url.substring(url.lastIndexOf("/") + 1);  
+            str[1]  = url.substring(0, url.lastIndexOf("/") + 1);  
+        }  
+              
+        return str;  
+    }
+    
+    public static int countOccurrences(String haystack, String needle) {  
+        int count = 0;  
+        int index = 0;  
+          
+        while ((index = haystack.indexOf(needle, index)) != -1) {  
+            ++index;  
+            ++count;  
+        }  
+          
+        return count;  
+    } 
+    
 }

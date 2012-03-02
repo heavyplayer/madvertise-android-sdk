@@ -31,7 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.graphics.Picture;
+// import android.graphics.Picture;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
@@ -53,13 +53,9 @@ import android.widget.VideoView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MadvertiseMraidView extends WebView {
 
-    protected static final Pattern sUrlSplitter = Pattern
-            .compile("((?:http|file):\\/\\/.*(?:\\.|_)+.*\\/)(.*\\.js)");
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
     private static String sCachePath;
     private static final int CLOSE_BUTTON_SIZE = 50;
@@ -149,6 +145,7 @@ public class MadvertiseMraidView extends WebView {
                 public WebResourceResponse shouldInterceptRequest(WebView view,
                         String url) {
                     if (url.endsWith("mraid.js")) {
+                    	MadvertiseUtil.logMessage(null, Log.INFO, "intercepted src=mraid.js");
                         final InputStream in = getContext().getResources().openRawResource(
                                 de.madvertise.android.sdk.R.raw.mraid);
                         final WebResourceResponse response = new WebResourceResponse(
@@ -170,21 +167,12 @@ public class MadvertiseMraidView extends WebView {
     }
 
     protected void loadAd(String url) {
-        Matcher m = sUrlSplitter.matcher(url);
-        if (m.matches()) {
-            final String jsFile = m.group(2);
-            final String baseUrl = m.group(1);
-            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading javascript Ad: baseUrl=" + baseUrl
-                    + " jsFile=" + jsFile);
-            loadDataWithBaseURL(baseUrl, "<html><head>" +
-                    "<script type=\"text/javascript\" src=\"mraid.js\"/>" +
-                    "<script type=\"text/javascript\" src=\"" + jsFile + "\"/>" +
-                    "</head><body>MRAID Ad</body></html>", "text/html", "utf8", null);
-        } else {
-            MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: " + url);
-            // TODO : This is a problem, if paths in the html ad are relative! there is no basepath
-            loadUrl(url);
-        }
+    	MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: " + url);
+    	String baseUrl = MadvertiseUtil.splitURL(url)[1];
+    	String mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources().openRawResource(de.madvertise.android.sdk.R.raw.mraid));
+    	loadUrl("javascript:" + mraidJS);
+	    prepareMraid(baseUrl);
+	    loadUrl(url);
     }
 
     @Override
@@ -192,6 +180,7 @@ public class MadvertiseMraidView extends WebView {
         if (!url.startsWith("javascript:")) {
             prepareMraid(url.substring(0, url.lastIndexOf("/") - 1));
         }
+        MadvertiseUtil.logMessage(null, Log.INFO, "Loading url now: " + url);
         super.loadUrl(url);
     }
 

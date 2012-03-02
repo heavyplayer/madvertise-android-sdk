@@ -12,11 +12,10 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityMonitor;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.UiThreadTest;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+// import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -432,30 +431,30 @@ public class MraidTestSuite extends ActivityInstrumentationTestCase2<Activity> {
         // assertEquals(1, monitor.getHits());
     }
 
-    public void testJsUrlSplitter() {
-        Matcher m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.com/ad.html");
-        assertFalse(m.matches());
-        m = MadvertiseMraidView.sUrlSplitter.matcher("wrong://domain.com/some_ad.js");
-        assertFalse(m.matches());
-        m = MadvertiseMraidView.sUrlSplitter.matcher("http://no/domain/some_ad.js");
-        assertFalse(m.matches());
-        m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.com/some_ad.js");
-        assertTrue(m.matches());
-        assertEquals("http://domain.com/", m.group(1));
-        assertEquals("some_ad.js", m.group(2));
-        m = MadvertiseMraidView.sUrlSplitter.matcher("file:///android_asset/path/ad.js");
-        assertTrue(m.matches());
-        assertEquals("file:///android_asset/path/", m.group(1));
-        assertEquals("ad.js", m.group(2));
-        m = MadvertiseMraidView.sUrlSplitter.matcher("http://sub.domain.com/ad.js");
-        assertTrue(m.matches());
-        assertEquals("http://sub.domain.com/", m.group(1));
-        assertEquals("ad.js", m.group(2));
-        m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.de/with/long/path/ad.js");
-        assertTrue(m.matches());
-        assertEquals("http://domain.de/with/long/path/", m.group(1));
-        assertEquals("ad.js", m.group(2));
-    }
+//    public void testJsUrlSplitter() {
+//        Matcher m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.com/ad.html");
+//        assertFalse(m.matches());
+//        m = MadvertiseMraidView.sUrlSplitter.matcher("wrong://domain.com/some_ad.js");
+//        assertFalse(m.matches());
+//        m = MadvertiseMraidView.sUrlSplitter.matcher("http://no/domain/some_ad.js");
+//        assertFalse(m.matches());
+//        m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.com/some_ad.js");
+//        assertTrue(m.matches());
+//        assertEquals("http://domain.com/", m.group(1));
+//        assertEquals("some_ad.js", m.group(2));
+//        m = MadvertiseMraidView.sUrlSplitter.matcher("file:///android_asset/path/ad.js");
+//        assertTrue(m.matches());
+//        assertEquals("file:///android_asset/path/", m.group(1));
+//        assertEquals("ad.js", m.group(2));
+//        m = MadvertiseMraidView.sUrlSplitter.matcher("http://sub.domain.com/ad.js");
+//        assertTrue(m.matches());
+//        assertEquals("http://sub.domain.com/", m.group(1));
+//        assertEquals("ad.js", m.group(2));
+//        m = MadvertiseMraidView.sUrlSplitter.matcher("http://domain.de/with/long/path/ad.js");
+//        assertTrue(m.matches());
+//        assertEquals("http://domain.de/with/long/path/", m.group(1));
+//        assertEquals("ad.js", m.group(2));
+//    }
 
     public void testXample_static() throws InterruptedException {
         // mraidView.loadAd("http://andlabs.info/jobs/MRAID_static/src/ad_loader.js");

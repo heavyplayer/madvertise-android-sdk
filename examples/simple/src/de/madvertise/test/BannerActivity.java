@@ -27,7 +27,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import de.madvertise.android.sdk.MadvertiseTracker;
+// import de.madvertise.android.sdk.MadvertiseTracker;
 import de.madvertise.android.sdk.MadvertiseView;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
@@ -39,7 +39,7 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
  */
 public class BannerActivity extends Activity implements MadvertiseViewCallbackListener {
 
-    private MadvertiseTracker mTracker;
+    // private MadvertiseTracker mTracker;
 
     private MadvertiseView mMadView;
 
@@ -85,10 +85,10 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         listView.setAdapter(adapter);
 
         // Retrieve a new instance of the a MadvertiseTracker
-        mTracker = MadvertiseTracker.getInstance(this);
+        // mTracker = MadvertiseTracker.getInstance(this);
 
         // Report the application's start.
-        mTracker.reportLaunch();
+        // mTracker.reportLaunch();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         super.onStart();
 
         // Report that the application becomes active
-        mTracker.reportActive();
+        // mTracker.reportActive();
     }
 
     @Override
@@ -104,7 +104,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         super.onDestroy();
 
         // Report that the application is being ended
-        mTracker.reportStop();
+        // mTracker.reportStop();
     }
 
     @Override
@@ -112,7 +112,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         super.onStop();
 
         // Report that the application becomes inactive
-        mTracker.reportInactive();
+        // mTracker.reportInactive();
     }
 
     /**
