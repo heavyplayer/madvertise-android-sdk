@@ -50,9 +50,9 @@ public class MadvertiseAd {
     private String mBannerType;
 
     private boolean mHasBanner = false;
-    
+
     private int mBannerHeight = 0;
-    
+
     private int mBannerWidth = 0;
 
     private JSONArray mJsonNames;
@@ -68,7 +68,7 @@ public class MadvertiseAd {
     /**
      * Constructor, blocking due to http request, should be called in a thread
      * pool, a request queue, a network thread
-     * 
+     *
      * @param context the applications context
      * @param json json object containing all ad information
      */
@@ -91,7 +91,7 @@ public class MadvertiseAd {
                             + " Value => " + mJsonValues.getString(i));
                 }
             }
-            
+
             // first get not nested values
             mClickUrl = MadvertiseUtil.getJSONValue(json, CLICK_URL_CODE);
             mText = MadvertiseUtil.getJSONValue(json, TEXT_CODE);
@@ -101,22 +101,22 @@ public class MadvertiseAd {
             if (bannerJson == null) {
             	return;
             }
-            
+
             // logic for new ad response
             mBannerUrl = MadvertiseUtil.getJSONValue(bannerJson, BANNER_URL_CODE);
             mHasBanner = true;
-        	
+
             // check, if rich media banner
-            JSONObject richMediaJson = MadvertiseUtil.getJSONObject(bannerJson, "rich_media"); 
+            JSONObject richMediaJson = MadvertiseUtil.getJSONObject(bannerJson, "rich_media");
             if (richMediaJson == null) {
         		return;
         	}
-            
+
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
             // mBannerUrl = "file:///android_asset/MRAID_andlabs_html_ad/banner.html";
             mBannerUrl = "http://dl.dropbox.com/u/44264257/MRAID_static_expand/src/ad_loader.js";
-            
+
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
             mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();
@@ -176,7 +176,7 @@ public class MadvertiseAd {
     protected String getBannerType() {
         return mBannerType;
     }
-    
+
     public int getBannerHeight() {
         return mBannerHeight;
     }

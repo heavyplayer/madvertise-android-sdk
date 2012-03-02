@@ -3,28 +3,32 @@
  		xmlns:android="http://schemas.android.com/apk/res/android"
  		xmlns:mad="http://schemas.android.com/apk/res/de.madvertise.test"
 		android:orientation="vertical"
-		android:layout_width="fill_parent" 
+		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
         android:gravity="center_horizontal"
 		>
-        
-        <!-- 
-        Create a new MadvertiseView. You can create multiple of them, e. g. one fixed and another in a ListView. 
+
+        <!--
+        Create a new MadvertiseView. You can create multiple of them, e. g. one fixed and another in a ListView.
         However, it is not recommended to use more than four of them.
         You can set the following attributes:
         textColor [color], the color your text ad's text should have. E.g. '#012'.
         textSize [integer], the size of your text ad's text. Maximum size is 20, minimum is 10.
         backgroundColor [color], the color the background of your text ads. E.g. '#012'.
         secondsToRefresh [integer], the time after which a new ad will be loaded. Minimum is 30.
-        bannerType [mma|leaderboard|fullscreen|portrait|landscape|medium_rectangle], the ad type of your banner. 
-                    You can also chain types like that: 'mma,portrait,landscape'. 
-                    The sizes are: mma 320x53, leaderboard 728x90, fullcreen 768x768, portrait 766x66, landscape 1024x66, medium_rectangle 300x250.                    
+        bannerType [mma|leaderboard|fullscreen|portrait|landscape|medium_rectangle|rich_media], the ad type of your banner.
+                    You can also chain types like that: 'mma,portrait,landscape'.
+                    The sizes are: mma 320x53, leaderboard 728x90, fullcreen 768x768, portrait 766x66, landscape 1024x66, medium_rectangle 300x250, rich_media is dynamic.
         animation [fade|left_to_right|top_down], the way new ads will be animated. 'fade' is default.
         deliverOnlyText [true|false], whether your ad only displays text or not. This only has effect on mma type banners.
+        placement_type [inline|interstitial], only for rich_media ads, default is inline. When declaring the placement_type as interstitial, you have to place your ad in
+        			a way that it is always visible, or, in other words, can not be scrolled out of the visible part of the screen.
+        max_view_width [integer] only for rich_media ads, default is 320. The max width you want an rich_media ad to have in its default state.
+        max_view_height [integer] only for rich_media ads, default is 53. The max height you want an rich_media ad to have in its default state.
         -->
 		<de.madvertise.android.sdk.MadvertiseView
 			android:id="@+id/madad"
-			android:layout_width="fill_parent" 
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			mad:backgroundColor="#555"
 			mad:textColor="#FF1F1F"
@@ -37,10 +41,10 @@
             mad:max_view_width="200"
             mad:max_view_height="100"
 		/>
-       
+
 		<ListView
 			android:id="@+id/country_list"
-			android:layout_width="wrap_content" 
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:background="#000000"
 		/>
