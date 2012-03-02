@@ -50,7 +50,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
-import android.provider.Settings.Secure;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
