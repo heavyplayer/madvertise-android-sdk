@@ -733,15 +733,11 @@ public class MadvertiseView extends FrameLayout {
 
                             HttpEntity entity = httpResponse.getEntity();
 
-//                            if (responseCode == 200 && entity != null) {
-                            if (responseCode == 200 || responseCode == 204) {
-//                                inputStream = entity.getContent();
-//                                String resultString = MadvertiseUtil
-//                                        .convertStreamToString(inputStream);
-//                                MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => "
-//                                        + resultString);
-//                                json = new JSONObject(resultString);
-                                json = new JSONObject("{\"text\":\"MMA Test Banner\",\"banner\":{\"banner_type\":\"rich_media\",\"banner_url\":\"http://dl.dropbox.com/u/44264257/MRAID_static_expand/src/ad_loader.js\",\"mraid\":true},\"has_banner\":true,\"cookies\":{\"madvertise\":\"UUMP-rgtyixhe\",\"mad_history\":\"gc0MbZIBzk9LYbY=\n\"},\"should_open_in_app\":true,\"tracking\":[\"http://ed1.9001.ad.madvertise.de/voxel.gif?lfn5o6yp\"],\"click_url\":\"http://ed1.9001.ad.madvertise.de/track/lfn5o6yp/site/TestTokn/ad/McSUHrsJ\",\"ad_width\":320,\"ad_height\":200}\"");
+                            if (responseCode == 200 && entity != null) {
+                                inputStream = entity.getContent();
+                                String resultString = MadvertiseUtil.convertStreamToString(inputStream);
+                                MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => " + resultString);
+                                json = new JSONObject(resultString);
 
                                 // set type and dimensions of this view
                                 adjustAdType(json);

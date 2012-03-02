@@ -85,11 +85,9 @@ public class MadvertiseAd {
         try {
             mJsonValues = json.toJSONArray(mJsonNames);
 
-            if (MadvertiseUtil.PRINT_LOG) {
-                for (int i = 0; i < mJsonNames.length(); i++) {
-                    MadvertiseUtil.logMessage(null, Log.DEBUG, "Key => " + mJsonNames.getString(i)
-                            + " Value => " + mJsonValues.getString(i));
-                }
+            for (int i = 0; i < mJsonNames.length(); i++) {
+                MadvertiseUtil.logMessage(null, Log.DEBUG, "Key => " + mJsonNames.getString(i)
+                        + " Value => " + mJsonValues.getString(i));
             }
 
             // first get not nested values

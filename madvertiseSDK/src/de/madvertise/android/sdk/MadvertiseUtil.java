@@ -492,11 +492,6 @@ public class MadvertiseUtil {
         	return;
         }	
 
-        //TODO: what is this for?
-//        if (!Log.isLoggable(logTag, level)) {
-//        	return;
-//        }
-        
         if (tag == null) {
             logTag = MadvertiseUtil.LOG;
         }
