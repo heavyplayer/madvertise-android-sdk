@@ -56,7 +56,6 @@ import java.io.InputStream;
 
 public class MadvertiseMraidView extends WebView {
 
-    private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
     private static String sCachePath;
     private static final int CLOSE_BUTTON_SIZE = 50;
     protected static final int STATE_LOADING = 0;
@@ -102,7 +101,7 @@ public class MadvertiseMraidView extends WebView {
 
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
-                MadvertiseUtil.logMessage(TAG, Log.INFO, "showing VideoView");
+                MadvertiseUtil.logMessage(null, Log.INFO, "showing VideoView");
                 super.onShowCustomView(view, callback);
                 if (view instanceof FrameLayout) {
                     FrameLayout frame = (FrameLayout) view;
@@ -167,8 +166,8 @@ public class MadvertiseMraidView extends WebView {
     }
 
     protected void loadAd(String url) {
-    	MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: " + url);
-    	String baseUrl = MadvertiseUtil.splitURL(url)[1];
+    	MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: " + url);
+    	String baseUrl = url.substring(0, url.lastIndexOf("/") - 1);
     	String mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources().openRawResource(de.madvertise.android.sdk.R.raw.mraid));
     	loadUrl("javascript:" + mraidJS);
 	    prepareMraid(baseUrl);
@@ -207,7 +206,7 @@ public class MadvertiseMraidView extends WebView {
                         while ((read = in.read(buffer)) != -1)
                             out.write(buffer, 0, read);
                     } catch (Exception e) {
-                        MadvertiseUtil.logMessage(TAG, Log.ERROR, e
+                        MadvertiseUtil.logMessage(null, Log.ERROR, e
                                 + " while copying mraid.js to cache directory");
                     }
                 }
@@ -221,7 +220,7 @@ public class MadvertiseMraidView extends WebView {
                 entry.put("contentlength", mraid.length());
                 cache.insert("cache", null, entry);
                 cache.close();
-                MadvertiseUtil.logMessage(TAG, Log.DEBUG, "prepared mraid.js for " + url);
+                MadvertiseUtil.logMessage(null, Log.DEBUG, "prepared mraid.js for " + url);
                 // TODO further long running (mraid 2.0) initialization here..
             }
             mJavaIsReady = true;

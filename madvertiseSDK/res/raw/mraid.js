@@ -130,5 +130,5 @@
       }
     }
   };
-  document.mraid_bridge.notifyReady();
+  mraid_bridge.notifyReady();
 }).call(this);
