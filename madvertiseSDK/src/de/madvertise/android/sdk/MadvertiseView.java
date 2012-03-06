@@ -154,6 +154,7 @@ public class MadvertiseView extends FrameLayout {
     private int mMaxViewHeight;
 
     private MadvertiseMraidView mMraidView;
+    private JSTesting mJSView;
 
     private boolean mFetchAdsEnabled = true;
 
@@ -265,7 +266,8 @@ public class MadvertiseView extends FrameLayout {
         if (mCurrentAd != null) {
             if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
                  if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
-                 	showMraidView();
+                	 showJSTestView();
+                	 // showMraidView();
                  } else {
                  	showImageView();
                  }
@@ -282,6 +284,22 @@ public class MadvertiseView extends FrameLayout {
             removeAllViews();
             notifyListener(false);
             setVisibility(View.GONE);
+        }
+    }
+    
+    private void showJSTestView() {
+        MadvertiseUtil.logMessage(null, Log.DEBUG, "Add JS test");
+
+        mJSView = new JSTesting(getContext().getApplicationContext(), mCurrentAd, mHandler);
+
+        // animate the old views
+        animateOldViews();
+
+        addView(mJSView);
+
+        final Animation animation = createAnimation(false);
+        if (animation != null) {
+        	mJSView.startAnimation(animation);
         }
     }
 
