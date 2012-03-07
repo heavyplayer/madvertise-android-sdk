@@ -19,11 +19,13 @@ this.mraid =      # export public API to global scope
   open: (url) -> mraid_bridge.open(url)
 
   expand: (url...) ->
-    if state == "default"
-      if url?.length == 0
-        mraid_bridge.expand()
-      else
-        mraid_bridge.expand(url[0])
+    mraid_bridge.logMessage("in expand : " + state)
+    # comment for testing
+    # if state == "default"
+    if url?.length == 0
+      mraid_bridge.expand()
+    else
+      mraid_bridge.expand(url[0])
 
   getPlacementType: -> placementType
 
@@ -35,8 +37,8 @@ this.mraid =      # export public API to global scope
     expandProperties.useCustomClose = properties.useCustomClose if properties.useCustomClose
     mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
 
-  useCustomClose: (useCustomClose) ->
-    expandProperties.useCustomClose = useCustomClose
+  useCustomClose: (useCustomCloseParams) ->
+    expandProperties.useCustomClose = useCustomCloseParams
     mraid_bridge.setExpandProperties(JSON.stringify(expandProperties))
     
   addEventListener: (event, listener) ->
@@ -53,7 +55,7 @@ this.mraid =      # export public API to global scope
   # internal functions
 
   fireEvent: (event) ->
-    # console.log "fireEvent "+event
+    mraid_bridge.logMessage("fireEvent : " + event)
     if listeners[event]
       for listener in listeners[event]
         if event == "ready"
@@ -68,6 +70,7 @@ this.mraid =      # export public API to global scope
 
   setState: (state_id) ->
     state = states[state_id]
+    mraid_bridge.logMessage("in setState : " + state)
     mraid.fireEvent("stateChange")
 
   setViewable: (is_viewable) ->

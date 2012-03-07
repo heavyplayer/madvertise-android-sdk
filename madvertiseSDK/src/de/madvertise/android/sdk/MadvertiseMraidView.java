@@ -171,6 +171,7 @@ public class MadvertiseMraidView extends WebView {
     private void checkReady() {
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
+        MadvertiseUtil.logMessage(null, Log.INFO, "Setting default expandProperties : " + mExpandProperties.toJson().toString());
         injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
         fireEvent("ready");
         setState(STATE_DEFAULT);
@@ -195,7 +196,13 @@ public class MadvertiseMraidView extends WebView {
 
     // to be called from the Ad (js side)
     Object mBridge = new Object() {
-        public void expand() {
+        
+    	@SuppressWarnings("unused")
+    	public void logMessage(String str) {
+    		MadvertiseUtil.logMessage(null, Log.INFO, "Called logMessage from Ad with : " + str);
+    	}
+    	
+    	public void expand() {
         	MadvertiseUtil.logMessage(null, Log.INFO, "Called expand from Ad or Java.");
             post(new Runnable() {
                 @Override
@@ -282,7 +289,7 @@ public class MadvertiseMraidView extends WebView {
 
     protected void setState(int state) {
         mState = state;
-        injectJs("mraid.setState('" + state + "');");
+        injectJs("mraid.setState(" + state + ");");
     }
 
     protected void fireEvent(String event) {
