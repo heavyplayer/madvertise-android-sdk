@@ -112,11 +112,8 @@ public class MadvertiseAd {
 
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
-//             mBannerUrl = "file:///android_asset/MRAID_andlabs_html_ad/banner.html";
-            mBannerUrl = "http://dl.dropbox.com/u/44264257/MRAID_static_expand/src/ad_loader.js";
-            mBannerUrl = "http://andlabs.info/jobs/MRAID_andlabs_html_ad/banner.html";
-//            mBannerUrl = "http://dl.dropbox.com/u/48980623/test.html";
-
+            // mBannerUrl = "file:///android_asset/MRAID_video/video.html";
+            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
 
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();

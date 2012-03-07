@@ -29,8 +29,6 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -38,14 +36,11 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebChromeClient.CustomViewCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.VideoView;
 
 public class MadvertiseMraidView extends WebView {
 
@@ -54,7 +49,6 @@ public class MadvertiseMraidView extends WebView {
     protected static final int STATE_HIDDEN = 1;
     protected static final int STATE_DEFAULT = 2;
     protected static final int STATE_EXPANDED = 3;
-//    private boolean mJavaIsReady;
     private int mState;
     private int mIndex;
     private boolean mOnScreen;
@@ -261,6 +255,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void setExpandProperties(String json) {
+        	
             mExpandProperties.readJson(json);
         }
     };

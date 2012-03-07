@@ -2,7 +2,6 @@
 package de.madvertise.android.sdk;
 
 import java.io.File;
-import java.util.regex.Matcher;
 
 import junit.framework.Assert;
 
