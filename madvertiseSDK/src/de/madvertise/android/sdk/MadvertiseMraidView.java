@@ -44,7 +44,6 @@ import android.widget.ImageButton;
 
 public class MadvertiseMraidView extends WebView {
 
-    private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
     private static final int CLOSE_BUTTON_SIZE = 50;
     protected static final int STATE_LOADING = 0;
     protected static final int STATE_HIDDEN = 1;
@@ -88,14 +87,14 @@ public class MadvertiseMraidView extends WebView {
         // This bridge stays available until this view is destroyed, hence no reloading when displaying new ads is necessary.
         addJavascriptInterface(mBridge, "mraid_bridge");
         
-        setWebViewClient( new WebViewClient() {
-            
+        setWebViewClient( new WebViewClient() {            
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 if(!url.endsWith("mraid.js")) {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "Setting mraid to default");
                     checkReady();
+
                 }
             }
         });
@@ -106,7 +105,7 @@ public class MadvertiseMraidView extends WebView {
     }
 
     protected void loadAd(String url) {
-    	MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: " + url);
+    	MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: " + url);
   
         if (mraidJS == null) {
             mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources()
@@ -116,8 +115,10 @@ public class MadvertiseMraidView extends WebView {
     	loadUrl("javascript:" + mraidJS);
     	
         if (url.endsWith(".js")) {
-            final String jsFile = MadvertiseUtil.splitURL(url)[0];
-            final String baseUrl = MadvertiseUtil.splitURL(url)[1];
+            final int lastIndex = url.lastIndexOf("/");
+            final String jsFile = url.substring(lastIndex, url.length() - 1);
+            final String baseUrl = url.substring(0, lastIndex - 1);
+
             
             loadDataWithBaseURL(baseUrl, "<html><head>" +
                     "<script type=\"text/javascript\" src=\"" + jsFile + "\"/>" +

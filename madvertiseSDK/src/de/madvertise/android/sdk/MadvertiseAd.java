@@ -117,6 +117,7 @@ public class MadvertiseAd {
             mBannerUrl = "http://andlabs.info/jobs/MRAID_andlabs_html_ad/banner.html";
 //            mBannerUrl = "http://dl.dropbox.com/u/48980623/test.html";
 
+
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
             mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();
