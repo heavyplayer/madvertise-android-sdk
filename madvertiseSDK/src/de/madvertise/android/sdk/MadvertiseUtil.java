@@ -20,6 +20,7 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -513,10 +514,18 @@ public class MadvertiseUtil {
     	return json.has(key) ? json.getString(key) : "";
     }
     
+    public static JSONArray getJSONArray(JSONObject json, String key) throws JSONException {
+    	if (json == null || key.equals("")) {
+    		throw new JSONException("Empty JSON or key");
+    	}
+    	return json.has(key) ? json.getJSONArray(key) : new JSONArray();
+    }
+    
     public static JSONObject getJSONObject(JSONObject json, String key) throws JSONException {
     	if (json == null || key.equals("")) {
     		throw new JSONException("Empty JSON or key");
     	}
     	return json.has(key) ? json.getJSONObject(key) : null;
     }
+
 }

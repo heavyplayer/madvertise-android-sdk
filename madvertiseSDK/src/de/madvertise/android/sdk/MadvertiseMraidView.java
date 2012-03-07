@@ -384,6 +384,7 @@ public class MadvertiseMraidView extends WebView {
             case STATE_DEFAULT:
                 // Set MadvertiseView to GONE. Note: This will cause this view
                 // to be GONE too.
+            	//TODO: stop reloading ads!!
                 ((ViewGroup) getParent()).setVisibility(View.GONE);
                 setState(STATE_HIDDEN);
                 break;

@@ -4,6 +4,7 @@ package de.madvertise.android.sdk;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.webkit.WebView;
@@ -67,8 +68,8 @@ class MadvertiseImageView extends WebView {
         content.append(
                 "<html><head><style>* {margin:0;padding:0;}</style></head><body>")
                 .append("<img src=\"" + mImageAd.getBannerUrl() + "\" height=\"" + newHeight
-                        + "\" width=\"" + newWidth + "\"/>").append("</html></head>");
-
+                        + "\" width=\"" + newWidth + "\"/>" + getImpressionTrackingTag()).append("</body></html>");
+        MadvertiseUtil.logMessage(null, Log.DEBUG, "Loading ad : " + content.toString());
         loadDataWithBaseURL(null, content.toString(), "text/html", "UTF-8", null);
     }
 
@@ -92,5 +93,13 @@ class MadvertiseImageView extends WebView {
         if (mAnimationListener != null) {
             mAnimationListener.onAnimationEnd();
         }
+    }
+    
+    private String getImpressionTrackingTag() {
+    	if (mImageAd != null && mImageAd.getImpresionTrackingUrl() != null && !mImageAd.getImpresionTrackingUrl().equals("")) {
+    		return "<img src=\"" + mImageAd.getImpresionTrackingUrl() + "\"/>";
+    	} else {
+    		return "";
+    	}
     }
 }
