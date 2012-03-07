@@ -147,7 +147,6 @@ public class MadvertiseMraidView extends WebView {
             final String jsFile = url.substring(lastIndex, url.length() - 1);
             final String baseUrl = url.substring(0, lastIndex - 1);
 
-            
             loadDataWithBaseURL(baseUrl, "<html><head>" +
                     "<script type=\"text/javascript\" src=\"" + jsFile + "\"/>" +
                     "</head><body>MRAID Ad</body></html>", "text/html", "utf-8", null);
@@ -197,6 +196,7 @@ public class MadvertiseMraidView extends WebView {
     // to be called from the Ad (js side)
     Object mBridge = new Object() {
         public void expand() {
+        	MadvertiseUtil.logMessage(null, Log.INFO, "Called expand from Ad or Java.");
             post(new Runnable() {
                 @Override
                 public void run() {
@@ -214,6 +214,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void expand(final String url) {
+        	MadvertiseUtil.logMessage(null, Log.INFO, "Called expand from Ad with : " + url);
             expand();
             post(new Runnable() {
                 @Override
@@ -226,6 +227,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void close() {
+        	MadvertiseUtil.logMessage(null, Log.INFO, "Called close from Ad with.");
             post(new Runnable() {
                 @Override
                 public void run() {
@@ -237,6 +239,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void open(final String url) {
+        	MadvertiseUtil.logMessage(null, Log.INFO, "Called open from Ad with : " + url);
             post(new Runnable() {
                 @Override
                 public void run() {
@@ -255,7 +258,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void setExpandProperties(String json) {
-        	
+        	MadvertiseUtil.logMessage(null, Log.INFO, "Called setExpandProperties from Ad with : " + json);
             mExpandProperties.readJson(json);
         }
     };
