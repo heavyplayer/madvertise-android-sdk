@@ -26,14 +26,9 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-// import android.graphics.Picture;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -41,30 +36,21 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.VideoView;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
 public class MadvertiseMraidView extends WebView {
 
     private static final String TAG = MadvertiseMraidView.class.getCanonicalName();
-    private static String sCachePath;
     private static final int CLOSE_BUTTON_SIZE = 50;
     protected static final int STATE_LOADING = 0;
     protected static final int STATE_HIDDEN = 1;
     protected static final int STATE_DEFAULT = 2;
     protected static final int STATE_EXPANDED = 3;
-    private boolean mJavaIsReady;
-    private boolean mJsIsReady;
+//    private boolean mJavaIsReady;
     private int mState;
     private int mIndex;
     private boolean mOnScreen;
@@ -77,6 +63,7 @@ public class MadvertiseMraidView extends WebView {
     private AnimationEndListener mAnimationEndListener;
     private MadvertiseView mMadView;
     private boolean mViewable;
+    private static String mraidJS;
 
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
             AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseView madView) {
@@ -89,7 +76,6 @@ public class MadvertiseMraidView extends WebView {
 
     public MadvertiseMraidView(Context context) {
         super(context);
-        sCachePath = "/data/data/" + getContext().getPackageName() + "/cache/webviewCache/mraid";
         setVerticalScrollBarEnabled(false);
         setHorizontalScrollBarEnabled(false);
         setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
@@ -98,68 +84,21 @@ public class MadvertiseMraidView extends WebView {
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setJavaScriptEnabled(true);
         settings.setPluginsEnabled(true);
-        setWebChromeClient(new WebChromeClient() {
-
+        
+        // This bridge stays available until this view is destroyed, hence no reloading when displaying new ads is necessary.
+        addJavascriptInterface(mBridge, "mraid_bridge");
+        
+        setWebViewClient( new WebViewClient() {
+            
             @Override
-            public void onShowCustomView(View view, CustomViewCallback callback) {
-                MadvertiseUtil.logMessage(TAG, Log.INFO, "showing VideoView");
-                super.onShowCustomView(view, callback);
-                if (view instanceof FrameLayout) {
-                    FrameLayout frame = (FrameLayout) view;
-                    if (frame.getFocusedChild() instanceof VideoView) {
-                        final VideoView video = (VideoView) ((FrameLayout) view).getFocusedChild();
-                        frame.removeView(video);
-                        mExpandLayout.addView(video);
-                        video.setOnCompletionListener(new OnCompletionListener() {
-
-                            @Override
-                            public void onCompletion(MediaPlayer player) {
-                                mExpandLayout.removeView(video);
-                                player.stop();
-                            }
-                        });
-                        video.start();
-                    }
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                if(!url.endsWith("mraid.js")) {
+                    MadvertiseUtil.logMessage(null, Log.DEBUG, "Setting mraid to default");
+                    checkReady();
                 }
             }
-
         });
-
-//        setPictureListener(new PictureListener() {
-// TODO scrolling to center interferes with ad creatives animation
-//            @Override
-//            // scroll to center
-//            public void onNewPicture(WebView wv, Picture pic) {
-//                int y = (pic.getHeight() - wv.getHeight()) / 2;
-//                int x = (pic.getWidth() - wv.getWidth());
-//                wv.scrollTo(x, y);
-//            }
-//        });
-
-        addJavascriptInterface(mBridge, "mraid_bridge");
-
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            // for Android 3.0+, we need to intercept the mraid.js-request
-            setWebViewClient(new WebViewClient() {
-                @Override
-                public WebResourceResponse shouldInterceptRequest(WebView view,
-                        String url) {
-                    if (url.endsWith("mraid.js")) {
-                    	MadvertiseUtil.logMessage(null, Log.INFO, "intercepted src=mraid.js");
-                        final InputStream in = getContext().getResources().openRawResource(
-                                de.madvertise.android.sdk.R.raw.mraid);
-                        final WebResourceResponse response = new WebResourceResponse(
-                                "application/JavaScript", "utf-8", in);
-
-                        return response;
-                    }
-
-                    return super.shouldInterceptRequest(view, url);
-                }
-            });
-
-            mJavaIsReady = true;
-        }
     }
 
     protected void loadAd(MadvertiseAd ad) {
@@ -168,18 +107,28 @@ public class MadvertiseMraidView extends WebView {
 
     protected void loadAd(String url) {
     	MadvertiseUtil.logMessage(TAG, Log.INFO, "loading html Ad: " + url);
-    	String baseUrl = MadvertiseUtil.splitURL(url)[1];
-    	String mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources().openRawResource(de.madvertise.android.sdk.R.raw.mraid));
+  
+        if (mraidJS == null) {
+            mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources()
+                    .openRawResource(de.madvertise.android.sdk.R.raw.mraid));
+        }
+    	
     	loadUrl("javascript:" + mraidJS);
-	    prepareMraid(baseUrl);
-	    loadUrl(url);
+    	
+        if (url.endsWith(".js")) {
+            final String jsFile = MadvertiseUtil.splitURL(url)[0];
+            final String baseUrl = MadvertiseUtil.splitURL(url)[1];
+            
+            loadDataWithBaseURL(baseUrl, "<html><head>" +
+                    "<script type=\"text/javascript\" src=\"" + jsFile + "\"/>" +
+                    "</head><body>MRAID Ad</body></html>", "text/html", "utf-8", null);
+        } else {
+            loadUrl(url);
+        }
     }
 
     @Override
     public void loadUrl(String url) {
-        if (!url.startsWith("javascript:")) {
-            prepareMraid(url.substring(0, url.lastIndexOf("/") - 1));
-        }
         MadvertiseUtil.logMessage(null, Log.INFO, "Loading url now: " + url);
         super.loadUrl(url);
     }
@@ -187,59 +136,19 @@ public class MadvertiseMraidView extends WebView {
     @Override
     public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding,
             String historyUrl) {
-        prepareMraid(baseUrl);
+        MadvertiseUtil.logMessage(null, Log.INFO, "Loading url now: " + baseUrl + " with data: " + data);
         super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
     }
 
-    private void prepareMraid(String baseUrl) {
-        // For android 2.3.3 and before we need to trick the cache a little
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            if (baseUrl.startsWith("http:")) { // because cache hack works only
-                                               // for online resources
-                File mraid = new File(sCachePath);
-                if (!mraid.exists()) {
-                    try { // copy mraid.js to cache directory
-                        int read;
-                        byte[] buffer = new byte[1024];
-                        FileOutputStream out = new FileOutputStream(mraid);
-                        InputStream in = getContext().getResources().openRawResource(
-                                de.madvertise.android.sdk.R.raw.mraid);
-                        while ((read = in.read(buffer)) != -1)
-                            out.write(buffer, 0, read);
-                    } catch (Exception e) {
-                        MadvertiseUtil.logMessage(TAG, Log.ERROR, e
-                                + " while copying mraid.js to cache directory");
-                    }
-                }
-                SQLiteDatabase cache = getContext().openOrCreateDatabase("webviewCache.db",
-                        SQLiteDatabase.OPEN_READWRITE, null);
-                ContentValues entry = new ContentValues();
-                String url = baseUrl + "mraid.js";
-                entry.put("url", url);
-                entry.put("filepath", "mraid");
-                entry.put("mimetype", "text/javascript");
-                entry.put("contentlength", mraid.length());
-                cache.insert("cache", null, entry);
-                cache.close();
-                MadvertiseUtil.logMessage(TAG, Log.DEBUG, "prepared mraid.js for " + url);
-                // TODO further long running (mraid 2.0) initialization here..
-            }
-            mJavaIsReady = true;
-        }
-        checkReady();
-
-    }
-
     private void checkReady() {
-        if (mJavaIsReady && mJsIsReady && mState != STATE_DEFAULT) {
-            DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-            mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
-            injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
-            fireEvent("ready");
-            setState(STATE_DEFAULT);
-            checkViewable();
-            if (mLoadingCompletedHandler != null)
-                mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
+        injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
+        fireEvent("ready");
+        setState(STATE_DEFAULT);
+        checkViewable();
+        if (mLoadingCompletedHandler != null) {
+            mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);
         }
     }
 
@@ -258,14 +167,6 @@ public class MadvertiseMraidView extends WebView {
 
     // to be called from the Ad (js side)
     Object mBridge = new Object() {
-
-        @SuppressWarnings("unused")
-        // because it IS used from the js side
-        public void notifyReady() {
-            mJsIsReady = true;
-            checkReady();
-        }
-
         public void expand() {
             post(new Runnable() {
                 @Override

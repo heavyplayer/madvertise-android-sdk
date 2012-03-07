@@ -79,6 +79,3 @@ this.mraid =      # export public API to global scope
       placementType = "inline"
     else if type == 1
       placementType = "interstitial"
-
-
-mraid_bridge.notifyReady()
