@@ -29,6 +29,8 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -36,11 +38,14 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebChromeClient.CustomViewCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.VideoView;
 
 public class MadvertiseMraidView extends WebView {
 
@@ -98,6 +103,35 @@ public class MadvertiseMraidView extends WebView {
                 }
             }
         });
+        
+        // TODO: This does not work yet
+//        setWebChromeClient(new WebChromeClient() {
+//
+//            @Override
+//            public void onShowCustomView(View view, CustomViewCallback callback) {
+//                MadvertiseUtil.logMessage(null, Log.INFO, "showing VideoView");
+//                super.onShowCustomView(view, callback);
+//                if (view instanceof FrameLayout) {
+//                    FrameLayout frame = (FrameLayout) view;
+//                    if (frame.getFocusedChild() instanceof VideoView) {
+//                        final VideoView video = (VideoView) ((FrameLayout) view).getFocusedChild();
+//                        frame.removeView(video);
+//                        mExpandLayout.addView(video);
+//                        video.setOnCompletionListener(new OnCompletionListener() {
+//
+//                            @Override
+//                            public void onCompletion(MediaPlayer player) {
+//                                mExpandLayout.removeView(video);
+//                                player.stop();
+//                            }
+//                        });
+//                        video.start();
+//                    }
+//                }
+//            }
+//
+//        });
+
     }
 
     protected void loadAd(MadvertiseAd ad) {
