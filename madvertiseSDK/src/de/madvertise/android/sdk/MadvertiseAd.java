@@ -40,8 +40,8 @@ public class MadvertiseAd {
     private final String BANNER_URL_CODE = "url";
 
     private final String TEXT_CODE = "text";
-    
-    private final String IMPRESSION_TRACKING_URL_CODE = "tracking";
+
+    private final String IMPRESSION_TRACKING_ARRAY_CODE = "tracking";
 
     private String mClickUrl;
 
@@ -56,8 +56,8 @@ public class MadvertiseAd {
     private int mBannerHeight = 0;
 
     private int mBannerWidth = 0;
-    
-    private String mImpressionTrackingUrl;
+
+    private JSONArray mImpressionTrackingArray;
 
     private JSONArray mJsonNames;
 
@@ -97,13 +97,7 @@ public class MadvertiseAd {
             // first get not nested values
             mClickUrl = MadvertiseUtil.getJSONValue(json, CLICK_URL_CODE);
             mText = MadvertiseUtil.getJSONValue(json, TEXT_CODE);
-            JSONArray trackingArray = MadvertiseUtil.getJSONArray(json, IMPRESSION_TRACKING_URL_CODE);
-            if (trackingArray.length() > 0) {
-            	mImpressionTrackingUrl = trackingArray.getString(0);
-            } else {
-            	mImpressionTrackingUrl = "";
-            }
-           
+            mImpressionTrackingArray = MadvertiseUtil.getJSONArray(json, IMPRESSION_TRACKING_ARRAY_CODE);
 
             // check, if we have a banner
             JSONObject bannerJson = MadvertiseUtil.getJSONObject(json, "banner");
@@ -123,12 +117,12 @@ public class MadvertiseAd {
 
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
-            
+
             // Works
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
            
             // Works
-            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
+//            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
             
             // Looks like its working, as an improvement expand properties should be set though. 
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
@@ -138,7 +132,8 @@ public class MadvertiseAd {
 
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-flipad-container/page-flip-mraid/index.html";
 
-                        
+             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
+            
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
             mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();
@@ -206,10 +201,10 @@ public class MadvertiseAd {
     protected int getBannerWidth() {
         return mBannerWidth;
     }
-    
-    protected String getImpresionTrackingUrl() {
-    	return mImpressionTrackingUrl;
+
+    protected JSONArray getImpressionTrackingArray() {
+    	return mImpressionTrackingArray;
     }
-    
-    
+
+
 }

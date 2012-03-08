@@ -13,7 +13,7 @@
 
   placementType = "inline";
 
-  state = "loading";
+  state = states[0];
 
   viewable = false;
 
@@ -117,7 +117,19 @@
       return _results;
     },
     setState: function(state_id) {
-      state = states[state_id];
+      switch (state_id) {
+        case 0:
+          state = "loading";
+          break;
+        case 1:
+          state = "hidden";
+          break;
+        case 2:
+          state = "default";
+          break;
+        case 3:
+          state = "expanded";
+      }
       mraid_bridge.logMessage("in setState : " + state);
       return mraid.fireEvent("stateChange");
     },

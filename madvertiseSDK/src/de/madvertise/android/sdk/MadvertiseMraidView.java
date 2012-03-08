@@ -175,8 +175,8 @@ public class MadvertiseMraidView extends WebView {
 
     private void checkReady() {
         injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
-        fireEvent("ready");
         setState(STATE_DEFAULT);
+        fireEvent("ready");
         checkViewable();
         if (mLoadingCompletedHandler != null) {
             mLoadingCompletedHandler.sendEmptyMessage(MadvertiseView.MAKE_VISIBLE);

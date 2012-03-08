@@ -2,7 +2,7 @@
 expandProperties = width: 320, height: 480, useCustomClose: false, isModal: false
 states = ["loading", "hidden", "default", "expanded"]
 placementType = "inline"
-state = "loading"
+state = states[0]
 viewable = false
 listeners = {}
 
@@ -70,7 +70,13 @@ this.mraid =      # export public API to global scope
     listener(message, action) for listener in listeners["error"]
 
   setState: (state_id) ->
-    state = states[state_id]
+    # iterating through the array of states is too slow, this switch is way faster.
+  	switch state_id
+      when 0 then state = "loading"
+      when 1 then state = "hidden"
+      when 2 then state = "default"
+      when 3 then state= "expanded"
+
     mraid_bridge.logMessage("in setState : " + state)
     mraid.fireEvent("stateChange")
 
