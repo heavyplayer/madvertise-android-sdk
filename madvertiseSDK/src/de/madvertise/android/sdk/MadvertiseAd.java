@@ -119,20 +119,21 @@ public class MadvertiseAd {
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
 
             // Works
-//            mBannerUrl = "ht7tp://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
+            // mBannerUrl = "ht7tp://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
 
             // ad is not expanded properly, a white part stays on the screen.
-            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
+             // mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
 
             // Looks like its working, as an improvement expand properties should be set though.
-//            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
+            // mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
 
             //TODO: totally weird, close is called too often by the ad.
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-overlayad-container/overlay-mraid/index.html";
 
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-flipad-container/page-flip-mraid/index.html";
 
-
+             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
+            
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
             mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();
