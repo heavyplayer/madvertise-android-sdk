@@ -43,6 +43,7 @@ this.mraid =      # export public API to global scope
     
   addEventListener: (event, listener) ->
     if event in ["ready", "stateChange", "viewableChange", "error"]
+      mraid_bridge.logMessage("adding event listener for " + event)      	
       (listeners[event] ||= []).push listener
 
   removeEventListener: (event, listener...) ->
