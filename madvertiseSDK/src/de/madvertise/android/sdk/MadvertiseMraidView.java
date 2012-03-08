@@ -61,8 +61,9 @@ public class MadvertiseMraidView extends WebView {
     private AnimationEndListener mAnimationEndListener;
     private MadvertiseView mMadView;
     private boolean mViewable;
+    private FrameLayout.LayoutParams mLayoutParams;
     private static String mraidJS;
-
+    
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
             AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseView madView) {
         this(context);
@@ -355,6 +356,7 @@ public class MadvertiseMraidView extends WebView {
         
             content.addView(mExpandLayout);
             mOriginalParent.addView(placeholderView, mIndex);
+            mOriginalParent.setVisibility(View.GONE);
             mState = STATE_EXPANDED;
         }
     }
@@ -368,6 +370,7 @@ public class MadvertiseMraidView extends WebView {
                     this.setLayoutParams(mOriginalParent.getChildAt(mIndex).getLayoutParams());
                     mOriginalParent.removeViewAt(mIndex);
                     mOriginalParent.addView(this, mIndex);
+                    mOriginalParent.setVisibility(View.VISIBLE);
                 }
                 setState(STATE_DEFAULT);
                 if (mListener != null) {
