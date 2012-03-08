@@ -83,6 +83,11 @@ public class MadvertiseMraidView extends WebView {
         settings.setJavaScriptEnabled(true);
         settings.setPluginsEnabled(true);
         
+        // Initialize the default expand properties.
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
+        MadvertiseUtil.logMessage(null, Log.INFO, "Setting default expandProperties : " + mExpandProperties.toJson().toString());
+        
         // This bridge stays available until this view is destroyed, hence no reloading when displaying new ads is necessary.
         addJavascriptInterface(mBridge, "mraid_bridge");
         
@@ -169,9 +174,6 @@ public class MadvertiseMraidView extends WebView {
     }
 
     private void checkReady() {
-        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-        mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
-        MadvertiseUtil.logMessage(null, Log.INFO, "Setting default expandProperties : " + mExpandProperties.toJson().toString());
         injectJs("mraid.setExpandProperties(" + mExpandProperties.toJson() + ");");
         fireEvent("ready");
         setState(STATE_DEFAULT);
@@ -289,7 +291,7 @@ public class MadvertiseMraidView extends WebView {
 
     protected void setState(int state) {
         mState = state;
-        injectJs("mraid.setState(" + state + ");");
+        injectJs("mraid.setState('" + state + "');");
     }
 
     protected void fireEvent(String event) {
@@ -326,47 +328,49 @@ public class MadvertiseMraidView extends WebView {
         mOriginalParent = (ViewGroup) getParent();
 
         int index = 0;
-        int count = mOriginalParent.getChildCount();
-        for (index = 0; index < count; index++) {
-            if (mOriginalParent.getChildAt(index) == this)
-                break;
-        }
-
-        mIndex = index;
-
-        this.setLayoutParams(adParams);
-        mOriginalParent.removeView(this);
-        mExpandLayout.addView(this);
-
-        final ImageButton closeButton = new ImageButton(getContext());
-        closeButton.setId(43);
-        final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
-                CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
-        closeButtonParams.gravity = Gravity.RIGHT;
-        closeButton.setLayoutParams(closeButtonParams);
-        closeButton.setBackgroundColor(Color.TRANSPARENT);
-        closeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                close();
+        if(mOriginalParent != null ) {
+            int count = mOriginalParent.getChildCount();
+            for (index = 0; index < count; index++) {
+                if (mOriginalParent.getChildAt(index) == this)
+                    break;
             }
-        });
-
-        if (!mExpandProperties.useCustomClose) {
-            closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+    
+            mIndex = index;
+    
+            this.setLayoutParams(adParams);
+            mOriginalParent.removeView(this);
+            mExpandLayout.addView(this);
+    
+            final ImageButton closeButton = new ImageButton(getContext());
+            closeButton.setId(43);
+            final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
+                    CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
+            closeButtonParams.gravity = Gravity.RIGHT;
+            closeButton.setLayoutParams(closeButtonParams);
+            closeButton.setBackgroundColor(Color.TRANSPARENT);
+            closeButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    close();
+                }
+            });
+    
+            if (!mExpandProperties.useCustomClose) {
+                closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+            }
+    
+            mExpandLayout.addView(closeButton);
+    
+            content.addView(mExpandLayout);
+            mOriginalParent.addView(placeholderView, mIndex);
+            mState = STATE_EXPANDED;
         }
-
-        mExpandLayout.addView(closeButton);
-
-        content.addView(mExpandLayout);
-        mOriginalParent.addView(placeholderView, mIndex);
-        mState = STATE_EXPANDED;
     }
 
     private void close() {
         switch (mState) {
             case STATE_EXPANDED:
-                if (mExpandLayout != null) {
+                if (mExpandLayout != null && mOriginalParent != null) {
                     ((ViewGroup) mExpandLayout.getParent()).removeView(mExpandLayout);
                     mExpandLayout.removeView(this);
                     this.setLayoutParams(mOriginalParent.getChildAt(mIndex).getLayoutParams());
@@ -384,9 +388,11 @@ public class MadvertiseMraidView extends WebView {
             case STATE_DEFAULT:
                 // Set MadvertiseView to GONE. Note: This will cause this view
                 // to be GONE too.
-            	//TODO: stop reloading ads!!
                 ((ViewGroup) getParent()).setVisibility(View.GONE);
                 setState(STATE_HIDDEN);
+                if(mMadView != null) {
+                    mMadView.setFetchingAdsEnabled(false);
+                }
                 break;
         }
     }
@@ -425,6 +431,7 @@ public class MadvertiseMraidView extends WebView {
         private static final String IS_MODAL = "isModal";
         private int mMaxWidth;
         private int mMaxHeight;
+        private float mScale = getResources().getDisplayMetrics().density;
         public int scrollX;
         public int scrollY;
         public int width;
@@ -458,10 +465,10 @@ public class MadvertiseMraidView extends WebView {
                 jsonObject = new JSONObject(json);
 
                 if (jsonObject.has(HEIGHT)) {
-                    width = jsonObject.getInt(WIDTH);
+                    width = (int) (jsonObject.getInt(WIDTH) * mScale);
                 }
                 if (jsonObject.has(WIDTH)) {
-                    height = jsonObject.getInt(HEIGHT);
+                    height = (int) (jsonObject.getInt(HEIGHT) * mScale);
                 }
                 if (jsonObject.has(USE_CUSTOM_CLOSE)) {
                     useCustomClose = jsonObject.getBoolean(USE_CUSTOM_CLOSE);

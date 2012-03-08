@@ -40,7 +40,7 @@ public class MadvertiseAd {
     private final String BANNER_URL_CODE = "url";
 
     private final String TEXT_CODE = "text";
-    
+
     private final String IMPRESSION_TRACKING_ARRAY_CODE = "tracking";
 
     private String mClickUrl;
@@ -56,7 +56,7 @@ public class MadvertiseAd {
     private int mBannerHeight = 0;
 
     private int mBannerWidth = 0;
-    
+
     private JSONArray mImpressionTrackingArray;
 
     private JSONArray mJsonNames;
@@ -117,8 +117,21 @@ public class MadvertiseAd {
 
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
-            // mBannerUrl = "file:///android_asset/MRAID_video/video.html";
+
+            // Works
+//            mBannerUrl = "ht7tp://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
+
+            // ad is not expanded properly, a white part stays on the screen.
             mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
+
+            // Looks like its working, as an improvement expand properties should be set though.
+//            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
+
+            //TODO: totally weird, close is called too often by the ad.
+//            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-overlayad-container/overlay-mraid/index.html";
+
+//            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-flipad-container/page-flip-mraid/index.html";
+
 
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
@@ -187,10 +200,10 @@ public class MadvertiseAd {
     protected int getBannerWidth() {
         return mBannerWidth;
     }
-    
+
     protected JSONArray getImpressionTrackingArray() {
     	return mImpressionTrackingArray;
     }
-    
-    
+
+
 }

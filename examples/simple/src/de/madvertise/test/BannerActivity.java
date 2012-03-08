@@ -150,8 +150,8 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
     public void onAdClicked() {
         Log.d("YOUR_LOG_TAG", "Ad clicked");
         // stop loading new ads and "remove" the view from the layout
-        mMadView.setFetchingAdsEnabled(false);
-        mMadView.setVisibility(View.GONE);
+//        mMadView.setFetchingAdsEnabled(false);
+//        mMadView.setVisibility(View.GONE);
     }
 
     @Override
