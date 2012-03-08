@@ -1153,10 +1153,10 @@ public class MadvertiseView extends FrameLayout {
 
         if (!isEnabled) {
             stopRequestThread();
+            mAdTimer.cancel();
+            mAdTimer = null;
         } else {
-            if(mRequestThread == null || !mRequestThread.isAlive()) {
-                onViewCallback(true);
-            }
+            onViewCallback(true);
         }
     }
 
