@@ -286,6 +286,27 @@ public class MadvertiseMraidView extends WebView {
         } else {
             mPlacementType = placementType;
             injectJs("mraid.setPlacementType(" + mPlacementType + ");");
+            
+            // Close button in default size for interstitial ads
+            if(placementType == MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL) {
+                final ImageButton closeButton = new ImageButton(getContext());
+                final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
+                        CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
+                closeButtonParams.gravity = Gravity.RIGHT;
+                closeButton.setLayoutParams(closeButtonParams);
+                closeButton.setBackgroundColor(Color.TRANSPARENT);
+                closeButton.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        close();
+                    }
+                });
+                if (!mExpandProperties.useCustomClose) {
+                    closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+                }
+        
+                ((ViewGroup) getParent()).addView(closeButton);
+            }
         }
     }
 
