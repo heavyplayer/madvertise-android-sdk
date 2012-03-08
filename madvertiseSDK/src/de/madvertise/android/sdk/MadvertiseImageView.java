@@ -1,6 +1,8 @@
 
 package de.madvertise.android.sdk;
 
+import org.json.JSONException;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
@@ -96,10 +98,19 @@ class MadvertiseImageView extends WebView {
     }
     
     private String getImpressionTrackingTag() {
-    	if (mImageAd != null && mImageAd.getImpresionTrackingUrl() != null && !mImageAd.getImpresionTrackingUrl().equals("")) {
-    		return "<img src=\"" + mImageAd.getImpresionTrackingUrl() + "\"/>";
-    	} else {
+    	if (mImageAd == null || mImageAd.getImpressionTrackingArray() == null || mImageAd.getImpressionTrackingArray().length() == 0) {
     		return "";
     	}
+    	
+    	StringBuilder content = new StringBuilder("");
+    	try {
+	    	for (int i = 0; i < mImageAd.getImpressionTrackingArray().length(); i++) {
+	    		content.append("<img src=\"" + mImageAd.getImpressionTrackingArray().get(i) + "\"/>");
+	    	}
+		} catch (JSONException e) {
+			content = new StringBuilder("");
+		}
+    	
+    	return content.toString();
     }
 }
