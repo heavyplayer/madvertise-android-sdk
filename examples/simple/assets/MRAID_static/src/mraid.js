@@ -13,7 +13,7 @@
 
   placementType = "inline";
 
-  state = states[0];
+  state = "loading";
 
   viewable = false;
 

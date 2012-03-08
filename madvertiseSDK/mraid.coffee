@@ -2,7 +2,7 @@
 expandProperties = width: 320, height: 480, useCustomClose: false, isModal: false
 states = ["loading", "hidden", "default", "expanded"]
 placementType = "inline"
-state = states[0]
+state = "loading"
 viewable = false
 listeners = {}
 
@@ -75,7 +75,7 @@ this.mraid =      # export public API to global scope
       when 0 then state = "loading"
       when 1 then state = "hidden"
       when 2 then state = "default"
-      when 3 then state= "expanded"
+      when 3 then state = "expanded"
 
     mraid_bridge.logMessage("in setState : " + state)
     mraid.fireEvent("stateChange")

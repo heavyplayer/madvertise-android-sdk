@@ -291,7 +291,7 @@ public class MadvertiseMraidView extends WebView {
 
     protected void setState(int state) {
         mState = state;
-        injectJs("mraid.setState('" + state + "');");
+        injectJs("mraid.setState(" + state + ");");
     }
 
     protected void fireEvent(String event) {

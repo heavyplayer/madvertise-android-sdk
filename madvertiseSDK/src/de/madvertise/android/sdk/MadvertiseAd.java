@@ -126,12 +126,14 @@ public class MadvertiseAd {
             
             // Looks like its working, as an improvement expand properties should be set though. 
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
-            
-            //TODO: totally weird, close is called too often by the ad. 
+
+            // Works
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-overlayad-container/overlay-mraid/index.html";
 
+            // Works
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-flipad-container/page-flip-mraid/index.html";
 
+            // Works
              mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
             
             // get sizes for rich media ad
