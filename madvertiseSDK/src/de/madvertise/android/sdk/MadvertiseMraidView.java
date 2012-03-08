@@ -98,7 +98,12 @@ public class MadvertiseMraidView extends WebView {
                 if(!url.endsWith("mraid.js")) {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "Setting mraid to default");
                     checkReady();
-
+                    
+                    // Close button in default size for interstitial ads
+                    if(mPlacementType == MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL) {
+                        final ImageButton closeButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
+                        closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+                    }
                 }
             }
         });
@@ -286,27 +291,6 @@ public class MadvertiseMraidView extends WebView {
         } else {
             mPlacementType = placementType;
             injectJs("mraid.setPlacementType(" + mPlacementType + ");");
-            
-            // Close button in default size for interstitial ads
-            if(placementType == MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL) {
-                final ImageButton closeButton = new ImageButton(getContext());
-                final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
-                        CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
-                closeButtonParams.gravity = Gravity.RIGHT;
-                closeButton.setLayoutParams(closeButtonParams);
-                closeButton.setBackgroundColor(Color.TRANSPARENT);
-                closeButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        close();
-                    }
-                });
-                if (!mExpandProperties.useCustomClose) {
-                    closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-                }
-        
-                ((ViewGroup) getParent()).addView(closeButton);
-            }
         }
     }
 
@@ -362,19 +346,8 @@ public class MadvertiseMraidView extends WebView {
             mOriginalParent.removeView(this);
             mExpandLayout.addView(this);
     
-            final ImageButton closeButton = new ImageButton(getContext());
+            final ImageButton closeButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
             closeButton.setId(43);
-            final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
-                    CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
-            closeButtonParams.gravity = Gravity.RIGHT;
-            closeButton.setLayoutParams(closeButtonParams);
-            closeButton.setBackgroundColor(Color.TRANSPARENT);
-            closeButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    close();
-                }
-            });
     
             if (!mExpandProperties.useCustomClose) {
                 closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
@@ -417,6 +390,26 @@ public class MadvertiseMraidView extends WebView {
                 break;
         }
     }
+    
+    private ImageButton addCloseButtonToViewGroup(final ViewGroup parent) {
+        final ImageButton closeButton = new ImageButton(getContext());
+        final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
+                CLOSE_BUTTON_SIZE, CLOSE_BUTTON_SIZE);
+        closeButtonParams.gravity = Gravity.RIGHT;
+        closeButton.setLayoutParams(closeButtonParams);
+        closeButton.setBackgroundColor(Color.TRANSPARENT);
+        closeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                close();
+            }
+        });
+
+        parent.addView(closeButton);
+        
+        return closeButton;
+    }
+    
 
     @Override
     protected void onAttachedToWindow() {
