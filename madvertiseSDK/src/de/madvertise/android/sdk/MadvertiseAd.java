@@ -128,13 +128,13 @@ public class MadvertiseAd {
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
 
             // Works
-//            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-overlayad-container/overlay-mraid/index.html";
+            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-overlayad-container/overlay-mraid/index.html";
 
             // Works
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-flipad-container/page-flip-mraid/index.html";
 
             // Works
-             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
+//             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
             
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();

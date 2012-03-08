@@ -352,9 +352,7 @@ public class MadvertiseMraidView extends WebView {
             if (!mExpandProperties.useCustomClose) {
                 closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
             }
-    
-            mExpandLayout.addView(closeButton);
-    
+        
             content.addView(mExpandLayout);
             mOriginalParent.addView(placeholderView, mIndex);
             mState = STATE_EXPANDED;
