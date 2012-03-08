@@ -125,9 +125,9 @@ public class MadvertiseAd {
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
             
             // Works
-//            mBannerUrl = "ht7tp://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
+//            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
            
-            // ad is not expanded properly, a white part stays on the screen.
+            // Works
             mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
             
             // Looks like its working, as an improvement expand properties should be set though. 
