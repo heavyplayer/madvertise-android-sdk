@@ -137,7 +137,9 @@ public class MadvertiseAd {
 //             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
 
 //             mBannerUrl = "http://dl.dropbox.com/u/44264257/overlay-mraid/index.html";
-
+            
+            mBannerUrl = "http://dl.dropbox.com/u/48980623/overlay-mraid/index.html";
+            
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
             mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();

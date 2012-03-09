@@ -183,7 +183,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Constructor
-     *
+     * 
      * @param context
      */
     public MadvertiseView(final Context context) {
@@ -192,7 +192,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Constructor
-     *
+     * 
      * @param context
      * @param attrs
      */
@@ -221,7 +221,8 @@ public class MadvertiseView extends FrameLayout {
 
         if (!MadvertiseUtil.checkForBrowserDeclaration(getContext())) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
-            MadvertiseUtil.logMessage(
+            MadvertiseUtil
+                    .logMessage(
                             null,
                             Log.DEBUG,
                             " *** You must declare the activity de.madvertise.android.sdk.MadvertiseActivity in your manifest! *** ");
@@ -264,11 +265,11 @@ public class MadvertiseView extends FrameLayout {
 
         if (mCurrentAd != null) {
             if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-                 if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
-                	  showMraidView();
-                 } else {
-                 	showImageView();
-                 }
+                if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+                    showMraidView();
+                } else {
+                    showImageView();
+                }
             } else {
                 showTextView();
                 // show the MadvertiseView immediately so this doesn't need to
@@ -284,7 +285,7 @@ public class MadvertiseView extends FrameLayout {
             setVisibility(View.GONE);
         }
     }
-    
+
     private void showMraidView() {
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Add rich media banner");
 
@@ -413,7 +414,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Convenience method to notify the callback listener
-     *
+     * 
      * @param succeed
      */
     private void notifyListener(final boolean succeed) {
@@ -426,7 +427,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Set the visibility state of this view.
-     *
+     * 
      * @param visibility - set the visibility with <code>VISIBLE</code>,
      *            <code>INVISIBLE</code> or <code>GONE</code>.
      */
@@ -450,7 +451,7 @@ public class MadvertiseView extends FrameLayout {
     /**
      * Reads all parameters, not needed for a request to the ad server (colors,
      * refresh timeout, ...)
-     *
+     * 
      * @param attrs attribute set for the view
      */
     private void initParameters(final AttributeSet attrs) {
@@ -516,8 +517,10 @@ public class MadvertiseView extends FrameLayout {
                     MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, maxHeightDefault);
             mMaxViewWidth = attrs.getAttributeIntValue(packageName,
                     MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, maxWidthDefault);
-            if (mMaxViewHeight == 0) mMaxViewHeight = maxHeightDefault;
-            if (mMaxViewWidth == 0) mMaxViewWidth = maxWidthDefault;
+            if (mMaxViewHeight == 0)
+                mMaxViewHeight = maxHeightDefault;
+            if (mMaxViewWidth == 0)
+                mMaxViewWidth = maxWidthDefault;
 
             final String placementTypeStr = attrs.getAttributeValue(packageName, "placement_type");
             if (placementTypeStr != null && placementTypeStr.equalsIgnoreCase("inline")) {
@@ -535,7 +538,6 @@ public class MadvertiseView extends FrameLayout {
             mSecondsToRefreshAd = MadvertiseUtil.SECONDS_TO_REFRESH_AD_DEFAULT;
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Refresh intervall must be higher than 60");
         }
-
 
         try {
             calculateBannerDimensions();
@@ -609,7 +611,7 @@ public class MadvertiseView extends FrameLayout {
 
                     // create post request
                     HttpPost postRequest = new HttpPost(MadvertiseUtil.MAD_SERVER + "/site/"
-                    		+ siteToken);
+                            + siteToken);
                     postRequest.setHeader("Content-Type",
                             "application/x-www-form-urlencoded; charset=utf-8");
                     // new ad response version, that supports rich media
@@ -618,10 +620,10 @@ public class MadvertiseView extends FrameLayout {
                     parameterList.add(new BasicNameValuePair("ua", MadvertiseUtil.getUA()));
                     parameterList.add(new BasicNameValuePair("app", "true"));
                     parameterList.add(new BasicNameValuePair("debug", Boolean.toString(mTestMode)));
-//                    parameterList.add(new BasicNameValuePair("ip", MadvertiseUtil
-//                            .getLocalIpAddress(mCallbackListener)));
+                    // parameterList.add(new BasicNameValuePair("ip",
+                    // MadvertiseUtil
+                    // .getLocalIpAddress(mCallbackListener)));
                     parameterList.add(new BasicNameValuePair("ip", "79.195.236.168"));
-
 
                     parameterList.add(new BasicNameValuePair("format", "json"));
                     parameterList.add(new BasicNameValuePair("requester", "android_sdk"));
@@ -735,8 +737,10 @@ public class MadvertiseView extends FrameLayout {
 
                             if (responseCode == 200 && entity != null) {
                                 inputStream = entity.getContent();
-                                String resultString = MadvertiseUtil.convertStreamToString(inputStream);
-                                MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => " + resultString);
+                                String resultString = MadvertiseUtil
+                                        .convertStreamToString(inputStream);
+                                MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => "
+                                        + resultString);
                                 json = new JSONObject(resultString);
 
                                 // set type and dimensions of this view
@@ -744,7 +748,7 @@ public class MadvertiseView extends FrameLayout {
 
                                 // create ad
                                 mCurrentAd = new MadvertiseAd(getContext().getApplicationContext(),
-                                            json, mCallbackListener, mBannerType);
+                                        json, mCallbackListener, mBannerType);
 
                                 calculateBannerDimensions();
                             } else {
@@ -812,19 +816,20 @@ public class MadvertiseView extends FrameLayout {
      * response.
      */
     private void adjustAdType(JSONObject json) {
-    	try {
-    	  JSONObject bannerJson = MadvertiseUtil.getJSONObject(json, "banner");
-    	  String updatedBannerType = MadvertiseUtil.getJSONValue(bannerJson, "type");
-    	  mBannerType = !updatedBannerType.equals("") ? updatedBannerType : mBannerType;
-    	} catch (JSONException e) {
-    		MadvertiseUtil.logMessage(null, Log.DEBUG, "Could not parse JSON and adjust banner_type. ");
-    	}
+        try {
+            JSONObject bannerJson = MadvertiseUtil.getJSONObject(json, "banner");
+            String updatedBannerType = MadvertiseUtil.getJSONValue(bannerJson, "type");
+            mBannerType = !updatedBannerType.equals("") ? updatedBannerType : mBannerType;
+        } catch (JSONException e) {
+            MadvertiseUtil.logMessage(null, Log.DEBUG,
+                    "Could not parse JSON and adjust banner_type. ");
+        }
     }
 
     private void calculateBannerDimensions() throws JSONException {
         // set the banner width and height
         if (mBannerType != null && mBannerType
-                        .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
+                .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
             mBannerHeight = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
             mBannerWidth = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT;
@@ -859,8 +864,7 @@ public class MadvertiseView extends FrameLayout {
             mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
-        } else if (mBannerType != null
-                ) {
+        } else if (mBannerType != null) {
             if (mCurrentAd != null && mCurrentAd.getBannerWidth() != 0) {
                 mBannerWidthDp = mCurrentAd.getBannerWidth();
             } else {
@@ -945,7 +949,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Convenience method for a shiny background for text ads
-     *
+     * 
      * @param rect
      * @param backgroundColor
      * @param mTextColor
@@ -966,7 +970,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Draw the ad background for a text banner
-     *
+     * 
      * @param canvas
      * @param rectangle
      * @param backgroundColor
@@ -1006,7 +1010,7 @@ public class MadvertiseView extends FrameLayout {
     /**
      * Handles the refresh timer, initiates the stopping of the request thread
      * and caching of ads.
-     *
+     * 
      * @param starting
      */
     private void onViewCallback(final boolean starting) {
@@ -1047,7 +1051,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Puts an {@link MadvertiseAd} into the static cache.
-     *
+     * 
      * @param ad
      */
     private void cacheAd(final MadvertiseAd ad) {
@@ -1061,7 +1065,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Get a cached {@link MadvertiseAd} that fits the current banner type.
-     *
+     * 
      * @return a cached ad
      */
     private MadvertiseAd getCachedAd() {
@@ -1100,7 +1104,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Sets the placement type of a rich media ad.
-     *
+     * 
      * @param placementType the placement type, either
      *            <code>MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL</code> or
      *            <code>MadvertiseUtil.PLACEMENT_TYPE_INLINE<code/>.
@@ -1113,7 +1117,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Set the gender of your app's user.
-     *
+     * 
      * @param the gender, either <code>GENDER_MALE</code> or
      *            <code>GENDER_FEMALE</code>
      */
@@ -1127,7 +1131,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Set the age or age range of your app's user.
-     *
+     * 
      * @param the age, e.g. '26' or '20-30'
      */
     public static void setAge(String age) {
@@ -1143,7 +1147,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Enable/disable the loading of new ads. Default is true.
-     *
+     * 
      * @param isEnabled
      */
     public void setFetchingAdsEnabled(final boolean isEnabled) {
@@ -1153,7 +1157,7 @@ public class MadvertiseView extends FrameLayout {
 
         if (!isEnabled) {
             stopRequestThread();
-            if(mAdTimer != null) {
+            if (mAdTimer != null) {
                 mAdTimer.cancel();
                 mAdTimer = null;
             }
@@ -1173,7 +1177,7 @@ public class MadvertiseView extends FrameLayout {
     /**
      * Returns the current listener that receives notifications about the ad
      * loading process
-     *
+     * 
      * @return
      */
     MadvertiseViewCallbackListener getCallbackListener() {
@@ -1182,7 +1186,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Sets a listener that receives notifications about the ad loading process
-     *
+     * 
      * @param listener
      */
     public void setMadvertiseViewCallbackListener(MadvertiseViewCallbackListener listener) {
@@ -1195,7 +1199,7 @@ public class MadvertiseView extends FrameLayout {
     public interface MadvertiseViewCallbackListener {
         /**
          * Notifies the listener on success or failure
-         *
+         * 
          * @param succeed true, if an ad could be loaded, else false
          * @param madView specified view
          */
@@ -1203,7 +1207,7 @@ public class MadvertiseView extends FrameLayout {
 
         /**
          * Notifies the listener when exceptions are thrown
-         *
+         * 
          * @param the thrown exception
          */
         public void onError(final Exception exception);
@@ -1211,7 +1215,7 @@ public class MadvertiseView extends FrameLayout {
         /**
          * Notifies the listener when an illegal HTTP status code was received.
          * This method is not called when the status code is okay (200)
-         *
+         * 
          * @param statusCode the HTTP status code
          * @param message a message with a reason of the problem
          */

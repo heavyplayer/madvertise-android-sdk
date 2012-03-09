@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -45,6 +46,8 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.VideoView;
+
+import java.io.IOException;
 
 public class MadvertiseMraidView extends WebView {
 
@@ -66,6 +69,7 @@ public class MadvertiseMraidView extends WebView {
     private MadvertiseView mMadView;
     private boolean mViewable;
     private static String mraidJS;
+    private VideoView mVideo;
     
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
             AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseView madView) {
@@ -121,21 +125,45 @@ public class MadvertiseMraidView extends WebView {
                 if (view instanceof FrameLayout) {
                     FrameLayout frame = (FrameLayout) view;
                     if (frame.getFocusedChild() instanceof VideoView) {
-                        final VideoView video = (VideoView) ((FrameLayout) view).getFocusedChild();
-                        frame.removeView(video);
-                        ((ViewGroup)getParent()).addView(video);
+                        mVideo = (VideoView) ((FrameLayout) view).getFocusedChild();
+                        frame.removeView(mVideo);
+                        ((ViewGroup)getParent()).addView(mVideo);
                         
                         // Will also be called onError
-                        video.setOnCompletionListener(new OnCompletionListener() {
+                        mVideo.setOnCompletionListener(new OnCompletionListener() {
 
                             @Override
                             public void onCompletion(MediaPlayer player) {
-                                ((ViewGroup)getParent()).removeView(video);
                                 player.stop();
                             }
                         });
                         
-                        video.start();
+                        mVideo.setOnErrorListener(new OnErrorListener() {
+                            
+                            @Override
+                            public boolean onError(MediaPlayer mp, int what, int extra) {
+                                MadvertiseUtil.logMessage(null, Log.WARN, "Error while playing video");
+                                
+                                if(mListener != null) {
+                                    mListener.onError(new IOException("Error while playing video"));
+                                }
+                                
+                                // We return false in order to call onCompletion()
+                                return false;
+                            }
+                        });
+                        
+                        mVideo.start();
+                    }
+                }
+            }
+            
+            @Override
+            public void onHideCustomView() {     
+                if(mVideo != null) {
+                    ((ViewGroup)getParent()).removeView(mVideo);
+                    if(mVideo.isPlaying()) {
+                        mVideo.stopPlayback();
                     }
                 }
             }
