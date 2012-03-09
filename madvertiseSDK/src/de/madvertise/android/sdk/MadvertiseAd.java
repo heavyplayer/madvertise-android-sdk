@@ -122,7 +122,7 @@ public class MadvertiseAd {
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
            
             // Works
-//            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
+            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
             
             // Looks like its working, as an improvement expand properties should be set though. 
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
@@ -134,12 +134,16 @@ public class MadvertiseAd {
 //            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-flipad-container/page-flip-mraid/index.html";
 
             // Works
-             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
-            
+//             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
+
+//             mBannerUrl = "http://dl.dropbox.com/u/44264257/overlay-mraid/index.html";
+
             // get sizes for rich media ad
             mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
             mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();
-
+//             mBannerHeight = 350;
+//             mBannerWidth = 300;
+                 
         } catch (JSONException e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Error in json string");
             if (mCallbackListener != null) {
