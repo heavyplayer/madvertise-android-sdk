@@ -149,15 +149,13 @@ public class MadvertiseView extends FrameLayout {
         }
     };
 
-    private int mMaxViewWidth;
-
-    private int mMaxViewHeight;
-
     private MadvertiseMraidView mMraidView;
 
     private boolean mFetchAdsEnabled = true;
 
     private int mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
+
+    private boolean mIsMraid;
 
     /**
      * Static ad cache. We use {@link SoftReference} as they are guaranteed to
@@ -265,7 +263,7 @@ public class MadvertiseView extends FrameLayout {
 
         if (mCurrentAd != null) {
             if (mCurrentAd.hasBanner() && !mDeliverOnlyText) {
-                if (mCurrentAd.getBannerType().equals(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
+                if (mCurrentAd.isMraid()) {
                     showMraidView();
                 } else {
                     showImageView();
@@ -506,22 +504,9 @@ public class MadvertiseView extends FrameLayout {
                         "The text size must be set to 10 at minimum.");
                 mTextSize = 10;
             }
-
-            int maxHeightDefault = 0;
-            int maxWidthDefault = 0;
-            if (mBannerType != null && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA)) {
-                maxHeightDefault = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
-                maxWidthDefault = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
-            }
-            mMaxViewHeight = attrs.getAttributeIntValue(packageName,
-                    MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, maxHeightDefault);
-            mMaxViewWidth = attrs.getAttributeIntValue(packageName,
-                    MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, maxWidthDefault);
-            if (mMaxViewHeight == 0)
-                mMaxViewHeight = maxHeightDefault;
-            if (mMaxViewWidth == 0)
-                mMaxViewWidth = maxWidthDefault;
-
+                        
+            mIsMraid = attrs.getAttributeBooleanValue(packageName, "mraid", false);
+            
             final String placementTypeStr = attrs.getAttributeValue(packageName, "placement_type");
             if (placementTypeStr != null && placementTypeStr.equalsIgnoreCase("inline")) {
                 mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
@@ -555,8 +540,7 @@ public class MadvertiseView extends FrameLayout {
         MadvertiseUtil.logMessage(null, Log.DEBUG, " animationType = " + mAnimationType);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " deliverOnlyText = " + mDeliverOnlyText);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " textSize = " + mTextSize);
-        MadvertiseUtil.logMessage(null, Log.DEBUG, " maxViewHeight = " + mMaxViewHeight);
-        MadvertiseUtil.logMessage(null, Log.DEBUG, " maxViewWidth = " + mMaxViewWidth);
+        MadvertiseUtil.logMessage(null, Log.DEBUG, " isMraid = " + mIsMraid);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " placementType = " + mPlacementType);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerWidth = " + mBannerWidth);
         MadvertiseUtil.logMessage(null, Log.DEBUG, " bannerHeight = " + mBannerHeight);
@@ -635,14 +619,9 @@ public class MadvertiseView extends FrameLayout {
                     if (sAge != null && !sAge.equals("")) {
                         parameterList.add(new BasicNameValuePair("age", sAge));
                     }
-                    if (mMaxViewHeight > 0 && mMaxViewWidth > 0) {
-                        parameterList.add(new BasicNameValuePair(
-                                MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT, Integer
-                                        .toString(mMaxViewHeight)));
-                        parameterList.add(new BasicNameValuePair(
-                                MadvertiseUtil.RICH_MEDIA_ATTRIBUTE_MAX_WIDTH, Integer
-                                        .toString(mMaxViewWidth)));
-                    }
+                    
+                    parameterList.add(new BasicNameValuePair("mraid", Boolean.toString(true)));
+                    
                     final int labelId = getContext().getApplicationContext().getApplicationInfo().labelRes;
                     if (labelId != 0) {
                         parameterList.add(new BasicNameValuePair("app_name", getContext()
@@ -864,20 +843,7 @@ public class MadvertiseView extends FrameLayout {
             mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
-        } else if (mBannerType != null) {
-            if (mCurrentAd != null && mCurrentAd.getBannerWidth() != 0) {
-                mBannerWidthDp = mCurrentAd.getBannerWidth();
-            } else {
-                mBannerWidthDp = MadvertiseUtil.RICH_MEDIA_BANNER_WIDTH_DEFAULT;
-            }
-            if (mCurrentAd != null && mCurrentAd.getBannerHeight() != 0) {
-                mBannerHeightDp = mCurrentAd.getBannerHeight();
-            } else {
-                mBannerHeightDp = MadvertiseUtil.RICH_MEDIA_BANNER_HEIGHT_DEFAULT;
-            }
-            mBannerWidth = (int) (mDp * mBannerWidthDp + 0.5f);
-            mBannerHeight = (int) (mDp * mBannerHeightDp + 0.5f);
-        }
+        } 
 
         mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 128;
 

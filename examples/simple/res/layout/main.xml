@@ -23,8 +23,8 @@
         deliverOnlyText [true|false], whether your ad only displays text or not. This only has effect on mma type banners.
         placement_type [inline|interstitial], only for rich_media ads, default is inline. When declaring the placement_type as interstitial, you have to place your ad in
         			a way that it is always visible, or, in other words, can not be scrolled out of the visible part of the screen.
-        max_view_width [integer] only for rich_media ads, default is 320. The max width you want an rich_media ad to have in its default state.
-        max_view_height [integer] only for rich_media ads, default is 53. The max height you want an rich_media ad to have in its default state.
+        mraid [boolean] whether you want to display rich media ads or not, default is false. When set to true, ads may use expand to full screen. Please make sure to overvrite 
+        			onApplicationPause() and onApplicationResume() in your MadvertiseCallbackListener appropriately when setting this flag to true.
         -->
 		<de.madvertise.android.sdk.MadvertiseView
 			android:id="@+id/madad"
@@ -32,14 +32,13 @@
 			android:layout_height="wrap_content"
 			mad:backgroundColor="#555"
 			mad:textColor="#FF1F1F"
-			mad:bannerType="rm"
+			mad:bannerType="mma"
             mad:animation="top_down"
             mad:isTestMode="true"
             mad:textSize="20"
             mad:deliverOnlyText="false"
             mad:placement_type="interstitial"
-            mad:max_view_width="320"
-            mad:max_view_height="53"
+            mad:mraid="true"
             mad:secondsToRefresh="60"
 		/>
 

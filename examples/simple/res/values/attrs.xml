@@ -10,7 +10,6 @@
 		<attr name="deliverOnlyText" format="boolean" />
         <attr name="animation" format="string" />
         <attr name="placement_type" format="string" />
-        <attr name="max_view_height" format="integer" />
-        <attr name="max_view_width" format="integer" />
+        <attr name="mraid" format="boolean" />
 	</declare-styleable>
 </resources>

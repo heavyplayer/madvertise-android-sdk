@@ -29,9 +29,9 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
+//import android.media.MediaPlayer;
+//import android.media.MediaPlayer.OnCompletionListener;
+//import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -39,15 +39,15 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
+//import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.VideoView;
+//import android.widget.VideoView;
 
-import java.io.IOException;
+//import java.io.IOException;
 
 public class MadvertiseMraidView extends WebView {
 
@@ -69,10 +69,12 @@ public class MadvertiseMraidView extends WebView {
     private MadvertiseView mMadView;
     private boolean mViewable;
     private static String mraidJS;
-    private VideoView mVideo;
-    
+
+    // private VideoView mVideo;
+
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
-            AnimationEndListener animationEndListener, Handler loadingCompletedHandler, MadvertiseView madView) {
+            AnimationEndListener animationEndListener, Handler loadingCompletedHandler,
+            MadvertiseView madView) {
         this(context);
         this.mLoadingCompletedHandler = loadingCompletedHandler;
         this.mAnimationEndListener = animationEndListener;
@@ -90,84 +92,89 @@ public class MadvertiseMraidView extends WebView {
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setJavaScriptEnabled(true);
         settings.setPluginsEnabled(true);
-        
+
         // Initialize the default expand properties.
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         mExpandProperties = new ExpandProperties(metrics.widthPixels, metrics.heightPixels);
-        MadvertiseUtil.logMessage(null, Log.INFO, "Setting default expandProperties : " + mExpandProperties.toJson().toString());
-        
-        // This bridge stays available until this view is destroyed, hence no reloading when displaying new ads is necessary.
+        MadvertiseUtil.logMessage(null, Log.INFO, "Setting default expandProperties : "
+                + mExpandProperties.toJson().toString());
+
+        // This bridge stays available until this view is destroyed, hence no
+        // reloading when displaying new ads is necessary.
         addJavascriptInterface(mBridge, "mraid_bridge");
-        
-        setWebViewClient( new WebViewClient() {            
+
+        setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if(!url.endsWith("mraid.js")) {
+                if (!url.endsWith("mraid.js")) {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "Setting mraid to default");
                     checkReady();
-                    
+
                     // Close button in default size for interstitial ads
-                    if(mPlacementType == MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL) {
+                    if (mPlacementType == MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL) {
                         final ImageButton closeButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
                         closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
                     }
                 }
             }
         });
-        
-        this.setWebChromeClient( new WebChromeClient() {
 
-            @Override
-            public void onShowCustomView(View view, CustomViewCallback callback) {
-                MadvertiseUtil.logMessage(null, Log.INFO, "showing VideoView");
-                super.onShowCustomView(view, callback);
-                if (view instanceof FrameLayout) {
-                    FrameLayout frame = (FrameLayout) view;
-                    if (frame.getFocusedChild() instanceof VideoView) {
-                        mVideo = (VideoView) ((FrameLayout) view).getFocusedChild();
-                        frame.removeView(mVideo);
-                        ((ViewGroup)getParent()).addView(mVideo);
-                        
-                        // Will also be called onError
-                        mVideo.setOnCompletionListener(new OnCompletionListener() {
-
-                            @Override
-                            public void onCompletion(MediaPlayer player) {
-                                player.stop();
-                            }
-                        });
-                        
-                        mVideo.setOnErrorListener(new OnErrorListener() {
-                            
-                            @Override
-                            public boolean onError(MediaPlayer mp, int what, int extra) {
-                                MadvertiseUtil.logMessage(null, Log.WARN, "Error while playing video");
-                                
-                                if(mListener != null) {
-                                    mListener.onError(new IOException("Error while playing video"));
-                                }
-                                
-                                // We return false in order to call onCompletion()
-                                return false;
-                            }
-                        });
-                        
-                        mVideo.start();
-                    }
-                }
-            }
-            
-            @Override
-            public void onHideCustomView() {     
-                if(mVideo != null) {
-                    ((ViewGroup)getParent()).removeView(mVideo);
-                    if(mVideo.isPlaying()) {
-                        mVideo.stopPlayback();
-                    }
-                }
-            }
-        });
+        // Comment this in to enable video tag-capability.
+        // this.setWebChromeClient( new WebChromeClient() {
+        //
+        // @Override
+        // public void onShowCustomView(View view, CustomViewCallback callback)
+        // {
+        // MadvertiseUtil.logMessage(null, Log.INFO, "showing VideoView");
+        // super.onShowCustomView(view, callback);
+        // if (view instanceof FrameLayout) {
+        // FrameLayout frame = (FrameLayout) view;
+        // if (frame.getFocusedChild() instanceof VideoView) {
+        // mVideo = (VideoView) ((FrameLayout) view).getFocusedChild();
+        // frame.removeView(mVideo);
+        // ((ViewGroup)getParent()).addView(mVideo);
+        //
+        // // Will also be called onError
+        // mVideo.setOnCompletionListener(new OnCompletionListener() {
+        //
+        // @Override
+        // public void onCompletion(MediaPlayer player) {
+        // player.stop();
+        // }
+        // });
+        //
+        // mVideo.setOnErrorListener(new OnErrorListener() {
+        //
+        // @Override
+        // public boolean onError(MediaPlayer mp, int what, int extra) {
+        // MadvertiseUtil.logMessage(null, Log.WARN,
+        // "Error while playing video");
+        //
+        // if(mListener != null) {
+        // mListener.onError(new IOException("Error while playing video"));
+        // }
+        //
+        // // We return false in order to call onCompletion()
+        // return false;
+        // }
+        // });
+        //
+        // mVideo.start();
+        // }
+        // }
+        // }
+        //
+        // @Override
+        // public void onHideCustomView() {
+        // if(mVideo != null) {
+        // ((ViewGroup)getParent()).removeView(mVideo);
+        // if(mVideo.isPlaying()) {
+        // mVideo.stopPlayback();
+        // }
+        // }
+        // }
+        // });
     }
 
     protected void loadAd(MadvertiseAd ad) {
@@ -175,15 +182,15 @@ public class MadvertiseMraidView extends WebView {
     }
 
     protected void loadAd(String url) {
-    	MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: " + url);
-  
+        MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: " + url);
+
         if (mraidJS == null) {
             mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources()
                     .openRawResource(de.madvertise.android.sdk.R.raw.mraid));
         }
-    	
-    	loadUrl("javascript:" + mraidJS);
-    	
+
+        loadUrl("javascript:" + mraidJS);
+
         if (url.endsWith(".js")) {
             final int lastIndex = url.lastIndexOf("/");
             final String jsFile = url.substring(lastIndex, url.length() - 1);
@@ -206,7 +213,8 @@ public class MadvertiseMraidView extends WebView {
     @Override
     public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding,
             String historyUrl) {
-        MadvertiseUtil.logMessage(null, Log.INFO, "Loading url now: " + baseUrl + " with data: " + data);
+        MadvertiseUtil.logMessage(null, Log.INFO, "Loading url now: " + baseUrl + " with data: "
+                + data);
         super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
     }
 
@@ -235,14 +243,14 @@ public class MadvertiseMraidView extends WebView {
 
     // to be called from the Ad (js side)
     Object mBridge = new Object() {
-        
-    	@SuppressWarnings("unused")
-    	public void logMessage(String str) {
-    		MadvertiseUtil.logMessage(null, Log.INFO, "Called logMessage from Ad with : " + str);
-    	}
-    	
-    	public void expand() {
-        	MadvertiseUtil.logMessage(null, Log.INFO, "Called expand from Ad or Java.");
+
+        @SuppressWarnings("unused")
+        public void logMessage(String str) {
+            MadvertiseUtil.logMessage(null, Log.INFO, "Called logMessage from Ad with : " + str);
+        }
+
+        public void expand() {
+            MadvertiseUtil.logMessage(null, Log.INFO, "Called expand from Ad or Java.");
             post(new Runnable() {
                 @Override
                 public void run() {
@@ -252,7 +260,7 @@ public class MadvertiseMraidView extends WebView {
                 }
             });
             setState(STATE_EXPANDED);
-            if(mMadView != null) {
+            if (mMadView != null) {
                 mMadView.setFetchingAdsEnabled(false);
             }
         }
@@ -260,7 +268,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void expand(final String url) {
-        	MadvertiseUtil.logMessage(null, Log.INFO, "Called expand from Ad with : " + url);
+            MadvertiseUtil.logMessage(null, Log.INFO, "Called expand from Ad with : " + url);
             expand();
             post(new Runnable() {
                 @Override
@@ -273,7 +281,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void close() {
-        	MadvertiseUtil.logMessage(null, Log.INFO, "Called close from Ad with.");
+            MadvertiseUtil.logMessage(null, Log.INFO, "Called close from Ad with.");
             post(new Runnable() {
                 @Override
                 public void run() {
@@ -285,7 +293,7 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void open(final String url) {
-        	MadvertiseUtil.logMessage(null, Log.INFO, "Called open from Ad with : " + url);
+            MadvertiseUtil.logMessage(null, Log.INFO, "Called open from Ad with : " + url);
             post(new Runnable() {
                 @Override
                 public void run() {
@@ -304,7 +312,8 @@ public class MadvertiseMraidView extends WebView {
         @SuppressWarnings("unused")
         // because it IS used from the js side
         public void setExpandProperties(String json) {
-        	MadvertiseUtil.logMessage(null, Log.INFO, "Called setExpandProperties from Ad with : " + json);
+            MadvertiseUtil.logMessage(null, Log.INFO, "Called setExpandProperties from Ad with : "
+                    + json);
             mExpandProperties.readJson(json);
         }
     };
@@ -318,7 +327,9 @@ public class MadvertiseMraidView extends WebView {
         if (placementType != MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL
                 && placementType != MadvertiseUtil.PLACEMENT_TYPE_INLINE) {
             MadvertiseUtil
-                    .logMessage(null, Log.WARN,
+                    .logMessage(
+                            null,
+                            Log.WARN,
                             "Placement type must be one of MadvertiseUtil.PLACEMENT_TYPE_INLINE or MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL");
         } else {
             mPlacementType = placementType;
@@ -347,8 +358,8 @@ public class MadvertiseMraidView extends WebView {
         post(new Runnable() {
             @Override
             public void run() {
-                loadUrl("javascript:" + jsCode);                
-            } 
+                loadUrl("javascript:" + jsCode);
+            }
         });
     }
 
@@ -365,26 +376,26 @@ public class MadvertiseMraidView extends WebView {
         mOriginalParent = (ViewGroup) getParent();
 
         int index = 0;
-        if(mOriginalParent != null ) {
+        if (mOriginalParent != null) {
             int count = mOriginalParent.getChildCount();
             for (index = 0; index < count; index++) {
                 if (mOriginalParent.getChildAt(index) == this)
                     break;
             }
-    
+
             mIndex = index;
-    
+
             this.setLayoutParams(adParams);
             mOriginalParent.removeView(this);
             mExpandLayout.addView(this);
-    
+
             final ImageButton closeButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
             closeButton.setId(43);
-    
+
             if (!mExpandProperties.useCustomClose) {
                 closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
             }
-        
+
             content.addView(mExpandLayout);
             mOriginalParent.addView(placeholderView, mIndex);
             mOriginalParent.setVisibility(View.GONE);
@@ -407,7 +418,7 @@ public class MadvertiseMraidView extends WebView {
                 if (mListener != null) {
                     mListener.onApplicationResume();
                 }
-                if(mMadView != null) {
+                if (mMadView != null) {
                     mMadView.setFetchingAdsEnabled(true);
                 }
                 break;
@@ -416,13 +427,13 @@ public class MadvertiseMraidView extends WebView {
                 // to be GONE too.
                 ((ViewGroup) getParent()).setVisibility(View.GONE);
                 setState(STATE_HIDDEN);
-                if(mMadView != null) {
+                if (mMadView != null) {
                     mMadView.setFetchingAdsEnabled(false);
                 }
                 break;
         }
     }
-    
+
     private ImageButton addCloseButtonToViewGroup(final ViewGroup parent) {
         final ImageButton closeButton = new ImageButton(getContext());
         final FrameLayout.LayoutParams closeButtonParams = new FrameLayout.LayoutParams(
@@ -438,10 +449,9 @@ public class MadvertiseMraidView extends WebView {
         });
 
         parent.addView(closeButton);
-        
+
         return closeButton;
     }
-    
 
     @Override
     protected void onAttachedToWindow() {
@@ -478,8 +488,6 @@ public class MadvertiseMraidView extends WebView {
         private int mMaxWidth;
         private int mMaxHeight;
         private float mScale = getResources().getDisplayMetrics().density;
-        public int scrollX;
-        public int scrollY;
         public int width;
         public int height;
         public boolean useCustomClose;
@@ -526,12 +534,7 @@ public class MadvertiseMraidView extends WebView {
         }
 
         private void checkSizeParams() {
-            scrollX = width - mMaxWidth / 2;
-            scrollY = height - mMaxHeight / 2;
-            if(scrollX < 0) scrollX = 0;
-            if(scrollY < 0) scrollY = 0;
-            
-            if (width > mMaxWidth || height > mMaxHeight) {
+           if (width > mMaxWidth || height > mMaxHeight) {
                 final float ratio = height / (float) width;
                 // respect the ratio
                 final int diffWidth = (int) ((float) (width - mMaxWidth) * ratio);

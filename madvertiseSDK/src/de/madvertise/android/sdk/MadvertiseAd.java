@@ -53,8 +53,10 @@ public class MadvertiseAd {
 
     private boolean mHasBanner = false;
 
+    // this one is not needed at the moment, but may become necessary in future versions
     private int mBannerHeight = 0;
 
+    // this one is not needed at the moment, but may become necessary in future versions
     private int mBannerWidth = 0;
 
     private JSONArray mImpressionTrackingArray;
@@ -68,6 +70,8 @@ public class MadvertiseAd {
     private Context mContext;
 
     private MadvertiseViewCallbackListener mCallbackListener;
+
+    private boolean mIsMraid = false;
 
     /**
      * Constructor, blocking due to http request, should be called in a thread
@@ -115,37 +119,15 @@ public class MadvertiseAd {
         		return;
         	}
 
+            mIsMraid = true;
+
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
-
-            // Works
-//            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-expandable-container/expand/index.html";
-           
-            // Works
-            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv3/index.html";
-            
-            // Looks like its working, as an improvement expand properties should be set though. 
-//            mBannerUrl = "http://dl.dropbox.com/u/44264257/Archiv/celtra.html";
-
-            // Works
-//            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-overlayad-container/overlay-mraid/index.html";
-
-            // Works
-//            mBannerUrl = "http://dl.dropbox.com/u/44264257/richmedia-flipad-container/page-flip-mraid/index.html";
-
-            // Works
-//             mBannerUrl = "http://dl.dropbox.com/u/44264257/expandable-demoad/index.html";
-
-//             mBannerUrl = "http://dl.dropbox.com/u/44264257/overlay-mraid/index.html";
-            
-            mBannerUrl = "http://dl.dropbox.com/u/48980623/overlay-mraid/index.html";
             
             // get sizes for rich media ad
-            mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53).intValue();
-            mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320).intValue();
-//             mBannerHeight = 350;
-//             mBannerWidth = 300;
-                 
+            mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53);
+            mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320);
+                             
         } catch (JSONException e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Error in json string");
             if (mCallbackListener != null) {
@@ -213,6 +195,8 @@ public class MadvertiseAd {
     protected JSONArray getImpressionTrackingArray() {
     	return mImpressionTrackingArray;
     }
-
-
+    
+    protected boolean isMraid() {
+        return mIsMraid;
+    }
 }

@@ -74,8 +74,6 @@ public class MadvertiseUtil {
 
     static final int BACKGROUND_COLOR_DEFAULT = 0x000000;
 
-    static final String BANNER_TYPE_RICH_MEDIA = "rich_media";
-
     static final String BANNER_TYPE_MEDIUM_RECTANGLE = "medium_rectangle";
 
     static final String BANNER_TYPE_MMA = "mma";
@@ -140,10 +138,6 @@ public class MadvertiseUtil {
     static final int MMA_BANNER_HEIGHT = 53;
 
     static final int MEDIUM_RECTANGLE_BANNER_HEIGHT = 250;
-
-    static final int RICH_MEDIA_BANNER_WIDTH_DEFAULT = MMA_BANNER_WIDTH;
-
-    static final int RICH_MEDIA_BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
 
     static final int BANNER_HEIGHT_DEFAULT = MMA_BANNER_HEIGHT;
 
