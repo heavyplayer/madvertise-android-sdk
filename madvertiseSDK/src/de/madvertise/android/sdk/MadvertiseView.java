@@ -505,7 +505,7 @@ public class MadvertiseView extends FrameLayout {
                 mTextSize = 10;
             }
                         
-            mIsMraid = attrs.getAttributeBooleanValue(packageName, "mraid", false);
+            mIsMraid = attrs.getAttributeBooleanValue(packageName, "mraid", true);
             
             final String placementTypeStr = attrs.getAttributeValue(packageName, "placement_type");
             if (placementTypeStr != null && placementTypeStr.equalsIgnoreCase("inline")) {
@@ -594,21 +594,15 @@ public class MadvertiseView extends FrameLayout {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "uid = " + uid);
 
                     // create post request
-                    HttpPost postRequest = new HttpPost(MadvertiseUtil.MAD_SERVER + "/site/"
-                            + siteToken);
-                    postRequest.setHeader("Content-Type",
-                            "application/x-www-form-urlencoded; charset=utf-8");
+                    HttpPost postRequest = new HttpPost(MadvertiseUtil.MAD_SERVER + "/site/" + siteToken);
+                    postRequest.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
                     // new ad response version, that supports rich media
                     postRequest.addHeader("Accept", "application/vnd.madad+json; version=3");
                     List<NameValuePair> parameterList = new ArrayList<NameValuePair>();
                     parameterList.add(new BasicNameValuePair("ua", MadvertiseUtil.getUA()));
                     parameterList.add(new BasicNameValuePair("app", "true"));
                     parameterList.add(new BasicNameValuePair("debug", Boolean.toString(mTestMode)));
-                    // parameterList.add(new BasicNameValuePair("ip",
-                    // MadvertiseUtil
-                    // .getLocalIpAddress(mCallbackListener)));
-                    parameterList.add(new BasicNameValuePair("ip", "79.195.236.168"));
-
+                    parameterList.add(new BasicNameValuePair("ip", MadvertiseUtil.getLocalIpAddress(mCallbackListener)));
                     parameterList.add(new BasicNameValuePair("format", "json"));
                     parameterList.add(new BasicNameValuePair("requester", "android_sdk"));
                     parameterList.add(new BasicNameValuePair("version", "3.0"));
@@ -620,7 +614,7 @@ public class MadvertiseView extends FrameLayout {
                         parameterList.add(new BasicNameValuePair("age", sAge));
                     }
                     
-                    parameterList.add(new BasicNameValuePair("mraid", Boolean.toString(true)));
+                    parameterList.add(new BasicNameValuePair("mraid", Boolean.toString(mIsMraid)));
                     
                     final int labelId = getContext().getApplicationContext().getApplicationInfo().labelRes;
                     if (labelId != 0) {
@@ -844,8 +838,6 @@ public class MadvertiseView extends FrameLayout {
             mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
             mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
         } 
-
-        mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 128;
 
         // adjust width and height to fit the screen
         final DisplayMetrics displayMetrics = getContext()

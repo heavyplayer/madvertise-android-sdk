@@ -1,8 +1,6 @@
 
 package de.madvertise.android.sdk;
 
-import java.io.File;
-
 import junit.framework.Assert;
 
 import org.json.JSONException;
