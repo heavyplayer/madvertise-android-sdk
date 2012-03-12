@@ -722,12 +722,9 @@ public class MadvertiseView extends FrameLayout {
                                         + resultString);
                                 json = new JSONObject(resultString);
 
-                                // set type and dimensions of this view
-                                adjustAdType(json);
-
                                 // create ad
                                 mCurrentAd = new MadvertiseAd(getContext().getApplicationContext(),
-                                        json, mCallbackListener, mBannerType);
+                                        json, mCallbackListener);
 
                                 calculateBannerDimensions();
                             } else {
@@ -790,22 +787,9 @@ public class MadvertiseView extends FrameLayout {
         }
     };
 
-    /**
-     * This method adjusts the width of the view according to the server
-     * response.
-     */
-    private void adjustAdType(JSONObject json) {
-        try {
-            JSONObject bannerJson = MadvertiseUtil.getJSONObject(json, "banner");
-            String updatedBannerType = MadvertiseUtil.getJSONValue(bannerJson, "type");
-            mBannerType = !updatedBannerType.equals("") ? updatedBannerType : mBannerType;
-        } catch (JSONException e) {
-            MadvertiseUtil.logMessage(null, Log.DEBUG,
-                    "Could not parse JSON and adjust banner_type. ");
-        }
-    }
-
     private void calculateBannerDimensions() throws JSONException {
+        mBannerType = mCurrentAd.getBannerType();
+        
         // set the banner width and height
         if (mBannerType != null && mBannerType
                 .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
