@@ -34,13 +34,12 @@
 			android:layout_height="wrap_content"
 			mad:backgroundColor="#555"
 			mad:textColor="#FF1F1F"
-			mad:bannerType="mma"
+			mad:bannerType="portrait"
             mad:animation="top_down"
             mad:isTestMode="true"
             mad:textSize="20"
             mad:deliverOnlyText="false"
             mad:placement_type="interstitial"
-            mad:mraid="true"
             mad:secondsToRefresh="60"
 		/>
 

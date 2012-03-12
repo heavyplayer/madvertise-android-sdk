@@ -118,6 +118,13 @@ public class MadvertiseAd {
             if (richMediaJson == null) {
         		return;
         	}
+            
+            // check, if mraid type
+            if (!MadvertiseUtil.getJSONBoolean(richMediaJson, "mraid")) {
+            	mHasBanner = false;
+            	mBannerUrl = "";
+            	return;
+            }
 
             mIsMraid = true;
 
@@ -125,8 +132,8 @@ public class MadvertiseAd {
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
             
             // get sizes for rich media ad
-            mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_height"), 53);
-            mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "ad_width"), 320);
+            mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "height"), 53);
+            mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "width"), 320);
                              
         } catch (JSONException e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Error in json string");

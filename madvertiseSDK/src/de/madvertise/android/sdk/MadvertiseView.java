@@ -525,7 +525,7 @@ public class MadvertiseView extends FrameLayout {
         }
 
         try {
-            calculateBannerDimensions();
+            calculateBannerDimensions(null);
         } catch (JSONException e) {
             // this should never happen
             e.printStackTrace();
@@ -565,7 +565,7 @@ public class MadvertiseView extends FrameLayout {
             mCurrentAd = getCachedAd();
 
             try {
-                calculateBannerDimensions();
+                calculateBannerDimensions(mCurrentAd);
             } catch (JSONException e) {
                 // this should never happen
                 e.printStackTrace();
@@ -723,7 +723,7 @@ public class MadvertiseView extends FrameLayout {
                                 mCurrentAd = new MadvertiseAd(getContext().getApplicationContext(),
                                         json, mCallbackListener, mBannerType);
 
-                                calculateBannerDimensions();
+                                calculateBannerDimensions(mCurrentAd);
                             } else {
                                 if (mCallbackListener != null) {
                                     mCallbackListener
@@ -799,46 +799,48 @@ public class MadvertiseView extends FrameLayout {
         }
     }
 
-    private void calculateBannerDimensions() throws JSONException {
+    private void calculateBannerDimensions(MadvertiseAd currentAd) throws JSONException {
         // set the banner width and height
-        if (mBannerType != null && mBannerType
-                .contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
-            mBannerHeight = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
-            mBannerHeightDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT;
-            mBannerWidthDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH;
-        } else if (mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
-            mBannerHeight = (int) (mDp * MadvertiseUtil.MMA_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int) (mDp * MadvertiseUtil.MMA_BANNER_WIDTH + 0.5f);
-            mBannerHeightDp = MadvertiseUtil.MMA_BANNER_HEIGHT;
-            mBannerWidthDp = MadvertiseUtil.MMA_BANNER_WIDTH;
-        } else if (mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
-            mBannerHeight = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_WIDTH + 0.5f);
-            mBannerHeightDp = MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT;
-            mBannerWidthDp = MadvertiseUtil.FULLSCREEN_BANNER_WIDTH;
-        } else if (mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
-            mBannerHeight = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_WIDTH + 0.5f);
-            mBannerHeightDp = MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT;
-            mBannerWidthDp = MadvertiseUtil.LANDSCAPE_BANNER_WIDTH;
-        } else if (mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
-            mBannerHeight = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 0.5f);
-            mBannerHeightDp = MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT;
-            mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH;
-        } else if (mBannerType != null
-                && mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
-            mBannerHeight = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_HEIGHT + 0.5f);
-            mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
-            mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
-            mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
-        } 
-
+    	if (mBannerType != null) {
+	        if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
+	            mBannerHeight = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT + 0.5f);
+	            mBannerWidth = (int) (mDp * MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH + 0.5f);
+	            mBannerHeightDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_HEIGHT;
+	            mBannerWidthDp = MadvertiseUtil.MEDIUM_RECTANGLE_BANNER_WIDTH;
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MMA)) {
+	            mBannerHeight = (int) (mDp * MadvertiseUtil.MMA_BANNER_HEIGHT + 0.5f);
+	            mBannerWidth = (int) (mDp * MadvertiseUtil.MMA_BANNER_WIDTH + 0.5f);
+	            mBannerHeightDp = MadvertiseUtil.MMA_BANNER_HEIGHT;
+	            mBannerWidthDp = MadvertiseUtil.MMA_BANNER_WIDTH;
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_FULLSCREEN)) {
+	            mBannerHeight = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT + 0.5f);
+	            mBannerWidth = (int) (mDp * MadvertiseUtil.FULLSCREEN_BANNER_WIDTH + 0.5f);
+	            mBannerHeightDp = MadvertiseUtil.FULLSCREEN_BANNER_HEIGHT;
+	            mBannerWidthDp = MadvertiseUtil.FULLSCREEN_BANNER_WIDTH;
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LANDSCAPE)) {
+	            mBannerHeight = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT + 0.5f);
+	            mBannerWidth = (int) (mDp * MadvertiseUtil.LANDSCAPE_BANNER_WIDTH + 0.5f);
+	            mBannerHeightDp = MadvertiseUtil.LANDSCAPE_BANNER_HEIGHT;
+	            mBannerWidthDp = MadvertiseUtil.LANDSCAPE_BANNER_WIDTH;
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_LEADERBOARD)) {
+	            mBannerHeight = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT + 0.5f);
+	            mBannerWidth = (int) (mDp * MadvertiseUtil.LEADERBOARD_BANNER_WIDTH + 0.5f);
+	            mBannerHeightDp = MadvertiseUtil.LEADERBOARD_BANNER_HEIGHT;
+	            mBannerWidthDp = MadvertiseUtil.LEADERBOARD_BANNER_WIDTH;
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_PORTRAIT)) {
+	            mBannerHeight = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_HEIGHT + 0.5f);
+	            mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
+	            mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
+	            mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MRAID) && currentAd != null && currentAd.isMraid()) {
+	        	// If we had chained banner types with mraid=true and actually get a rich media ad, we don't know how big it should be in default mode.
+	        	// So we need to check the parsed ad-response from the server.
+	        	mBannerHeightDp = currentAd.getBannerHeight();
+	        	mBannerWidthDp = currentAd.getBannerWidth();
+	        	mBannerHeight = (int) (mDp * mBannerHeightDp + 0.5f);
+	            mBannerWidth = (int) (mDp * mBannerHeightDp + 0.5f);
+	        }
+    	}
         // adjust width and height to fit the screen
         final DisplayMetrics displayMetrics = getContext()
                 .getApplicationContext().getResources().getDisplayMetrics();

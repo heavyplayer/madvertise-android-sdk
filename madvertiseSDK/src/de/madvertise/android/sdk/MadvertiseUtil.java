@@ -89,6 +89,8 @@ public class MadvertiseUtil {
     static final String BANNER_TYPE_LANDSCAPE = "landscape";
 
     static final String BANNER_TYPE_ALL = "all";
+    
+    static final String BANNER_TYPE_MRAID = "rich_media";
 
     static final String BANNER_TYPE_DEFAULT = BANNER_TYPE_MMA;
 
@@ -521,6 +523,13 @@ public class MadvertiseUtil {
     		throw new JSONException("Empty JSON or key");
     	}
     	return json.has(key) ? json.getJSONObject(key) : null;
+    }
+    
+    public static boolean getJSONBoolean(JSONObject json, String key) throws JSONException {
+    	if (json == null || key.equals("")) {
+    		throw new JSONException("Empty JSON or key");
+    	}
+    	return json.has(key) ? json.getBoolean(key) : false;
     }
 
 }
