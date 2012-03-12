@@ -81,10 +81,9 @@ public class MadvertiseAd {
      * @param json json object containing all ad information
      */
     protected MadvertiseAd(final Context context, final JSONObject json,
-            final MadvertiseViewCallbackListener listener, final String bannerType) {
+            final MadvertiseViewCallbackListener listener) {
         this.mContext = context;
         this.mCallbackListener = listener;
-        this.mBannerType = bannerType;
 
         MadvertiseUtil.logMessage(null, Log.DEBUG, "Creating ad");
 
@@ -112,7 +111,8 @@ public class MadvertiseAd {
             // logic for new ad response
             mBannerUrl = MadvertiseUtil.getJSONValue(bannerJson, BANNER_URL_CODE);
             mHasBanner = true;
-
+            mBannerType = MadvertiseUtil.getJSONValue(bannerJson, "type");
+               
             // check, if rich media banner
             JSONObject richMediaJson = MadvertiseUtil.getJSONObject(bannerJson, "rich_media");
             if (richMediaJson == null) {

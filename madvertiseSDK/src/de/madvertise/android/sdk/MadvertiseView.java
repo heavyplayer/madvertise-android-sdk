@@ -181,7 +181,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Constructor
-     * 
+     *
      * @param context
      */
     public MadvertiseView(final Context context) {
@@ -190,7 +190,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Constructor
-     * 
+     *
      * @param context
      * @param attrs
      */
@@ -412,7 +412,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Convenience method to notify the callback listener
-     * 
+     *
      * @param succeed
      */
     private void notifyListener(final boolean succeed) {
@@ -425,7 +425,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Set the visibility state of this view.
-     * 
+     *
      * @param visibility - set the visibility with <code>VISIBLE</code>,
      *            <code>INVISIBLE</code> or <code>GONE</code>.
      */
@@ -449,7 +449,7 @@ public class MadvertiseView extends FrameLayout {
     /**
      * Reads all parameters, not needed for a request to the ad server (colors,
      * refresh timeout, ...)
-     * 
+     *
      * @param attrs attribute set for the view
      */
     private void initParameters(final AttributeSet attrs) {
@@ -504,9 +504,9 @@ public class MadvertiseView extends FrameLayout {
                         "The text size must be set to 10 at minimum.");
                 mTextSize = 10;
             }
-                        
+
             mIsMraid = attrs.getAttributeBooleanValue(packageName, "mraid", true);
-            
+
             final String placementTypeStr = attrs.getAttributeValue(packageName, "placement_type");
             if (placementTypeStr != null && placementTypeStr.equalsIgnoreCase("inline")) {
                 mPlacementType = MadvertiseUtil.PLACEMENT_TYPE_INLINE;
@@ -613,9 +613,9 @@ public class MadvertiseView extends FrameLayout {
                     if (sAge != null && !sAge.equals("")) {
                         parameterList.add(new BasicNameValuePair("age", sAge));
                     }
-                    
+
                     parameterList.add(new BasicNameValuePair("mraid", Boolean.toString(mIsMraid)));
-                    
+
                     final int labelId = getContext().getApplicationContext().getApplicationInfo().labelRes;
                     if (labelId != 0) {
                         parameterList.add(new BasicNameValuePair("app_name", getContext()
@@ -716,12 +716,11 @@ public class MadvertiseView extends FrameLayout {
                                         + resultString);
                                 json = new JSONObject(resultString);
 
-                                // set type and dimensions of this view
                                 adjustAdType(json);
-
+                                
                                 // create ad
                                 mCurrentAd = new MadvertiseAd(getContext().getApplicationContext(),
-                                        json, mCallbackListener, mBannerType);
+                                        json, mCallbackListener);
 
                                 calculateBannerDimensions(mCurrentAd);
                             } else {
@@ -909,7 +908,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Convenience method for a shiny background for text ads
-     * 
+     *
      * @param rect
      * @param backgroundColor
      * @param mTextColor
@@ -930,7 +929,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Draw the ad background for a text banner
-     * 
+     *
      * @param canvas
      * @param rectangle
      * @param backgroundColor
@@ -970,7 +969,7 @@ public class MadvertiseView extends FrameLayout {
     /**
      * Handles the refresh timer, initiates the stopping of the request thread
      * and caching of ads.
-     * 
+     *
      * @param starting
      */
     private void onViewCallback(final boolean starting) {
@@ -1011,7 +1010,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Puts an {@link MadvertiseAd} into the static cache.
-     * 
+     *
      * @param ad
      */
     private void cacheAd(final MadvertiseAd ad) {
@@ -1025,7 +1024,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Get a cached {@link MadvertiseAd} that fits the current banner type.
-     * 
+     *
      * @return a cached ad
      */
     private MadvertiseAd getCachedAd() {
@@ -1064,7 +1063,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Sets the placement type of a rich media ad.
-     * 
+     *
      * @param placementType the placement type, either
      *            <code>MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL</code> or
      *            <code>MadvertiseUtil.PLACEMENT_TYPE_INLINE<code/>.
@@ -1077,7 +1076,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Set the gender of your app's user.
-     * 
+     *
      * @param the gender, either <code>GENDER_MALE</code> or
      *            <code>GENDER_FEMALE</code>
      */
@@ -1091,7 +1090,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Set the age or age range of your app's user.
-     * 
+     *
      * @param the age, e.g. '26' or '20-30'
      */
     public static void setAge(String age) {
@@ -1107,7 +1106,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Enable/disable the loading of new ads. Default is true.
-     * 
+     *
      * @param isEnabled
      */
     public void setFetchingAdsEnabled(final boolean isEnabled) {
@@ -1137,7 +1136,7 @@ public class MadvertiseView extends FrameLayout {
     /**
      * Returns the current listener that receives notifications about the ad
      * loading process
-     * 
+     *
      * @return
      */
     MadvertiseViewCallbackListener getCallbackListener() {
@@ -1146,7 +1145,7 @@ public class MadvertiseView extends FrameLayout {
 
     /**
      * Sets a listener that receives notifications about the ad loading process
-     * 
+     *
      * @param listener
      */
     public void setMadvertiseViewCallbackListener(MadvertiseViewCallbackListener listener) {
@@ -1159,7 +1158,7 @@ public class MadvertiseView extends FrameLayout {
     public interface MadvertiseViewCallbackListener {
         /**
          * Notifies the listener on success or failure
-         * 
+         *
          * @param succeed true, if an ad could be loaded, else false
          * @param madView specified view
          */
@@ -1167,7 +1166,7 @@ public class MadvertiseView extends FrameLayout {
 
         /**
          * Notifies the listener when exceptions are thrown
-         * 
+         *
          * @param the thrown exception
          */
         public void onError(final Exception exception);
@@ -1175,7 +1174,7 @@ public class MadvertiseView extends FrameLayout {
         /**
          * Notifies the listener when an illegal HTTP status code was received.
          * This method is not called when the status code is okay (200)
-         * 
+         *
          * @param statusCode the HTTP status code
          * @param message a message with a reason of the problem
          */
