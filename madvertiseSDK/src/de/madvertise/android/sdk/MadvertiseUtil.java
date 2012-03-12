@@ -33,6 +33,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.util.Log;
@@ -50,6 +51,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Utility class for the madvertise android SDK.
@@ -146,6 +148,8 @@ public class MadvertiseUtil {
     public static final int PLACEMENT_TYPE_INTERSTITIAL = 1;
 
     private static final String MADVERTISE_SITE_TOKEN = "madvertise_site_token";
+    
+    private static String sUA;
 
     private static long sLocationUpdateTimestamp = 0;
 
@@ -415,50 +419,47 @@ public class MadvertiseUtil {
      * @return
      */
     static String getUA() {
-    	//TODO: only for testing!!
-//    	return "Mozilla/5.0 (Linux; U; Android 2.1-update1; de-de; SonyEricssonU20i Build/2.1.1.A.0.16) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
-    	return "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5";
-//        if (sUA != null)
-//            return sUA;
-//
-//        StringBuffer arg = new StringBuffer();
-//
-//        final String version = Build.VERSION.RELEASE;
-//        if (version.length() > 0) {
-//            arg.append(version);
-//        } else {
-//            arg.append("1.0");
-//        }
-//        arg.append("; ");
-//
-//        final Locale l = Locale.getDefault();
-//        final String language = l.getLanguage();
-//        if (language != null) {
-//            arg.append(language.toLowerCase());
-//            final String country = l.getCountry();
-//            if (country != null) {
-//                arg.append("-");
-//                arg.append(country.toLowerCase());
-//            }
-//        } else {
-//            arg.append("de");
-//        }
-//        final String model = Build.MODEL;
-//        if (model.length() > 0) {
-//            arg.append("; ");
-//            arg.append(model);
-//        }
-//        final String id = Build.ID;
-//        if (id.length() > 0) {
-//            arg.append(" Build/");
-//            arg.append(id);
-//        }
-//
-//        // TODO: add version detection for AppleWebKit, Version and Safari
-//        final String rawUA = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2";
-//        sUA = String.format(rawUA, arg);
-//
-//        return sUA;  
+        if (sUA != null)
+            return sUA;
+
+        StringBuffer arg = new StringBuffer();
+
+        final String version = Build.VERSION.RELEASE;
+        if (version.length() > 0) {
+            arg.append(version);
+        } else {
+            arg.append("1.0");
+        }
+        arg.append("; ");
+
+        final Locale l = Locale.getDefault();
+        final String language = l.getLanguage();
+        if (language != null) {
+            arg.append(language.toLowerCase());
+            final String country = l.getCountry();
+            if (country != null) {
+                arg.append("-");
+                arg.append(country.toLowerCase());
+            }
+        } else {
+            arg.append("de");
+        }
+        final String model = Build.MODEL;
+        if (model.length() > 0) {
+            arg.append("; ");
+            arg.append(model);
+        }
+        final String id = Build.ID;
+        if (id.length() > 0) {
+            arg.append(" Build/");
+            arg.append(id);
+        }
+
+        // TODO: add version detection for AppleWebKit, Version and Safari
+        final String rawUA = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2";
+        sUA = String.format(rawUA, arg);
+
+        return sUA;  
     }
 
     static boolean checkForBrowserDeclaration(final Context context) {
