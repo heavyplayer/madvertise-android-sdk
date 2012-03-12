@@ -525,7 +525,7 @@ public class MadvertiseView extends FrameLayout {
         }
 
         try {
-            calculateBannerDimensions(null);
+            calculateBannerDimensions();
         } catch (JSONException e) {
             // this should never happen
             e.printStackTrace();
@@ -565,7 +565,7 @@ public class MadvertiseView extends FrameLayout {
             mCurrentAd = getCachedAd();
 
             try {
-                calculateBannerDimensions(mCurrentAd);
+                calculateBannerDimensions();
             } catch (JSONException e) {
                 // this should never happen
                 e.printStackTrace();
@@ -715,14 +715,12 @@ public class MadvertiseView extends FrameLayout {
                                 MadvertiseUtil.logMessage(null, Log.DEBUG, "Response => "
                                         + resultString);
                                 json = new JSONObject(resultString);
-
-                                adjustAdType(json);
                                 
                                 // create ad
                                 mCurrentAd = new MadvertiseAd(getContext().getApplicationContext(),
                                         json, mCallbackListener);
 
-                                calculateBannerDimensions(mCurrentAd);
+                                calculateBannerDimensions();
                             } else {
                                 if (mCallbackListener != null) {
                                     mCallbackListener
@@ -783,22 +781,10 @@ public class MadvertiseView extends FrameLayout {
         }
     };
 
-    /**
-     * This method adjusts the width of the view according to the server
-     * response.
-     */
-    private void adjustAdType(JSONObject json) {
-        try {
-            JSONObject bannerJson = MadvertiseUtil.getJSONObject(json, "banner");
-            String updatedBannerType = MadvertiseUtil.getJSONValue(bannerJson, "type");
-            mBannerType = !updatedBannerType.equals("") ? updatedBannerType : mBannerType;
-        } catch (JSONException e) {
-            MadvertiseUtil.logMessage(null, Log.DEBUG,
-                    "Could not parse JSON and adjust banner_type. ");
-        }
-    }
-
-    private void calculateBannerDimensions(MadvertiseAd currentAd) throws JSONException {
+    private void calculateBannerDimensions() throws JSONException {
+    	if (mCurrentAd != null) {
+    		mBannerType = mCurrentAd.getBannerType();
+    	}
         // set the banner width and height
     	if (mBannerType != null) {
 	        if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MEDIUM_RECTANGLE)) {
@@ -831,11 +817,11 @@ public class MadvertiseView extends FrameLayout {
 	            mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
 	            mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
 	            mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
-	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MRAID) && currentAd != null && currentAd.isMraid()) {
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MRAID) && mCurrentAd != null && mCurrentAd.isMraid()) {
 	        	// If we had chained banner types with mraid=true and actually get a rich media ad, we don't know how big it should be in default mode.
 	        	// So we need to check the parsed ad-response from the server.
-	        	mBannerHeightDp = currentAd.getBannerHeight();
-	        	mBannerWidthDp = currentAd.getBannerWidth();
+	        	mBannerHeightDp = mCurrentAd.getBannerHeight();
+	        	mBannerWidthDp = mCurrentAd.getBannerWidth();
 	        	mBannerHeight = (int) (mDp * mBannerHeightDp + 0.5f);
 	            mBannerWidth = (int) (mDp * mBannerHeightDp + 0.5f);
 	        }
