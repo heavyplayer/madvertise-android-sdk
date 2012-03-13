@@ -54,10 +54,10 @@ public class MadvertiseAd {
     private boolean mHasBanner = false;
 
     // this one is not needed at the moment, but may become necessary in future versions
-    private int mBannerHeight = 0;
+    private int mBannerHeight = 53;
 
     // this one is not needed at the moment, but may become necessary in future versions
-    private int mBannerWidth = 0;
+    private int mBannerWidth = 320;
 
     private JSONArray mImpressionTrackingArray;
 
@@ -131,9 +131,14 @@ public class MadvertiseAd {
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
             
-            // get sizes for rich media ad
-            mBannerHeight = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "height"), 53);
-            mBannerWidth = Integer.getInteger(MadvertiseUtil.getJSONValue(richMediaJson, "width"), 320);
+            // get sizes for rich media ad     
+            try {
+                mBannerHeight = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "height"));
+                mBannerWidth = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "width"));
+            } catch (NumberFormatException e) {
+            	mBannerHeight = 53;
+            	mBannerWidth = 320;
+            }
                              
         } catch (JSONException e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Error in json string");
