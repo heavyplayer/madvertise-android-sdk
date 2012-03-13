@@ -823,7 +823,7 @@ public class MadvertiseView extends FrameLayout {
 	        	mBannerHeightDp = mCurrentAd.getBannerHeight();
 	        	mBannerWidthDp = mCurrentAd.getBannerWidth();
 	        	mBannerHeight = (int) (mDp * mBannerHeightDp + 0.5f);
-	            mBannerWidth = (int) (mDp * mBannerHeightDp + 0.5f);
+	            mBannerWidth = (int) (mDp * mBannerWidthDp + 0.5f);
 	        }
     	}
         // adjust width and height to fit the screen
