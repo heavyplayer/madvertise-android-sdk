@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-// Notice: inspired by The ORMMA.org project reference android implementation
-
 package de.madvertise.android.sdk;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,7 +38,6 @@ import android.widget.Toast;
 
 public class MadvertiseActivity extends Activity {
 
-    /** Extra Constants **/
     public static final String SHOW_BACK_EXTRA = "open_show_back";
     public static final String SHOW_FORWARD_EXTRA = "open_show_forward";
     public static final String SHOW_REFRESH_EXTRA = "open_show_refresh";
@@ -47,107 +46,102 @@ public class MadvertiseActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Build the layout
-        RelativeLayout rl = new RelativeLayout(this);
-        final WebView webview = new WebView(this);
+        final RelativeLayout relativeLayout = new RelativeLayout(this);
+        final WebView webView = new WebView(this);
 
         this.getWindow().requestFeature(Window.FEATURE_PROGRESS);
         getWindow().setFeatureInt(Window.FEATURE_PROGRESS,
                 Window.PROGRESS_VISIBILITY_ON);
 
-        // Build the button bar
-        LinearLayout bll = new LinearLayout(this);
-        bll.setOrientation(LinearLayout.HORIZONTAL);
-        bll.setId(42);
-        bll.setWeightSum(100);
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+        final LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        linearLayout.setId(42);
+        linearLayout.setWeightSum(100);
+        RelativeLayout.LayoutParams rlParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.FILL_PARENT,
                 RelativeLayout.LayoutParams.FILL_PARENT);
-        lp.addRule(RelativeLayout.ABOVE, 42);
-        rl.addView(webview, lp);
+        rlParams.addRule(RelativeLayout.ABOVE, 42);
+        relativeLayout.addView(webView, rlParams);
 
-        lp = new RelativeLayout.LayoutParams(
+        rlParams = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.FILL_PARENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        rl.addView(bll, lp);
+        rlParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        relativeLayout.addView(linearLayout, rlParams);
 
-        LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.FILL_PARENT);
-        lp2.weight = 25;
-        lp2.gravity = Gravity.CENTER_VERTICAL;
+        llParams.weight = 25;
+        llParams.gravity = Gravity.CENTER_VERTICAL;
 
-        ImageButton backButton = new ImageButton(this);
+        final ImageButton back = new ImageButton(this);
 
-        bll.addView(backButton, lp2);
+        linearLayout.addView(back, llParams);
         if (!getIntent().getBooleanExtra(SHOW_BACK_EXTRA, true))
-            backButton.setVisibility(ViewGroup.GONE);
+            back.setVisibility(ViewGroup.GONE);
 
-        // backButton.setImageBitmap(bitmapFromJar("bitmaps/leftarrow.png"));
-        backButton.setImageResource(R.drawable.ic_menu_back);
+        back.setImageResource(R.drawable.ic_menu_back);
 
-        backButton.setOnClickListener(new OnClickListener() {
+        back.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                if (webview.canGoBack())
-                    webview.goBack();
+                if (webView.canGoBack())
+                    webView.goBack();
                 else
                     MadvertiseActivity.this.finish();
             }
         });
 
-        final ImageButton forwardButton = new ImageButton(this);
-        lp2 = new LinearLayout.LayoutParams(
+        final ImageButton forward = new ImageButton(this);
+        llParams = new LinearLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.FILL_PARENT);
-        lp2.weight = 25;
-        lp2.gravity = Gravity.CENTER_VERTICAL;
+        llParams.weight = 25;
+        llParams.gravity = Gravity.CENTER_VERTICAL;
 
-        bll.addView(forwardButton, lp2);
+        linearLayout.addView(forward, llParams);
         if (!getIntent().getBooleanExtra(SHOW_FORWARD_EXTRA, true))
-            forwardButton.setVisibility(ViewGroup.GONE);
-        forwardButton.setOnClickListener(new OnClickListener() {
+            forward.setVisibility(ViewGroup.GONE);
+        forward.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(android.view.View arg0) {
-                webview.goForward();
+                webView.goForward();
             }
         });
 
-        ImageButton refreshButton = new ImageButton(this);
-        // refreshButton.setImageBitmap(bitmapFromJar("bitmaps/refresh.png"));
-        refreshButton.setImageResource(R.drawable.ic_menu_refresh);
-        lp2 = new LinearLayout.LayoutParams(
+        final ImageButton refresh = new ImageButton(this);
+        refresh.setImageResource(R.drawable.ic_menu_refresh);
+        llParams = new LinearLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp2.weight = 25;
-        lp2.gravity = Gravity.CENTER_VERTICAL;
+        llParams.weight = 25;
+        llParams.gravity = Gravity.CENTER_VERTICAL;
 
-        bll.addView(refreshButton, lp2);
-        if (!getIntent().getBooleanExtra(SHOW_REFRESH_EXTRA, true))
-
-            refreshButton.setVisibility(ViewGroup.GONE);
-        refreshButton.setOnClickListener(new OnClickListener() {
+        linearLayout.addView(refresh, llParams);
+        if (!getIntent().getBooleanExtra(SHOW_REFRESH_EXTRA, true)) {
+            refresh.setVisibility(ViewGroup.GONE);
+        }
+        refresh.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(android.view.View arg0) {
-                webview.reload();
+                webView.reload();
             }
         });
 
-        ImageButton closeButton = new ImageButton(this);
-        // closeButton.setImageBitmap(bitmapFromJar("bitmaps/close.png"));
-        closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-        lp2 = new LinearLayout.LayoutParams(
+        final ImageButton close = new ImageButton(this);
+        close.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+        llParams = new LinearLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp2.weight = 25;
-        lp2.gravity = Gravity.CENTER_VERTICAL;
+        llParams.weight = 25;
+        llParams.gravity = Gravity.CENTER_VERTICAL;
 
-        bll.addView(closeButton, lp2);
-        closeButton.setOnClickListener(new OnClickListener() {
+        linearLayout.addView(close, llParams);
+        close.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(android.view.View arg0) {
@@ -161,15 +155,26 @@ public class MadvertiseActivity extends Activity {
         // Enable cookies
         CookieSyncManager.createInstance(this);
         CookieSyncManager.getInstance().startSync();
-        webview.getSettings().setJavaScriptEnabled(true);
-        webview.loadUrl(getIntent().getDataString());
-        Log.d("MadvertiseBrowser", "loading " + getIntent().getDataString());
+        webView.getSettings().setJavaScriptEnabled(true);
+        
+        final String dataString = getIntent().getDataString();
+        // check for other formats like tel:, geo:, and so on
+        if (!dataString.startsWith("http") || dataString.startsWith("https://market.")
+                || dataString.startsWith("https://play.")) {
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(dataString));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        } else {
+            webView.loadUrl(getIntent().getDataString());
+            MadvertiseUtil.logMessage(null, Log.DEBUG, "loading " + getIntent().getDataString());
+        }
 
-        webview.setWebViewClient(new WebViewClient() {
+        webView.setWebViewClient(new WebViewClient() {
             public void onReceivedError(WebView view, int errorCode,
                     String description, String failingUrl) {
-                Activity a = (Activity) view.getContext();
-                Toast.makeText(a, "Ormma Error:" + description,
+                final Activity activity = (Activity) view.getContext();
+                Toast.makeText(activity, "Error:" + description,
                         Toast.LENGTH_SHORT).show();
             }
 
@@ -182,7 +187,7 @@ public class MadvertiseActivity extends Activity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                forwardButton.setImageResource(R.drawable.ic_menu_forward);
+                forward.setImageResource(R.drawable.ic_menu_forward);
             }
 
             @Override
@@ -190,42 +195,34 @@ public class MadvertiseActivity extends Activity {
                 super.onPageFinished(view, url);
 
                 if (view.canGoForward()) {
-                    forwardButton.setEnabled(true);
+                    forward.setEnabled(true);
                 } else {
-                    forwardButton.setEnabled(false);
+                    forward.setEnabled(false);
                 }
 
             }
         });
-        setContentView(rl);
+        setContentView(relativeLayout);
 
-        webview.setWebChromeClient(new WebChromeClient() {
+        webView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
                 // show progress bar while loading, url when loaded
-                Activity a = (Activity) view.getContext();
-                a.setTitle("Loading...");
-                a.setProgress(progress * 100);
+                final Activity activity = (Activity) view.getContext();
+                activity.setTitle("Loading...");
+                activity.setProgress(progress * 100);
                 if (progress == 100)
-                    a.setTitle(view.getUrl());
+                    activity.setTitle(view.getUrl());
             }
         });
 
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
     @Override
     protected void onPause() {
         super.onPause();
         CookieSyncManager.getInstance().stopSync();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
     @Override
     protected void onResume() {
         super.onResume();
