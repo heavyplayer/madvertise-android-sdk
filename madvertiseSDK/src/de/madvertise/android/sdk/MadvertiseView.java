@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 madvertise Mobile Advertising GmbH
+ * Copyright 2012 madvertise Mobile Advertising GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -210,7 +209,7 @@ public class MadvertiseView extends FrameLayout {
         // the layout.
         setVisibility(GONE);
 
-        if (context.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
+        if (!MadvertiseUtil.checkPermissionGranted(android.Manifest.permission.INTERNET, context)) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** Missing internet permissions! *** ");
             MadvertiseUtil.logMessage(null, Log.DEBUG, " *** ----------------------------- *** ");
@@ -589,10 +588,6 @@ public class MadvertiseView extends FrameLayout {
                         MadvertiseUtil.logMessage(null, Log.DEBUG, "appID = " + siteToken);
                     }
 
-                    // get uid (does not work in emulator)
-                    String uid = MadvertiseUtil.getHashedAndroidID(getContext());
-                    MadvertiseUtil.logMessage(null, Log.DEBUG, "uid = " + uid);
-
                     // create post request
                     HttpPost postRequest = new HttpPost(MadvertiseUtil.MAD_SERVER + "/site/" + siteToken);
                     postRequest.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
@@ -606,7 +601,6 @@ public class MadvertiseView extends FrameLayout {
                     parameterList.add(new BasicNameValuePair("format", "json"));
                     parameterList.add(new BasicNameValuePair("requester", "android_sdk"));
                     parameterList.add(new BasicNameValuePair("version", "3.0"));
-                    parameterList.add(new BasicNameValuePair("uid", uid));
                     parameterList.add(new BasicNameValuePair("banner_type", mBannerType));
                     parameterList.add(new BasicNameValuePair("deliver_only_text", Boolean
                             .toString(mDeliverOnlyText)));
@@ -651,6 +645,19 @@ public class MadvertiseView extends FrameLayout {
                         parameterList.add(new BasicNameValuePair("lng", Double
                                 .toString(MadvertiseUtil.getLocation().getLongitude())));
                     }
+                    
+                    
+                    parameterList.add(new BasicNameValuePair("app_name", MadvertiseUtil.getApplicationName(getContext().getApplicationContext())));
+                    parameterList.add(new BasicNameValuePair("app_version", MadvertiseUtil.getApplicationVersion(getContext().getApplicationContext())));
+                    
+                    parameterList.add(new BasicNameValuePair("udid_md5", MadvertiseUtil.getHashedAndroidID(getContext(), "MD5")));
+                    parameterList.add(new BasicNameValuePair("udid_sha1", MadvertiseUtil.getHashedAndroidID(getContext(), "SHA1")));
+                    
+                    parameterList.add(new BasicNameValuePair("mac_md5", MadvertiseUtil.getHashedMacAddress(getContext(), "MD5")));
+                    parameterList.add(new BasicNameValuePair("mac_sha1", MadvertiseUtil.getHashedMacAddress(getContext(), "SHA1")));
+                    
+                    parameterList.add(new BasicNameValuePair("token_md5", MadvertiseUtil.getOrCreateToken(getContext(), "MD5")));
+                    parameterList.add(new BasicNameValuePair("token_sha1", MadvertiseUtil.getOrCreateToken(getContext(), "SHA1")));
 
                     UrlEncodedFormEntity urlEncodedEntity = null;
                     try {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 madvertise Mobile Advertising GmbH
+ * Copyright 2012 madvertise Mobile Advertising GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,18 +27,25 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,6 +59,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Utility class for the madvertise android SDK.
@@ -156,17 +164,75 @@ public class MadvertiseUtil {
     private static long sLocationUpdateTimestamp = 0;
 
     private static Location sCurrentLocation = null;
-
     
-    static String getHashedAndroidID(Context context) {
+    
+    public static String getHashedAndroidID(Context context, String hashType) {
     	String id = Secure.getString(context.getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
         if (id == null) {
             id = "";
         } else {
-            id = MadvertiseUtil.getMD5Hash(id);
+            id = MadvertiseUtil.getHash(id, hashType);
         }
         return id;
     }
+    
+    public static String getHashedMacAddress(Context context, String hashType) {
+    	String mac = null;
+    	
+    	if (MadvertiseUtil.checkPermissionGranted(android.Manifest.permission.ACCESS_WIFI_STATE, context)) {
+    		WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+    		mac = wm.getConnectionInfo().getMacAddress();
+    	}
+    	
+    	if (mac == null) {
+    		mac = "";
+    	} else {
+    		mac = MadvertiseUtil.getHash(mac, hashType);
+    	}
+    	
+    	return mac;
+    }
+    
+	public static String getOrCreateToken(Context context, String hashType) {
+		if (!MadvertiseUtil.checkPermissionGranted("android.permission.WRITE_EXTERNAL_STORAGE", context)) {
+			return "";
+		}
+		
+		String tokenName = "token" + hashType;
+		String hashedToken = "";
+		FileInputStream fileInputStream = null;
+		FileOutputStream fileOutputStream = null;
+		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_NOTIFICATIONS);
+		File tokenFile = new File(path, tokenName);
+		path.mkdirs();
+
+		try {
+			fileInputStream = new FileInputStream(tokenFile);
+			hashedToken = MadvertiseUtil.convertStreamToString(fileInputStream);
+		} catch (Exception e) {
+			e.printStackTrace();
+			hashedToken = "";
+		}
+		
+		if (hashedToken == "") {
+			String randomToken = UUID.randomUUID().toString();
+			hashedToken = MadvertiseUtil.getHash(randomToken, hashType);
+			try {	
+				fileOutputStream = new FileOutputStream(tokenFile);
+				fileOutputStream.write(hashedToken.getBytes());
+			} catch (Exception e) {
+				hashedToken = "";
+				e.printStackTrace();
+			} finally {
+				try {
+					fileOutputStream.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return hashedToken;
+	}
     
     /**
      * Returns the madvertise token
@@ -174,7 +240,7 @@ public class MadvertiseUtil {
      * @param context application context
      * @return madvertise_token from AndroidManifest.xml or null
      */
-    static String getToken(final Context context, MadvertiseViewCallbackListener listener) {
+    public static String getToken(final Context context, MadvertiseViewCallbackListener listener) {
         String madvertiseToken = null;
 
         PackageManager packageManager = context.getPackageManager();
@@ -197,13 +263,41 @@ public class MadvertiseUtil {
 
         return madvertiseToken;
     }
+    
+    public static String getApplicationName(final Context context) {
+    	String appName = "";
+    	
+    	PackageManager packageManager = context.getPackageManager();
+		try {
+			ApplicationInfo applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+			appName = packageManager.getApplicationLabel(applicationInfo).toString();
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
+    	return appName;
+    }
+    
+    public static String getApplicationVersion(final Context context) {
+    	String appVersion = "";
+    	
+    	PackageManager packageManager = context.getPackageManager();
+		try {
+			PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+			appVersion = packageInfo.versionName;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
+    	return appVersion;
+    }
 
     /**
      * Fetch the address of the enabled interface
      * 
      * @return ip address as string
      */
-    static String getLocalIpAddress(MadvertiseViewCallbackListener listener) {
+    public static String getLocalIpAddress(MadvertiseViewCallbackListener listener) {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en
                     .hasMoreElements();) {
@@ -237,11 +331,11 @@ public class MadvertiseUtil {
      * @param input
      * @return md5 hash
      */
-    synchronized static String getMD5Hash(final String input) {
+    public synchronized static String getHash(final String input, String hashType) {
         MessageDigest messageDigest = null;
 
         try {
-            messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest = MessageDigest.getInstance(hashType);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Could not create hash value");
@@ -268,7 +362,7 @@ public class MadvertiseUtil {
      * @param headers header object
      * @return all headers concatenated
      */
-    static String getAllHeadersAsString(final Header[] headers) {
+    public static String getAllHeadersAsString(final Header[] headers) {
         String returnString = "";
         for (int i = 0; i < headers.length; i++) {
             returnString += "<< " + headers[i].getName() + " : " + headers[i].getValue() + " >>";
@@ -282,7 +376,7 @@ public class MadvertiseUtil {
      * @param inputStream stream from the http connection with the ad server
      * @return json string from the ad server
      */
-    static String convertStreamToString(final InputStream inputStream) {
+    public static String convertStreamToString(final InputStream inputStream) {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder stringBuilder = new StringBuilder();
         String line = null;
@@ -302,7 +396,7 @@ public class MadvertiseUtil {
         return stringBuilder.toString();
     }
 
-    static Location getLocation() {
+    public static Location getLocation() {
         return sCurrentLocation;
     }
 
@@ -311,7 +405,7 @@ public class MadvertiseUtil {
      * 
      * @param context application context
      */
-    static void refreshCoordinates(final Context context) {
+    public static void refreshCoordinates(final Context context) {
     	MadvertiseUtil.logMessage(null, Log.DEBUG, "Trying to refresh location");
 
         if (context == null) {
@@ -335,10 +429,8 @@ public class MadvertiseUtil {
                 return;
             }
 
-            boolean permissionCoarseLocation = context
-                    .checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            boolean permissionFineLocation = context
-                    .checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            boolean permissionCoarseLocation = MadvertiseUtil.checkPermissionGranted(android.Manifest.permission.ACCESS_COARSE_LOCATION, context);
+            boolean permissionFineLocation = MadvertiseUtil.checkPermissionGranted(android.Manifest.permission.ACCESS_FINE_LOCATION, context);
 
             // return (null) if we do not have any permissions
             if (!permissionCoarseLocation && !permissionFineLocation) {
@@ -347,8 +439,7 @@ public class MadvertiseUtil {
             }
 
             // return (null) if we can't get a location manager
-            LocationManager locationManager = (LocationManager) context
-                    .getSystemService(Context.LOCATION_SERVICE);
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             if (locationManager == null) {
             	MadvertiseUtil.logMessage(null, Log.DEBUG, "Unable to fetch a location manger");
                 return;
@@ -402,7 +493,7 @@ public class MadvertiseUtil {
         }
     }
 
-    static String printRequestParameters(final List<NameValuePair> parameterList) {
+    public static String printRequestParameters(final List<NameValuePair> parameterList) {
         StringBuilder stringBuilder = new StringBuilder();
         Iterator<NameValuePair> nameValueIterator = parameterList.iterator();
         while (nameValueIterator.hasNext()) {
@@ -420,7 +511,7 @@ public class MadvertiseUtil {
      * 
      * @return
      */
-    static String getUA() {
+    public static String getUA() {
         if (sUA != null)
             return sUA;
 
@@ -464,7 +555,7 @@ public class MadvertiseUtil {
         return sUA;  
     }
 
-    static boolean checkForBrowserDeclaration(final Context context) {
+    public static boolean checkForBrowserDeclaration(final Context context) {
         PackageManager pm = context.getPackageManager();
         Intent mainIntent = new Intent(context, MadvertiseActivity.class);
         List<ResolveInfo> returnList = pm.queryIntentActivities(mainIntent, 0);
@@ -504,32 +595,33 @@ public class MadvertiseUtil {
         Log.println(level, logTag, logMessage);
     }
     
+    public static boolean checkPermissionGranted(String p, Context c) {
+        return c.checkCallingOrSelfPermission(p) == PackageManager.PERMISSION_GRANTED;
+    }
+    
     public static String getJSONValue(JSONObject json, String key) throws JSONException {
-    	if (json == null || key.equals("")) {
-    		throw new JSONException("Empty JSON or key");
-    	}
+    	MadvertiseUtil.checkEmptyJson(json,  key);
     	return json.has(key) ? json.getString(key) : "";
     }
     
     public static JSONArray getJSONArray(JSONObject json, String key) throws JSONException {
-    	if (json == null || key.equals("")) {
-    		throw new JSONException("Empty JSON or key");
-    	}
+    	MadvertiseUtil.checkEmptyJson(json,  key);
     	return json.has(key) ? json.getJSONArray(key) : new JSONArray();
     }
     
     public static JSONObject getJSONObject(JSONObject json, String key) throws JSONException {
-    	if (json == null || key.equals("")) {
-    		throw new JSONException("Empty JSON or key");
-    	}
+    	MadvertiseUtil.checkEmptyJson(json,  key);
     	return json.has(key) ? json.getJSONObject(key) : null;
     }
     
     public static boolean getJSONBoolean(JSONObject json, String key) throws JSONException {
+    	MadvertiseUtil.checkEmptyJson(json,  key);
+    	return json.has(key) ? json.getBoolean(key) : false;
+    }
+    
+    private static void checkEmptyJson(JSONObject json, String key) throws JSONException {
     	if (json == null || key.equals("")) {
     		throw new JSONException("Empty JSON or key");
     	}
-    	return json.has(key) ? json.getBoolean(key) : false;
     }
-
 }
