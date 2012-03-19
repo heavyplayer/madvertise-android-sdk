@@ -2,7 +2,7 @@ h1. madvertise Android SDK
 
 h2. Intro
 
-The madvertise Android SDK lets you monetize your Android apps via advertising. Basically, the code sends http requests to the madvertise ad server and displays banner ads in various "formats":https://redmine.madvertise.me/projects/madapi/wiki/Banner_Formats. You will receive 100 % of click generated revenues, as we commited in our "developer fund":http://www.madvertise-fund.com/.
+The madvertise Android SDK lets you monetize your Android apps via advertising. Basically, the code sends http requests to the madvertise ad server and displays banner and rich media ads in various "formats":https://redmine.madvertise.me/projects/madapi/wiki/Banner_Formats. You will receive 100 % of click generated revenues, as we commited in our "developer fund":http://www.madvertise-fund.com/.
 
 h2. Preparations
 
@@ -51,9 +51,9 @@ After your app project is created, you will need to add a reference to the Madve
 
 h4. Edit your AndroidManifest.xml file
 
-# Add internet (required) and location (optional) permissions
+# Add internet permissions (INTERNET) and *optionally* location (ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION) wifi state (ACCESS_WIFI_STATE) or external storage (WRITE_EXTERNAL_STORAGE).
 # Add meta data called madvertise_site_token
-# Add the Activity de.madvertise.android.sdk.MadvertiseActivity 
+# Add the Activity de.madvertise.android.sdk.MadvertiseActivity
 # Finally, your manifest file should look something like "this":https://github.com/madvertise/madvertise-android-sdk/blob/master/examples/simple/AndroidManifest.xml#L1-21
 
 h4. Prepare view configuration

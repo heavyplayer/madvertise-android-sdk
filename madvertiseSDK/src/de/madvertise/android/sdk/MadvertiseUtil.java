@@ -110,10 +110,6 @@ public class MadvertiseUtil {
 
     static final String ANIMATION_TYPE_DEFAULT = ANIMATION_TYPE_FADE;
 
-    static final String RICH_MEDIA_ATTRIBUTE_MAX_HEIGHT = "max_view_height";
-
-    static final String RICH_MEDIA_ATTRIBUTE_MAX_WIDTH = "max_view_width";
-
     static final boolean DELIVER_ONLY_TEXT_DEFAULT = false;
 
     static final int TEXT_SIZE_DEFAULT = 18;

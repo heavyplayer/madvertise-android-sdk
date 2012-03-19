@@ -36,7 +36,6 @@ import org.apache.http.params.HttpParams;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 /**
@@ -202,24 +201,26 @@ public class MadvertiseTracker {
                             .toString(mIsDebugMode)));
                     parameterList.add(new BasicNameValuePair("ip", MadvertiseUtil
                             .getLocalIpAddress(null)));
-                    parameterList.add(new BasicNameValuePair("uid", uid));
-                    final int labelId = mContext.getApplicationInfo().labelRes;
-                    if (labelId != 0) {
-                        parameterList.add(new BasicNameValuePair("app_name", mContext.getString(labelId)));
-                    }
-                    try {
-                        parameterList.add(new BasicNameValuePair("app_version",
-                                mContext.getPackageManager().getPackageInfo(
-                                        mContext.getPackageName(), 0).versionName));
-                    } catch (NameNotFoundException e) {
-                        e.printStackTrace();
-                    }
+
                     parameterList.add(new BasicNameValuePair("ts", Long.toString(System
                             .currentTimeMillis())));
                     parameterList.add(new BasicNameValuePair("at", actionType));
                     parameterList.add(new BasicNameValuePair("first_launch", Boolean
                             .toString(isFirstLaunch())));
 
+                    
+                    parameterList.add(new BasicNameValuePair("app_name", MadvertiseUtil.getApplicationName(mContext.getApplicationContext())));
+                    parameterList.add(new BasicNameValuePair("app_version", MadvertiseUtil.getApplicationVersion(mContext.getApplicationContext())));
+                    
+                    parameterList.add(new BasicNameValuePair("udid_md5", MadvertiseUtil.getHashedAndroidID(mContext, "MD5")));
+                    parameterList.add(new BasicNameValuePair("udid_sha1", MadvertiseUtil.getHashedAndroidID(mContext, "SHA1")));
+                    
+                    parameterList.add(new BasicNameValuePair("mac_md5", MadvertiseUtil.getHashedMacAddress(mContext, "MD5")));
+                    parameterList.add(new BasicNameValuePair("mac_sha1", MadvertiseUtil.getHashedMacAddress(mContext, "SHA1")));
+                    
+                    parameterList.add(new BasicNameValuePair("token_md5", MadvertiseUtil.getOrCreateToken(mContext, "MD5")));
+                    parameterList.add(new BasicNameValuePair("token_sha1", MadvertiseUtil.getOrCreateToken(mContext, "SHA1")));
+                    
                     UrlEncodedFormEntity urlEncodedEntity = null;
                     try {
                         urlEncodedEntity = new UrlEncodedFormEntity(parameterList);
