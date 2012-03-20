@@ -183,11 +183,6 @@ public class MadvertiseTracker {
                         MadvertiseUtil.logMessage(null, Log.DEBUG, "appID = " + siteToken);
                     }
 
-                    // get uid (does not work in emulator)
-                    String uid = MadvertiseUtil.getHashedAndroidID(mContext, "MD5");
-
-                    MadvertiseUtil.logMessage(null, Log.DEBUG, "uid = " + uid);
-
                     // create post request
                     HttpPost postRequest = new HttpPost(MadvertiseUtil.MAD_SERVER + "/action/"
                             + siteToken);
@@ -208,18 +203,14 @@ public class MadvertiseTracker {
                     parameterList.add(new BasicNameValuePair("first_launch", Boolean
                             .toString(isFirstLaunch())));
 
-                    
                     parameterList.add(new BasicNameValuePair("app_name", MadvertiseUtil.getApplicationName(mContext.getApplicationContext())));
                     parameterList.add(new BasicNameValuePair("app_version", MadvertiseUtil.getApplicationVersion(mContext.getApplicationContext())));
                     
-                    parameterList.add(new BasicNameValuePair("udid_md5", MadvertiseUtil.getHashedAndroidID(mContext, "MD5")));
-                    parameterList.add(new BasicNameValuePair("udid_sha1", MadvertiseUtil.getHashedAndroidID(mContext, "SHA1")));
+                    parameterList.add(new BasicNameValuePair("udid_md5", MadvertiseUtil.getHashedAndroidID(mContext, MadvertiseUtil.HashType.MD5)));
+                    parameterList.add(new BasicNameValuePair("udid_sha1", MadvertiseUtil.getHashedAndroidID(mContext, MadvertiseUtil.HashType.SHA1)));
                     
-                    parameterList.add(new BasicNameValuePair("mac_md5", MadvertiseUtil.getHashedMacAddress(mContext, "MD5")));
-                    parameterList.add(new BasicNameValuePair("mac_sha1", MadvertiseUtil.getHashedMacAddress(mContext, "SHA1")));
-                    
-                    parameterList.add(new BasicNameValuePair("token_md5", MadvertiseUtil.getOrCreateToken(mContext, "MD5")));
-                    parameterList.add(new BasicNameValuePair("token_sha1", MadvertiseUtil.getOrCreateToken(mContext, "SHA1")));
+                    parameterList.add(new BasicNameValuePair("mac_md5", MadvertiseUtil.getHashedMacAddress(mContext, MadvertiseUtil.HashType.MD5)));
+                    parameterList.add(new BasicNameValuePair("mac_sha1", MadvertiseUtil.getHashedMacAddress(mContext, MadvertiseUtil.HashType.SHA1)));
                     
                     UrlEncodedFormEntity urlEncodedEntity = null;
                     try {

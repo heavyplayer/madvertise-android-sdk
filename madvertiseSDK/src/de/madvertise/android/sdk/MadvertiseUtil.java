@@ -38,14 +38,10 @@ import android.location.LocationManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,7 +55,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * Utility class for the madvertise android SDK.
@@ -161,8 +156,12 @@ public class MadvertiseUtil {
 
     private static Location sCurrentLocation = null;
     
+    public enum HashType {
+    	MD5,
+    	SHA1
+    }
     
-    public static String getHashedAndroidID(Context context, String hashType) {
+    public static String getHashedAndroidID(Context context, HashType hashType) {
     	String id = Secure.getString(context.getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
         if (id == null) {
             id = "";
@@ -172,7 +171,7 @@ public class MadvertiseUtil {
         return id;
     }
     
-    public static String getHashedMacAddress(Context context, String hashType) {
+    public static String getHashedMacAddress(Context context, HashType hashType) {
     	String mac = null;
     	
     	if (MadvertiseUtil.checkPermissionGranted(android.Manifest.permission.ACCESS_WIFI_STATE, context)) {
@@ -188,47 +187,6 @@ public class MadvertiseUtil {
     	
     	return mac;
     }
-    
-	public static String getOrCreateToken(Context context, String hashType) {
-		if (!MadvertiseUtil.checkPermissionGranted("android.permission.WRITE_EXTERNAL_STORAGE", context)) {
-			return "";
-		}
-		
-		String tokenName = "token" + hashType;
-		String hashedToken = "";
-		FileInputStream fileInputStream = null;
-		FileOutputStream fileOutputStream = null;
-		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_NOTIFICATIONS);
-		File tokenFile = new File(path, tokenName);
-		path.mkdirs();
-
-		try {
-			fileInputStream = new FileInputStream(tokenFile);
-			hashedToken = MadvertiseUtil.convertStreamToString(fileInputStream);
-		} catch (Exception e) {
-			e.printStackTrace();
-			hashedToken = "";
-		}
-		
-		if (hashedToken == "") {
-			String randomToken = UUID.randomUUID().toString();
-			hashedToken = MadvertiseUtil.getHash(randomToken, hashType);
-			try {	
-				fileOutputStream = new FileOutputStream(tokenFile);
-				fileOutputStream.write(hashedToken.getBytes());
-			} catch (Exception e) {
-				hashedToken = "";
-				e.printStackTrace();
-			} finally {
-				try {
-					fileOutputStream.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return hashedToken;
-	}
     
     /**
      * Returns the madvertise token
@@ -327,11 +285,11 @@ public class MadvertiseUtil {
      * @param input
      * @return md5 hash
      */
-    public synchronized static String getHash(final String input, String hashType) {
+    public synchronized static String getHash(final String input, HashType hashType) {
         MessageDigest messageDigest = null;
 
         try {
-            messageDigest = MessageDigest.getInstance(hashType);
+            messageDigest = MessageDigest.getInstance(hashType.toString());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Could not create hash value");

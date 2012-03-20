@@ -650,14 +650,11 @@ public class MadvertiseView extends FrameLayout {
                     parameterList.add(new BasicNameValuePair("app_name", MadvertiseUtil.getApplicationName(getContext().getApplicationContext())));
                     parameterList.add(new BasicNameValuePair("app_version", MadvertiseUtil.getApplicationVersion(getContext().getApplicationContext())));
                     
-                    parameterList.add(new BasicNameValuePair("udid_md5", MadvertiseUtil.getHashedAndroidID(getContext(), "MD5")));
-                    parameterList.add(new BasicNameValuePair("udid_sha1", MadvertiseUtil.getHashedAndroidID(getContext(), "SHA1")));
+                    parameterList.add(new BasicNameValuePair("udid_md5", MadvertiseUtil.getHashedAndroidID(getContext(), MadvertiseUtil.HashType.MD5)));
+                    parameterList.add(new BasicNameValuePair("udid_sha1", MadvertiseUtil.getHashedAndroidID(getContext(), MadvertiseUtil.HashType.SHA1)));
                     
-                    parameterList.add(new BasicNameValuePair("mac_md5", MadvertiseUtil.getHashedMacAddress(getContext(), "MD5")));
-                    parameterList.add(new BasicNameValuePair("mac_sha1", MadvertiseUtil.getHashedMacAddress(getContext(), "SHA1")));
-                    
-                    parameterList.add(new BasicNameValuePair("token_md5", MadvertiseUtil.getOrCreateToken(getContext(), "MD5")));
-                    parameterList.add(new BasicNameValuePair("token_sha1", MadvertiseUtil.getOrCreateToken(getContext(), "SHA1")));
+                    parameterList.add(new BasicNameValuePair("mac_md5", MadvertiseUtil.getHashedMacAddress(getContext(), MadvertiseUtil.HashType.MD5)));
+                    parameterList.add(new BasicNameValuePair("mac_sha1", MadvertiseUtil.getHashedMacAddress(getContext(), MadvertiseUtil.HashType.SHA1)));
 
                     UrlEncodedFormEntity urlEncodedEntity = null;
                     try {
