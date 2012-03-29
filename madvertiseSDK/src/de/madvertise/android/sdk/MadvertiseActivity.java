@@ -17,11 +17,11 @@
 package de.madvertise.android.sdk;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -161,13 +161,16 @@ public class MadvertiseActivity extends Activity {
         // check for other formats like tel:, geo:, and so on
         if (!dataString.startsWith("http") || dataString.startsWith("https://market.")
                 || dataString.startsWith("https://play.")) {
-            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(dataString));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            try {
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(dataString));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            } catch (ActivityNotFoundException e) { // in case there is no activity, we show the data in the browser
+                webView.loadUrl(getIntent().getDataString());
+            }
         } else {
             webView.loadUrl(getIntent().getDataString());
-            MadvertiseUtil.logMessage(null, Log.DEBUG, "loading " + getIntent().getDataString());
         }
 
         webView.setWebViewClient(new WebViewClient() {

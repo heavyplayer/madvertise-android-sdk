@@ -130,11 +130,11 @@ public class MadvertiseAd {
 
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
-            
+mBannerUrl="http://dl.dropbox.com/u/48980623/overlay-mraid/index.html";            
             // get sizes for rich media ad     
             try {
-                mBannerHeight = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "height"));
-                mBannerWidth = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "width"));
+                mBannerHeight = 350;//Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "height"));
+                mBannerWidth = 350; //Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "width"));
             } catch (NumberFormatException e) {
             	mBannerHeight = 53;
             	mBannerWidth = 320;
