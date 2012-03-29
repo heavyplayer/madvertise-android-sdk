@@ -31,6 +31,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -51,6 +52,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -72,6 +74,7 @@ public class MadvertiseUtil {
     static final boolean PRINT_LOG = true;
 
 	static final String MAD_SERVER = "http://ad.madvertise.de";
+	// static final String MAD_SERVER = "http://192.168.1.121:9292";
 
     static final int CONNECTION_TIMEOUT = 5000;
 
@@ -93,7 +96,9 @@ public class MadvertiseUtil {
 
     static final String BANNER_TYPE_ALL = "all";
     
-    static final String BANNER_TYPE_MRAID = "rich_media";
+    static final String BANNER_TYPE_RICH_MEDIA = "rich_media";
+    
+    static final String BANNER_TYPE_RICH_MEDIA_SHORT = "rm";
 
     static final String BANNER_TYPE_DEFAULT = BANNER_TYPE_MMA;
 
@@ -578,4 +583,51 @@ public class MadvertiseUtil {
     		throw new JSONException("Empty JSON or key");
     	}
     }
+    
+    // code for getting app names
+    // taken from http://www.androidsnippets.com/get-installed-applications-with-name-package-name-version-and-icon
+    // thx guys :-)
+    static class PInfo {
+        private String appname = "";
+        private String pname = "";
+        private String versionName = "";
+        private int versionCode = 0;
+        @SuppressWarnings("unused")
+		private Drawable icon;
+        private void prettyPrint() {
+            MadvertiseUtil.logMessage(null, Log.DEBUG, appname + "\t " + pname + "\t " + versionName + "\t " + versionCode);
+        }
+    }
+
+    public static ArrayList<PInfo> getPackages(Context c) {
+        ArrayList<PInfo> apps = MadvertiseUtil.getInstalledApps(false, c); /* false = no system packages */
+        final int max = apps.size();
+        for (int i=0; i<max; i++) {
+            apps.get(i).prettyPrint();
+        }
+        return apps;
+    }
+
+    private static ArrayList<PInfo> getInstalledApps(boolean getSysPackages, Context c) {
+        ArrayList<PInfo> res = new ArrayList<PInfo>();        
+        List<PackageInfo> packs = c.getPackageManager().getInstalledPackages(0);
+        for(int i=0;i<packs.size();i++) {
+            PackageInfo p = packs.get(i);
+            if ((!getSysPackages) && (p.versionName == null)) {
+                continue ;
+            }
+            PInfo newInfo = new PInfo();
+            newInfo.appname = p.applicationInfo.loadLabel(c.getPackageManager()).toString();
+            newInfo.pname = p.packageName;
+            newInfo.versionName = p.versionName;
+            newInfo.versionCode = p.versionCode;
+            newInfo.icon = p.applicationInfo.loadIcon(c.getPackageManager());
+            res.add(newInfo);
+        }
+        return res; 
+    }
+    
+    
+    
+    
 }
