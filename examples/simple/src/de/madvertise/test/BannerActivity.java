@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 madvertise Mobile Advertising GmbH
+ * Copyright 2012 madvertise Mobile Advertising GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-// import de.madvertise.android.sdk.MadvertiseTracker;
+import de.madvertise.android.sdk.MadvertiseTracker;
 import de.madvertise.android.sdk.MadvertiseView;
 import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
@@ -39,7 +39,7 @@ import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
  */
 public class BannerActivity extends Activity implements MadvertiseViewCallbackListener {
 
-    // private MadvertiseTracker mTracker;
+    private MadvertiseTracker mTracker;
 
     private MadvertiseView mMadView;
 
@@ -85,10 +85,10 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         listView.setAdapter(adapter);
 
         // Retrieve a new instance of the a MadvertiseTracker
-        // mTracker = MadvertiseTracker.getInstance(this);
+         mTracker = MadvertiseTracker.getInstance(this);
 
         // Report the application's start.
-        // mTracker.reportLaunch();
+         mTracker.reportLaunch();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         super.onStart();
 
         // Report that the application becomes active
-        // mTracker.reportActive();
+        mTracker.reportActive();
     }
 
     @Override
@@ -104,7 +104,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         super.onDestroy();
 
         // Report that the application is being ended
-        // mTracker.reportStop();
+        mTracker.reportStop();
     }
 
     @Override
@@ -112,7 +112,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
         super.onStop();
 
         // Report that the application becomes inactive
-        // mTracker.reportInactive();
+        mTracker.reportInactive();
     }
 
     /**
@@ -142,16 +142,14 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
     public void onIllegalHttpStatusCode(final int statusCode, final String message) {
         // called when the madvertise-server did not answer with a HTTP-okay
         // statuscode (200).
-        // Statuscode 204 usually means your device is not known to the
-        // madvertise-server yet.
     }
 
     @Override
     public void onAdClicked() {
         Log.d("YOUR_LOG_TAG", "Ad clicked");
         // stop loading new ads and "remove" the view from the layout
-//        mMadView.setFetchingAdsEnabled(false);
-//        mMadView.setVisibility(View.GONE);
+        // mMadView.setFetchingAdsEnabled(false);
+        // mMadView.setVisibility(View.GONE);
     }
 
     @Override
@@ -162,7 +160,7 @@ public class BannerActivity extends Activity implements MadvertiseViewCallbackLi
 
     @Override
     public void onApplicationResume() {
-        // called when a rich media ad is expanded. Should then call onPause().
+        // called when a rich media ad is close. Should then call onResume().
         this.onResume();
     }
 }
