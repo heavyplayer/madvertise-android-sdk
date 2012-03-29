@@ -29,9 +29,9 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-//import android.media.MediaPlayer;
-//import android.media.MediaPlayer.OnCompletionListener;
-//import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -39,12 +39,15 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-//import android.webkit.WebChromeClient;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.VideoView;
+
+import java.io.IOException;
 //import android.widget.VideoView;
 
 //import java.io.IOException;
@@ -70,8 +73,7 @@ public class MadvertiseMraidView extends WebView {
     private ImageButton mCloseButton;
     private boolean mViewable;
     private static String mraidJS;
-
-    // private VideoView mVideo;
+    private VideoView mVideo;
 
     public MadvertiseMraidView(Context context, MadvertiseViewCallbackListener listener,
             AnimationEndListener animationEndListener, Handler loadingCompletedHandler,
@@ -110,81 +112,85 @@ public class MadvertiseMraidView extends WebView {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (!url.endsWith("mraid.js") && ! mError) {
+                if (!url.endsWith("mraid.js") && !mError) {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "Setting mraid to default");
                     checkReady();
 
                     // Close button in default size for interstitial ads
                     if (mPlacementType == MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL) {
                         mCloseButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
-                        mCloseButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+                        mCloseButton
+                                .setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
                     }
+                } else {
+                    mError = false;
                 }
             }
-            
+
             @Override
             public void onReceivedError(WebView view, int errorCode, String description,
                     String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                mError  = true;
+                mError = true;
             }
         });
 
         // Comment this in to enable video tag-capability.
-        // this.setWebChromeClient( new WebChromeClient() {
-        //
-        // @Override
-        // public void onShowCustomView(View view, CustomViewCallback callback)
-        // {
-        // MadvertiseUtil.logMessage(null, Log.INFO, "showing VideoView");
-        // super.onShowCustomView(view, callback);
-        // if (view instanceof FrameLayout) {
-        // FrameLayout frame = (FrameLayout) view;
-        // if (frame.getFocusedChild() instanceof VideoView) {
-        // mVideo = (VideoView) ((FrameLayout) view).getFocusedChild();
-        // frame.removeView(mVideo);
-        // ((ViewGroup)getParent()).addView(mVideo);
-        //
-        // // Will also be called onError
-        // mVideo.setOnCompletionListener(new OnCompletionListener() {
-        //
-        // @Override
-        // public void onCompletion(MediaPlayer player) {
-        // player.stop();
-        // }
-        // });
-        //
-        // mVideo.setOnErrorListener(new OnErrorListener() {
-        //
-        // @Override
-        // public boolean onError(MediaPlayer mp, int what, int extra) {
-        // MadvertiseUtil.logMessage(null, Log.WARN,
-        // "Error while playing video");
-        //
-        // if(mListener != null) {
-        // mListener.onError(new IOException("Error while playing video"));
-        // }
-        //
-        // // We return false in order to call onCompletion()
-        // return false;
-        // }
-        // });
-        //
-        // mVideo.start();
-        // }
-        // }
-        // }
-        //
-        // @Override
-        // public void onHideCustomView() {
-        // if(mVideo != null) {
-        // ((ViewGroup)getParent()).removeView(mVideo);
-        // if(mVideo.isPlaying()) {
-        // mVideo.stopPlayback();
-        // }
-        // }
-        // }
-        // });
+        this.setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback)
+            {
+                MadvertiseUtil.logMessage(null, Log.INFO, "showing VideoView");
+                super.onShowCustomView(view, callback);
+                if (view instanceof FrameLayout) {
+                    FrameLayout frame = (FrameLayout) view;
+                    if (frame.getFocusedChild() instanceof VideoView) {
+                        mVideo = (VideoView) ((FrameLayout) view).getFocusedChild();
+                        frame.removeView(mVideo);
+                        ((ViewGroup) getParent()).addView(mVideo);
+
+                        // Will also be called onError
+                        mVideo.setOnCompletionListener(new OnCompletionListener() {
+
+                            @Override
+                            public void onCompletion(MediaPlayer player) {
+                                player.stop();
+                            }
+                        });
+
+                        mVideo.setOnErrorListener(new OnErrorListener() {
+
+                            @Override
+                            public boolean onError(MediaPlayer mp, int what, int extra) {
+                                MadvertiseUtil.logMessage(null, Log.WARN,
+                                        "Error while playing video");
+
+                                if (mListener != null) {
+                                    mListener.onError(new IOException("Error while playing video"));
+                                }
+
+                                // We return false in order to call
+                                // onCompletion()
+                                return false;
+                            }
+                        });
+
+                        mVideo.start();
+                    }
+                }
+            }
+
+            @Override
+            public void onHideCustomView() {
+                if (mVideo != null) {
+                    ((ViewGroup) getParent()).removeView(mVideo);
+                    if (mVideo.isPlaying()) {
+                        mVideo.stopPlayback();
+                    }
+                }
+            }
+        });
     }
 
     protected void loadAd(MadvertiseAd ad) {
@@ -536,7 +542,7 @@ public class MadvertiseMraidView extends WebView {
                 }
                 if (jsonObject.has(USE_CUSTOM_CLOSE)) {
                     useCustomClose = jsonObject.getBoolean(USE_CUSTOM_CLOSE);
-                    if(!useCustomClose && mCloseButton != null) {
+                    if (useCustomClose && mCloseButton != null) {
                         post(new Runnable() {
                             @Override
                             public void run() {
@@ -552,7 +558,7 @@ public class MadvertiseMraidView extends WebView {
         }
 
         private void checkSizeParams() {
-           if (width > mMaxWidth || height > mMaxHeight) {
+            if (width > mMaxWidth || height > mMaxHeight) {
                 final float ratio = height / (float) width;
                 // respect the ratio
                 final int diffWidth = (int) ((float) (width - mMaxWidth) * ratio);
