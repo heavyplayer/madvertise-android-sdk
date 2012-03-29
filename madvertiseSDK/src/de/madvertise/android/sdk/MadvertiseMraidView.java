@@ -67,6 +67,7 @@ public class MadvertiseMraidView extends WebView {
     private MadvertiseViewCallbackListener mListener;
     private AnimationEndListener mAnimationEndListener;
     private MadvertiseView mMadView;
+    private ImageButton mCloseButton;
     private boolean mViewable;
     private static String mraidJS;
 
@@ -113,8 +114,8 @@ public class MadvertiseMraidView extends WebView {
 
                     // Close button in default size for interstitial ads
                     if (mPlacementType == MadvertiseUtil.PLACEMENT_TYPE_INTERSTITIAL) {
-                        final ImageButton closeButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
-                        closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+                        mCloseButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
+                        mCloseButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
                     }
                 }
             }
@@ -389,11 +390,11 @@ public class MadvertiseMraidView extends WebView {
             mOriginalParent.removeView(this);
             mExpandLayout.addView(this);
 
-            final ImageButton closeButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
-            closeButton.setId(43);
+            mCloseButton = addCloseButtonToViewGroup(((ViewGroup) getParent()));
+            mCloseButton.setId(43);
 
             if (!mExpandProperties.useCustomClose) {
-                closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+                mCloseButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
             }
 
             content.addView(mExpandLayout);
@@ -526,6 +527,14 @@ public class MadvertiseMraidView extends WebView {
                 }
                 if (jsonObject.has(USE_CUSTOM_CLOSE)) {
                     useCustomClose = jsonObject.getBoolean(USE_CUSTOM_CLOSE);
+                    if(!useCustomClose && mCloseButton != null) {
+                        post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCloseButton.setImageDrawable(null);
+                            }
+                        });
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

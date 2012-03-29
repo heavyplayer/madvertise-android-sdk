@@ -130,6 +130,7 @@ public class MadvertiseAd {
 
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
+//            mBannerUrl = "http://asset0.madvertise.de/banners/11665/rich_media/index.html?id=madvertise-ad-container-0.8776058123808168&cu=http://ed5.9000.ad.madvertise.de/track/k5qd1cl7/site/uFeEozDw/ad/TPnlI9Ay&t=k5qd1cl7&b1=http://ed5.9000.ad.madvertise.de/voxel.gif?k5qd1cl7";
             
             // get sizes for rich media ad     
             try {

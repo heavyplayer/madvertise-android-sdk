@@ -20,7 +20,7 @@
         <activity android:name="de.madvertise.android.sdk.MadvertiseActivity"/>
         
         <!-- Setup your site token. For tests, use 'TestToken'-->
-        <meta-data android:value="TestTokn" android:name="madvertise_site_token" />
+        <meta-data android:value="uFeEozDw" android:name="madvertise_site_token" />
         
         <!-- Mraid TestSuite -->
         <activity android:name="android.app.Activity" />
