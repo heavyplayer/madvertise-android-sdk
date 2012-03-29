@@ -105,10 +105,12 @@ public class MadvertiseMraidView extends WebView {
         addJavascriptInterface(mBridge, "mraid_bridge");
 
         setWebViewClient(new WebViewClient() {
+            private boolean mError = false;
+
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (!url.endsWith("mraid.js")) {
+                if (!url.endsWith("mraid.js") && ! mError) {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "Setting mraid to default");
                     checkReady();
 
@@ -118,6 +120,13 @@ public class MadvertiseMraidView extends WebView {
                         mCloseButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
                     }
                 }
+            }
+            
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description,
+                    String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                mError  = true;
             }
         });
 
