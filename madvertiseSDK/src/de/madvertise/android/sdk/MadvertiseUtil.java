@@ -69,7 +69,7 @@ public class MadvertiseUtil {
 
     static final int SECONDS_TO_REFRESH_LOCATION = 900;
 
-    static final int SECONDS_TO_REFRESH_AD_DEFAULT = 30;
+    static final int SECONDS_TO_REFRESH_AD_DEFAULT = 45;
 
     static final boolean PRINT_LOG = true;
 
@@ -95,9 +95,9 @@ public class MadvertiseUtil {
     static final String BANNER_TYPE_LANDSCAPE = "landscape";
 
     static final String BANNER_TYPE_ALL = "all";
-    
+
     static final String BANNER_TYPE_RICH_MEDIA = "rich_media";
-    
+
     static final String BANNER_TYPE_RICH_MEDIA_SHORT = "rm";
 
     static final String BANNER_TYPE_DEFAULT = BANNER_TYPE_MMA;
@@ -154,18 +154,18 @@ public class MadvertiseUtil {
     public static final int PLACEMENT_TYPE_INTERSTITIAL = 1;
 
     private static final String MADVERTISE_SITE_TOKEN = "madvertise_site_token";
-    
+
     private static String sUA;
 
     private static long sLocationUpdateTimestamp = 0;
 
     private static Location sCurrentLocation = null;
-    
+
     public enum HashType {
     	MD5,
     	SHA1
     }
-    
+
     public static String getHashedAndroidID(Context context, HashType hashType) {
     	String id = Secure.getString(context.getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
         if (id == null) {
@@ -175,27 +175,27 @@ public class MadvertiseUtil {
         }
         return id;
     }
-    
+
     public static String getHashedMacAddress(Context context, HashType hashType) {
     	String mac = null;
-    	
+
     	if (MadvertiseUtil.checkPermissionGranted(android.Manifest.permission.ACCESS_WIFI_STATE, context)) {
     		WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
     		mac = wm.getConnectionInfo().getMacAddress();
     	}
-    	
+
     	if (mac == null) {
     		mac = "";
     	} else {
     		mac = MadvertiseUtil.getHash(mac, hashType);
     	}
-    	
+
     	return mac;
     }
-    
+
     /**
      * Returns the madvertise token
-     * 
+     *
      * @param context application context
      * @return madvertise_token from AndroidManifest.xml or null
      */
@@ -222,10 +222,10 @@ public class MadvertiseUtil {
 
         return madvertiseToken;
     }
-    
+
     public static String getApplicationName(final Context context) {
     	String appName = "";
-    	
+
     	PackageManager packageManager = context.getPackageManager();
 		try {
 			ApplicationInfo applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
@@ -236,10 +236,10 @@ public class MadvertiseUtil {
 
     	return appName;
     }
-    
+
     public static String getApplicationVersion(final Context context) {
     	String appVersion = "";
-    	
+
     	PackageManager packageManager = context.getPackageManager();
 		try {
 			PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
@@ -253,7 +253,7 @@ public class MadvertiseUtil {
 
     /**
      * Fetch the address of the enabled interface
-     * 
+     *
      * @return ip address as string
      */
     public static String getLocalIpAddress(MadvertiseViewCallbackListener listener) {
@@ -286,7 +286,7 @@ public class MadvertiseUtil {
 
     /**
      * Returns the MD5 hash for a string.
-     * 
+     *
      * @param input
      * @return md5 hash
      */
@@ -317,7 +317,7 @@ public class MadvertiseUtil {
 
     /**
      * Print all header parameters, just for logging purpose
-     * 
+     *
      * @param headers header object
      * @return all headers concatenated
      */
@@ -331,7 +331,7 @@ public class MadvertiseUtil {
 
     /**
      * converts a stream to a string
-     * 
+     *
      * @param inputStream stream from the http connection with the ad server
      * @return json string from the ad server
      */
@@ -361,7 +361,7 @@ public class MadvertiseUtil {
 
     /**
      * Try to update current location. Non blocking call.
-     * 
+     *
      * @param context application context
      */
     public static void refreshCoordinates(final Context context) {
@@ -467,7 +467,7 @@ public class MadvertiseUtil {
      * Generate a User-Agent used in HTTP request to pick an ad. Source used
      * from Android source code
      * "frameworks/base/core/java/android/webkit/WebSettings.java"
-     * 
+     *
      * @return
      */
     public static String getUA() {
@@ -511,7 +511,7 @@ public class MadvertiseUtil {
         final String rawUA = "Mozilla/5.0 (Linux; U; Android %s) AppleWebKit/525.10+ (KHTML, like Gecko) Version/3.0.4 Mobile Safari/523.12.2";
         sUA = String.format(rawUA, arg);
 
-        return sUA;  
+        return sUA;
     }
 
     public static boolean checkForBrowserDeclaration(final Context context) {
@@ -525,7 +525,7 @@ public class MadvertiseUtil {
      * Simple logging helper to prevent producing duplicate code blocks.
      * Log-Message is only printed to LogCat if logging is enabled in MadUtils
      * and message is logable with specified tag and level.
-     * 
+     *
      * @param tag use a given tag for logging or use default tag if nil. Default
      *            tag can be defined in MadUtil class.
      * @param level log level from {@link android.util.Log}
@@ -536,7 +536,7 @@ public class MadvertiseUtil {
         String logTag = tag;
         if (!PRINT_LOG) {
         	return;
-        }	
+        }
 
         if (tag == null) {
             logTag = MadvertiseUtil.LOG;
@@ -553,37 +553,37 @@ public class MadvertiseUtil {
         String logMessage = "(" + className + ":" + lineNumber + ") : " + message;
         Log.println(level, logTag, logMessage);
     }
-    
+
     public static boolean checkPermissionGranted(String p, Context c) {
         return c.checkCallingOrSelfPermission(p) == PackageManager.PERMISSION_GRANTED;
     }
-    
+
     public static String getJSONValue(JSONObject json, String key) throws JSONException {
     	MadvertiseUtil.checkEmptyJson(json,  key);
     	return json.has(key) ? json.getString(key) : "";
     }
-    
+
     public static JSONArray getJSONArray(JSONObject json, String key) throws JSONException {
     	MadvertiseUtil.checkEmptyJson(json,  key);
     	return json.has(key) ? json.getJSONArray(key) : new JSONArray();
     }
-    
+
     public static JSONObject getJSONObject(JSONObject json, String key) throws JSONException {
     	MadvertiseUtil.checkEmptyJson(json,  key);
     	return json.has(key) ? json.getJSONObject(key) : null;
     }
-    
+
     public static boolean getJSONBoolean(JSONObject json, String key) throws JSONException {
     	MadvertiseUtil.checkEmptyJson(json,  key);
     	return json.has(key) ? json.getBoolean(key) : false;
     }
-    
+
     private static void checkEmptyJson(JSONObject json, String key) throws JSONException {
     	if (json == null || key.equals("")) {
     		throw new JSONException("Empty JSON or key");
     	}
     }
-    
+
     // code for getting app names
     // taken from http://www.androidsnippets.com/get-installed-applications-with-name-package-name-version-and-icon
     // thx guys :-)
@@ -609,7 +609,7 @@ public class MadvertiseUtil {
     }
 
     private static ArrayList<PInfo> getInstalledApps(boolean getSysPackages, Context c) {
-        ArrayList<PInfo> res = new ArrayList<PInfo>();        
+        ArrayList<PInfo> res = new ArrayList<PInfo>();
         List<PackageInfo> packs = c.getPackageManager().getInstalledPackages(0);
         for(int i=0;i<packs.size();i++) {
             PackageInfo p = packs.get(i);
@@ -624,10 +624,10 @@ public class MadvertiseUtil {
             newInfo.icon = p.applicationInfo.loadIcon(c.getPackageManager());
             res.add(newInfo);
         }
-        return res; 
+        return res;
     }
-    
-    
-    
-    
+
+
+
+
 }
