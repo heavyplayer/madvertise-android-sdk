@@ -247,6 +247,16 @@ public class MadvertiseView extends FrameLayout {
         if (mRequestThread == null || !mRequestThread.isAlive()) {
             requestNewAd(false);
         }
+        
+        // no reloads for ads with banner_type = rich_media
+        if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA) || mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA_SHORT) ) {
+        	this.setFetchingAdsEnabled(false);
+        	MadvertiseUtil.logMessage(null, Log.DEBUG, "No ad reloading, since banner_type=[rich_media|rm] was requested");
+        }
+        
+        // just some testing
+        // MadvertiseUtil.getPackages(context.getApplicationContext());
+        
     }
 
     @Override
@@ -610,11 +620,6 @@ public class MadvertiseView extends FrameLayout {
 
                     parameterList.add(new BasicNameValuePair("mraid", Boolean.toString(mIsMraid)));
 
-                    final int labelId = getContext().getApplicationContext().getApplicationInfo().labelRes;
-                    if (labelId != 0) {
-                        parameterList.add(new BasicNameValuePair("app_name", getContext()
-                                .getApplicationContext().getString(labelId)));
-                    }
                     if (sGender != null && !sGender.equals("")) {
                         parameterList.add(new BasicNameValuePair("gender", sGender));
                     }
@@ -626,8 +631,10 @@ public class MadvertiseView extends FrameLayout {
                     } else {
                         orientation = "portrait";
                     }
-                    parameterList.add(new BasicNameValuePair("screen_size", display.getWidth()
-                            + "x" + display.getHeight()));
+
+                    parameterList.add(new BasicNameValuePair("device_height", Integer.toString(display.getHeight())));
+                    parameterList.add(new BasicNameValuePair("device_width", Integer.toString(display.getWidth())));
+                    
                     // When the View is first created, the parent does not exist
                     // when this call is made. Hence, we assume that the parent
                     // size is equal the screen size for the first call.
@@ -635,8 +642,10 @@ public class MadvertiseView extends FrameLayout {
                         mParentWidth = display.getWidth();
                         mParentHeight = display.getHeight();
                     }
-                    parameterList.add(new BasicNameValuePair("parent_view_size", mParentWidth + "x"
-                            + mParentHeight));
+
+                    parameterList.add(new BasicNameValuePair("parent_height", Integer.toString(mParentHeight)));
+                    parameterList.add(new BasicNameValuePair("parent_width", Integer.toString(mParentWidth)));
+
                     parameterList.add(new BasicNameValuePair("device_orientation", orientation));
                     MadvertiseUtil.refreshCoordinates(getContext().getApplicationContext());
                     if (MadvertiseUtil.getLocation() != null) {
@@ -821,9 +830,16 @@ public class MadvertiseView extends FrameLayout {
 	            mBannerWidth = (int) (mDp * MadvertiseUtil.PORTRAIT_BANNER_WIDTH + 0.5f);
 	            mBannerHeightDp = MadvertiseUtil.PORTRAIT_BANNER_HEIGHT;
 	            mBannerWidthDp = MadvertiseUtil.PORTRAIT_BANNER_WIDTH;
-	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_MRAID) && mCurrentAd != null && mCurrentAd.isMraid()) {
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA) && mCurrentAd != null && mCurrentAd.isMraid()) {
 	        	// If we had chained banner types with mraid=true and actually get a rich media ad, we don't know how big it should be in default mode.
 	        	// So we need to check the parsed ad-response from the server.
+	        	mBannerHeightDp = mCurrentAd.getBannerHeight();
+	        	mBannerWidthDp = mCurrentAd.getBannerWidth();
+	        	mBannerHeight = (int) (mDp * mBannerHeightDp + 0.5f);
+	            mBannerWidth = (int) (mDp * mBannerWidthDp + 0.5f);
+	        } else if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA) && mCurrentAd != null && !mCurrentAd.isMraid()) {
+	        	// banner type = rich_media, but no mraid, take fullscreen
+	        	// actually same logic as for mraid
 	        	mBannerHeightDp = mCurrentAd.getBannerHeight();
 	        	mBannerWidthDp = mCurrentAd.getBannerWidth();
 	        	mBannerHeight = (int) (mDp * mBannerHeightDp + 0.5f);

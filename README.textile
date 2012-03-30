@@ -16,34 +16,33 @@ h2. Preparations
 
 * All code was tested with the latest Eclipse 3.7.1 (Build id: M20110909-1335) and ADT 12.0.0.v201106281929-138431
 
-* The required Android SDK version is 7 (2.1).
+* The minimum Android SDK version is 7 (2.1).
 
-h2. Sample App
+h2. Banner types and rich media (mraid) content
 
-The SDK comes with a very simple example, how to integrate the SDK in your APP. You can find it at [PROJECT_ROOT]/example/simple/.
-Please make sure to add the madvertiseSDK to the build path settings accordingly to your development environment.
-
-For Eclipse with installed ADT Plugin follow "these steps":http://developer.android.com/guide/developing/projects/projects-eclipse.html#ReferencingLibraryProject.
+The madvertise Android SDK fully supports the "mraid 1.0 standard":http://www.iab.net/mraid. It can display text ads, static and animated banners and rich media media content, which means HTML5 and CSS animations. The SDK supports seven different banner_types (= sizes):
+* mma 320x53
+* medium_rectangle 300x250
+* leaderboard 728x90
+* fullcreen 768x768
+* portrait 766x66
+* landscape 1024x66
+* rich_media up-to-fullscreen
+rich_media is a special format. With this banner_type, you provide your whole screen for the ad (e.g. on startup, between two levels in a game, ...). It can only be used together with the parameter mraid = true and placement_type = interstitial. mraid is a boolen and decides, wheter you want mraid ads (html5 + css) or not. These ads take exactly the space given with the banner_type parameter. They can expand on a click and display animations (depends on the ad itself). The placement_type [interstitial|inline] is important, because the ad needs to know, how it is going to be displayed (inline, e.g. within a ListView, or interstitial as overlay above the other content). Please make sure, to set the placement_type parameter coresponding to your implementation, in order to get correct close buttons.
 
 h2. Using the SDK
 
 h3. For the impatient
 
-* Clone this repository:
-<pre lang="bash">
-  $ git clone git@github.com:madvertise/madvertise-android-sdk.git
-</pre>
-* Import the SDK project located at [PROJECT_ROOT]/madvertiseSDK/ to your workspace
-
+* Clone this repository
+* Add a new project with sources from [PROJECT_ROOT]/madvertiseSDK/ to your workspace
 * Add the SDK to your project build path as described "here":http://developer.android.com/guide/developing/projects/projects-eclipse.html#ReferencingLibraryProject
-
-* Embed the MadvertiseView as shown in the sample app
-
-* Make sure to add the madvertise_site_token to your AndroidManifest.xml, that you get when creating an app on our "plattform":https://app.madvertise.de/register.
+* Embed the MadvertiseView, e.g. like this : "sample main.xml":https://github.com/madvertise/madvertise-android-sdk/blob/master/examples/simple/res/layout/main.xml.
+* Add permissions and the madvertise_site_token to your AndroidManifest.xml (sample : "AndroidManifest.xml":https://github.com/madvertise/madvertise-android-sdk/blob/master/examples/simple/AndroidManifest.xml).
 
 h3. Step by Step
 
-Once you have installed everything, open Eclipse and create a new Android Project. Use "Create project from existing source" and point the location to the sdk folder (/madvertise-android-sdk/madvertiseSDK). Adjust the compiler compliance level if necessary.
+Once you have installed everything, open Eclipse and create a new Android Project. Use "Create project from existing source" and point the location to the sdk folder (/madvertise-android-sdk/madvertiseSDK). Adjust the compiler compliance level if you get warnings.
 
 After your app project is created, you will need to add a reference to the Madvertise SDK for Android Project. Open the properties window for our app (<code>File | Properties</code>), select the Android item from the list, press the Add... button in the Library area and selecting the Madvertise SDK for Android Project created above.
 
@@ -54,7 +53,7 @@ h4. Edit your AndroidManifest.xml file
 # Add internet permissions (INTERNET) and *optionally* location (ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION) and wifi state (ACCESS_WIFI_STATE).
 # Add meta data called madvertise_site_token
 # Add the Activity de.madvertise.android.sdk.MadvertiseActivity
-# Finally, your manifest file should look something like "this":https://github.com/madvertise/madvertise-android-sdk/blob/master/examples/simple/AndroidManifest.xml#L1-21
+# Finally, your manifest file should look something like "this":https://github.com/madvertise/madvertise-android-sdk/blob/master/examples/simple/AndroidManifest.xml
 
 h4. Prepare view configuration
 
@@ -66,6 +65,29 @@ h4. Include the view that displays advertising banners
 # Add new namespace mad to your layout xml file
 # Add the MadvertiseView to your layout structure and configure it
 # The layout file should look similiar to "this":https://github.com/madvertise/madvertise-android-sdk/blob/documentation_update/examples/simple/res/layout/main.xml
+# You can create multiple of them, e. g. one fixed and another in a ListView. However, it is not recommended to use more than four of them.
+# *IMPORTANT*: You have multiple options to configure the view, requested banners, etc. (also see above in section Banner types and rich media (mraid) content)
+## <code>textColor [color]</code>, the color your text ad's text should have. E.g. '#FFFFFF'.
+## <code>textSize [integer]</code>, the size of your text ad's text. Maximum size is 20, minimum is 10.
+## <code>backgroundColor [color]</code>, the color the background of your text ads. E.g. '#000000'.
+## <code>secondsToRefresh [integer]</code>, the time after which a new ad will be loaded. Minimum is 45.
+## <code>bannerType [mma|leaderboard|fullscreen|portrait|landscape|medium_rectangle|rich_media]</code>, the ad type (size) of your banner. rich_media is a special high priced format that can cover the whole device screen. If rich_media is set, the placement_type is always (!) interstitial.
+The sizes are: mma 320x53, leaderboard 728x90, fullcreen 768x768, portrait 766x66, landscape 1024x66, medium_rectangle 300x250, rich_media up to fullscreen.
+## <code>animation [fade|left_to_right|top_down]</code>, the way new ads will be animated. 'fade' is default.
+## <code>deliverOnlyText [true|false]</code>, whether your ad only displays text or not. This only has effect on mma type banners.
+## <code>placement_type [inline|interstitial]</code>, only for mraid ads, default is inline. When declaring the placement_type as interstitial, you have to place your ad in a way that it is always visible, or, in other words, can not be scrolled out of the visible part of the screen. Basically interstitial ads do always have a close button, whereas inline ads might have none (if so, it's provided by the ad itself).
+## <code>mraid [boolean]</code>, whether you want to display rich media ads or not, default is true. Please make sure to overwrite onApplicationPause() and onApplicationResume() in your MadvertiseCallbackListener appropriately when setting this flag to true. MRAID ads will have the initial size defined with the parameter "bannerType" (see above). They can expand on a click (expanded is defined by the ad itself, which might be fullscreen).
+
+h2. Sample App
+
+The SDK comes with a very simple example, how to integrate the SDK in your APP. You can find it at [PROJECT_ROOT]/example/simple/.
+Use "Create project from existing source" and point the location to the mentioned folder. You might get some compiler warnings. If so, adjust the compiler compliance level.
+
+Please make sure to add the madvertiseSDK to the build path settings accordingly to your development environment.
+
+For Eclipse with installed ADT Plugin follow "these steps":http://developer.android.com/guide/developing/projects/projects-eclipse.html#ReferencingLibraryProject.
+
+"main.xml":https://github.com/madvertise/madvertise-android-sdk/blob/master/examples/simple/res/layout/main.xml contains a MadvertiseView, that fetches the ads.
 
 h2. Contributing
 
