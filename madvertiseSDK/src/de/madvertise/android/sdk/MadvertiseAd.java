@@ -130,14 +130,6 @@ public class MadvertiseAd {
 
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
-            // only for testing
-            
-            // only sound after click, no video
-            //mBannerUrl = "http://dl.dropbox.com/u/48980623/overlay-mraid/index.html";
-            
-            // nothing happens after first click on play button, second click => excpetion!
-            //mBannerUrl = "http://dl.dropbox.com/u/48980623/overlay-mraid-2/index.html";
-            
             // get sizes for rich media ad     
             try {
                 mBannerHeight = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "height"));
@@ -146,10 +138,6 @@ public class MadvertiseAd {
             	mBannerHeight = 53;
             	mBannerWidth = 320;
             }
-            
-         // only for testing
-        	mBannerHeight = 350;
-        	mBannerWidth = 310;
                              
         } catch (JSONException e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Error in json string");
