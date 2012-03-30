@@ -122,8 +122,6 @@ public class MadvertiseMraidView extends WebView {
                         mCloseButton
                                 .setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
                     }
-                } else {
-                    mError = false;
                 }
             }
 

@@ -112,13 +112,13 @@ public class MadvertiseAd {
             mBannerUrl = MadvertiseUtil.getJSONValue(bannerJson, BANNER_URL_CODE);
             mHasBanner = true;
             mBannerType = MadvertiseUtil.getJSONValue(bannerJson, "type");
-               
+
             // check, if rich media banner
             JSONObject richMediaJson = MadvertiseUtil.getJSONObject(bannerJson, "rich_media");
             if (richMediaJson == null) {
         		return;
         	}
-            
+
             // check, if mraid type
             if (!MadvertiseUtil.getJSONBoolean(richMediaJson, "mraid")) {
             	mHasBanner = false;
@@ -130,7 +130,7 @@ public class MadvertiseAd {
 
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
-            // get sizes for rich media ad     
+
             try {
                 mBannerHeight = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "height"));
                 mBannerWidth = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "width"));
@@ -138,7 +138,7 @@ public class MadvertiseAd {
             	mBannerHeight = 53;
             	mBannerWidth = 320;
             }
-                             
+
         } catch (JSONException e) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Error in json string");
             if (mCallbackListener != null) {
@@ -206,7 +206,7 @@ public class MadvertiseAd {
     protected JSONArray getImpressionTrackingArray() {
     	return mImpressionTrackingArray;
     }
-    
+
     protected boolean isMraid() {
         return mIsMraid;
     }
