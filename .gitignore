@@ -1,3 +1,9 @@
+examples/overlay/.classpath
+examples/overlay/.settings
+examples/overlay/.project
+examples/overlay/bin/
+examples/overlay/gen/
+examples/overlay/.DS_Store
 examples/simple/.classpath
 examples/simple/.settings
 examples/simple/.project
