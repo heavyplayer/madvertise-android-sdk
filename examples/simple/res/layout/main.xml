@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
  <LinearLayout
- 		xmlns:android="http://schemas.android.com/apk/res/android"
- 		xmlns:mad="http://schemas.android.com/apk/res/de.madvertise.test"
-		android:orientation="vertical"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:mad="http://schemas.android.com/apk/res/de.madvertise.test"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:gravity="center_horizontal">
+	<!-- documentation : https://github.com/madvertise/madvertise-android-sdk-->
+	<de.madvertise.android.sdk.MadvertiseView
+		android:id="@+id/madad"
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-    android:gravity="center_horizontal"
-		>
-		<!-- documentation : https://github.com/madvertise/madvertise-android-sdk-->
-		<de.madvertise.android.sdk.MadvertiseView
-			android:id="@+id/madad"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			mad:bannerType="rich_media"
-      mad:placement_type="interstitial"
-		/>
-
-		<ListView
-			android:id="@+id/country_list"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:background="#000000"
-		/>
+		android:layout_height="wrap_content"
+		mad:bannerType="mma"
+		mad:placement_type="inline"/>
+	<ListView
+		android:id="@+id/country_list"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:background="#000000"/>
  </LinearLayout>
