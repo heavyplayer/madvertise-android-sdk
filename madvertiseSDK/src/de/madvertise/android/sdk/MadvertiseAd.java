@@ -131,6 +131,7 @@ public class MadvertiseAd {
             // overwrite banner url
             mBannerUrl = MadvertiseUtil.getJSONValue(richMediaJson, "full_url");
 
+            // get sizes for rich media ad
             try {
                 mBannerHeight = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "height"));
                 mBannerWidth = Integer.parseInt(MadvertiseUtil.getJSONValue(richMediaJson, "width"));

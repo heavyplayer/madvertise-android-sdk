@@ -73,8 +73,7 @@ public class MadvertiseUtil {
 
     static final boolean PRINT_LOG = true;
 
-	static final String MAD_SERVER = "http://ad.madvertise.de";
-	// static final String MAD_SERVER = "http://192.168.1.121:9292";
+	 static final String MAD_SERVER = "http://ad.madvertise.de";
 
     static final int CONNECTION_TIMEOUT = 5000;
 
