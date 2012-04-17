@@ -18,13 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
         <!-- open external urls -->
         <activity android:name="de.madvertise.android.sdk.MadvertiseActivity"/>
-        
-        <!-- Setup your site token. For tests, use 'TestToken'-->
-        <meta-data android:value="okAs3Iar" android:name="madvertise_site_token" />
-        
+
+        <!-- Setup your site token. For tests, use 'TestTokn'-->
+        <meta-data android:value="TestTokn" android:name="madvertise_site_token" />
+
     </application>
 
 </manifest>
