@@ -274,6 +274,9 @@ public class MadvertiseMraidView extends WebView {
                 }
             });
             setState(STATE_EXPANDED);
+            if (mListener != null) {
+                mListener.onApplicationPause();
+            }
             if (mMadView != null) {
                 mMadView.setFetchingAdsEnabled(false);
             }
