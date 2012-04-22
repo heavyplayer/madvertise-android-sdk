@@ -561,7 +561,7 @@ public class MadvertiseView extends FrameLayout {
      * Starts a background thread to fetch a new ad. Method is called from the
      * refresh timer task
      */
-    private void requestNewAd(final boolean isTimerRequest) {
+    public void requestNewAd(final boolean isTimerRequest) {
         if (!mFetchAdsEnabled) {
             MadvertiseUtil.logMessage(null, Log.DEBUG, "Fetching ads is disabled");
             return;
