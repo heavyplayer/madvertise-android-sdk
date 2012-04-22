@@ -196,7 +196,7 @@ public class MadvertiseMraidView extends WebView {
     }
 
     protected void loadAd(String url) {
-        MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: " + url);
+//        MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: " + url);
 
         if (mraidJS == null) {
             mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources()
@@ -220,7 +220,7 @@ public class MadvertiseMraidView extends WebView {
 
     @Override
     public void loadUrl(String url) {
-        MadvertiseUtil.logMessage(null, Log.INFO, "Loading url now: " + url);
+//        MadvertiseUtil.logMessage(null, Log.INFO, "Loading url now: " + url);
         super.loadUrl(url);
     }
 
