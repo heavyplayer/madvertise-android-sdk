@@ -1203,4 +1203,8 @@ public class MadvertiseView extends FrameLayout {
          */
         public void onApplicationResume();
     }
+    
+    public void setTestModeEnabled(boolean enabled) {
+    	mTestMode = enabled;
+    }
 }
