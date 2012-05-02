@@ -66,7 +66,7 @@ import java.util.TimerTask;
 
 public class MadvertiseView extends FrameLayout {
 
-    private static final boolean IS_TESTMODE_DEFAULT = false;
+    public static boolean IS_TESTMODE_DEFAULT = false;
 
     // parameters for shine effect of the textview banner
     private final int GRADIENT_TOP_ALPHA = (int) (255 * 0.50);
