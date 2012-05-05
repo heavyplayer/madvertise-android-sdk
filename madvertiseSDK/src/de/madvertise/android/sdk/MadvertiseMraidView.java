@@ -20,8 +20,8 @@
 
 package de.madvertise.android.sdk;
 
-import java.io.IOException;
-import java.io.InputStream;
+import de.madvertise.android.sdk.MadvertiseView.AnimationEndListener;
+import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,8 +46,9 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.VideoView;
-import de.madvertise.android.sdk.MadvertiseView.AnimationEndListener;
-import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
+
+import java.io.IOException;
+//import android.widget.VideoView;
 
 //import java.io.IOException;
 
@@ -198,8 +199,8 @@ public class MadvertiseMraidView extends WebView {
 //        MadvertiseUtil.logMessage(null, Log.INFO, "loading html Ad: " + url);
 
         if (mraidJS == null) {
-        	InputStream is = MadvertiseMraidView.class.getClassLoader().getResourceAsStream("res/raw/mraid.js");
-            mraidJS = MadvertiseUtil.convertStreamToString(is);
+            mraidJS = MadvertiseUtil.convertStreamToString(getContext().getResources()
+                    .openRawResource(de.madvertise.android.sdk.R.raw.mraid));
         }
 
         loadUrl("javascript:" + mraidJS);
