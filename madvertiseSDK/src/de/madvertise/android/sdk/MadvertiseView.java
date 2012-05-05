@@ -244,9 +244,9 @@ public class MadvertiseView extends FrameLayout {
         setFocusable(true);
         setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
-        if (mRequestThread == null || !mRequestThread.isAlive()) {
-            requestNewAd(false);
-        }
+//        if (mRequestThread == null || !mRequestThread.isAlive()) {
+//            requestNewAd(false);
+//        }
         
         // no reloads for ads with banner_type = rich_media
         if (mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA) || mBannerType.contains(MadvertiseUtil.BANNER_TYPE_RICH_MEDIA_SHORT) ) {
