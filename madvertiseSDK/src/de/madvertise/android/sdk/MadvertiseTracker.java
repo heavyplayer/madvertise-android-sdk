@@ -17,21 +17,11 @@
 package de.madvertise.android.sdk;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -168,7 +158,7 @@ public class MadvertiseTracker {
         		&&
         		isSessionEnabled()
            ) {
-            new Thread(new Runnable() {
+            Thread trackerThread = new Thread(new Runnable() {
                 public void run() {
                     MadvertiseUtil.logMessage(null, Log.DEBUG, "Reporting action " + actionType);
 
@@ -183,83 +173,66 @@ public class MadvertiseTracker {
                         MadvertiseUtil.logMessage(null, Log.DEBUG, "appID = " + siteToken);
                     }
 
-                    // create post request
-                    HttpPost postRequest = new HttpPost(MadvertiseUtil.MAD_SERVER + "/action/"
-                            + siteToken);
-                    postRequest.setHeader("Content-Type",
-                            "application/x-www-form-urlencoded; charset=utf-8");
-
-                    List<NameValuePair> parameterList = new ArrayList<NameValuePair>();
-                    parameterList.add(new BasicNameValuePair("ua", MadvertiseUtil.getUA()));
-                    parameterList.add(new BasicNameValuePair("app", "true"));
-                    parameterList.add(new BasicNameValuePair("debug", Boolean
-                            .toString(mIsDebugMode)));
-                    parameterList.add(new BasicNameValuePair("ip", MadvertiseUtil
-                            .getLocalIpAddress(null)));
-
-                    parameterList.add(new BasicNameValuePair("ts", Long.toString(System
-                            .currentTimeMillis())));
-                    parameterList.add(new BasicNameValuePair("at", actionType));
-                    parameterList.add(new BasicNameValuePair("first_launch", Boolean
-                            .toString(isFirstLaunch())));
-
-                    parameterList.add(new BasicNameValuePair("app_name", MadvertiseUtil.getApplicationName(mContext.getApplicationContext())));
-                    parameterList.add(new BasicNameValuePair("app_version", MadvertiseUtil.getApplicationVersion(mContext.getApplicationContext())));
-                    
-                    parameterList.add(new BasicNameValuePair("udid_md5", MadvertiseUtil.getHashedAndroidID(mContext, MadvertiseUtil.HashType.MD5)));
-                    parameterList.add(new BasicNameValuePair("udid_sha1", MadvertiseUtil.getHashedAndroidID(mContext, MadvertiseUtil.HashType.SHA1)));
-                    
-                    parameterList.add(new BasicNameValuePair("mac_md5", MadvertiseUtil.getHashedMacAddress(mContext, MadvertiseUtil.HashType.MD5)));
-                    parameterList.add(new BasicNameValuePair("mac_sha1", MadvertiseUtil.getHashedMacAddress(mContext, MadvertiseUtil.HashType.SHA1)));
-                    
-                    UrlEncodedFormEntity urlEncodedEntity = null;
-                    try {
-                        urlEncodedEntity = new UrlEncodedFormEntity(parameterList);
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-
-                    postRequest.setEntity(urlEncodedEntity);
-
-                    MadvertiseUtil.logMessage(null, Log.DEBUG, "Post request created");
-                    MadvertiseUtil.logMessage(null, Log.DEBUG, "Uri : "
-                            + postRequest.getURI().toASCIIString());
-                    MadvertiseUtil.logMessage(
-                            null,
-                            Log.DEBUG,
-                            "All headers : "
-                                    + MadvertiseUtil.getAllHeadersAsString(postRequest
-                                            .getAllHeaders()));
-                    MadvertiseUtil.logMessage(null, Log.DEBUG, "All request parameters :"
-                            + MadvertiseUtil.printRequestParameters(parameterList));
-
+                    HttpURLConnection urlConnection = null;
                     synchronized (this) {
-                        // send blocking request to ad server
-                        HttpClient httpClient = new DefaultHttpClient();
-                        HttpResponse httpResponse = null;
+            			try {
+            				// create post request
+            				URL url = new URL(MadvertiseUtil.MAD_SERVER + "/action/" + siteToken);
+            				
+            				urlConnection = (HttpURLConnection)url.openConnection();
+            				urlConnection.setDoOutput(true);
 
-                        try {
-                            HttpParams clientParams = httpClient.getParams();
-                            HttpConnectionParams.setConnectionTimeout(clientParams,
-                                    MadvertiseUtil.CONNECTION_TIMEOUT);
-                            HttpConnectionParams.setSoTimeout(clientParams,
-                                    MadvertiseUtil.CONNECTION_TIMEOUT);
+            				urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+                    
+            				StringBuilder entities = new StringBuilder();
+            				MadvertiseUtil.addEntity(entities, "ua", MadvertiseUtil.getUA());
+            				MadvertiseUtil.addEntity(entities, "app", "true");
+            				MadvertiseUtil.addEntity(entities, "debug", Boolean.toString(mIsDebugMode));
+            				MadvertiseUtil.addEntity(entities, "ip", MadvertiseUtil.getLocalIpAddress(null));
+            				
+            				MadvertiseUtil.addEntity(entities, "ts", Long.toString(System.currentTimeMillis()));
+            				MadvertiseUtil.addEntity(entities, "at", actionType);
+            				MadvertiseUtil.addEntity(entities, "first_launch", Boolean.toString(isFirstLaunch()));
+            				
+            				MadvertiseUtil.addEntity(entities, "app_name", MadvertiseUtil.getApplicationName(mContext.getApplicationContext()));
+            				MadvertiseUtil.addEntity(entities, "app_version", MadvertiseUtil.getApplicationVersion(mContext.getApplicationContext()));
 
-                            MadvertiseUtil.logMessage(null, Log.DEBUG, "Sending request");
-                            httpResponse = httpClient.execute(postRequest);
+            				MadvertiseUtil.addEntity(entities, "udid_md5", MadvertiseUtil.getHashedAndroidID(mContext, MadvertiseUtil.HashType.MD5));
+            				MadvertiseUtil.addEntity(entities, "udid_sha1", MadvertiseUtil.getHashedAndroidID(mContext, MadvertiseUtil.HashType.SHA1));
+
+            				MadvertiseUtil.addEntity(entities, "mac_md5", MadvertiseUtil.getHashedMacAddress(mContext, MadvertiseUtil.HashType.MD5));
+            				MadvertiseUtil.addEntity(entities, "mac_sha1", MadvertiseUtil.getHashedMacAddress(mContext, MadvertiseUtil.HashType.SHA1));
+
+            				urlConnection.setConnectTimeout(MadvertiseUtil.CONNECTION_TIMEOUT);
+            				urlConnection.setReadTimeout(MadvertiseUtil.CONNECTION_TIMEOUT);
+
+            				MadvertiseUtil.logMessage(null, Log.DEBUG, "Post request created");
+            				MadvertiseUtil.logMessage(null, Log.DEBUG, "Uri : "+ url.toString());
+            				MadvertiseUtil.logMessage(
+            						null,
+            						Log.DEBUG,
+            						"All headers : "+MadvertiseUtil.getAllHeadersAsString(urlConnection.getRequestProperties()));
+            				MadvertiseUtil.logMessage(null, Log.DEBUG, "All request parameters : "+entities.toString());
+
+            				// send blocking request to ad server
+            				urlConnection.setConnectTimeout(MadvertiseUtil.CONNECTION_TIMEOUT);
+            				urlConnection.setReadTimeout(MadvertiseUtil.CONNECTION_TIMEOUT);
+
+            				MadvertiseUtil.logMessage(null, Log.DEBUG, "Sending request");
+            				OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream(), MadvertiseUtil.ENCODING);
+            				out.write(entities.toString());
+            				out.flush();
+
+            				int responseCode = urlConnection.getResponseCode();
 
                             MadvertiseUtil.logMessage(null, Log.DEBUG, "Response Code => "
-                                    + httpResponse.getStatusLine().getStatusCode());
+                                    + responseCode);
 
-                            int responseCode = httpResponse.getStatusLine().getStatusCode();
-
-                            HttpEntity entity = httpResponse.getEntity();
-
-                            if (responseCode == 200 && entity != null) {
-                                if (isFirstLaunch()) {
+            				if (responseCode == 200) {
+            					if (isFirstLaunch()) {
                                     onFirstLaunch();
                                 }
-                            }
+            				}
                         } catch (ClientProtocolException e) {
                             MadvertiseUtil.logMessage(null, Log.DEBUG,
                                     "Error in HTTP request / protocol");
@@ -275,7 +248,9 @@ public class MadvertiseTracker {
                         }
                     }
                 }
-            }, "MadvertiseTrackingThread").start();
+            }, "MadvertiseTrackingThread");
+            trackerThread.setPriority(Thread.MIN_PRIORITY);
+            trackerThread.start();
         }
     }
 

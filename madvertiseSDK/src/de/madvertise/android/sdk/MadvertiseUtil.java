@@ -16,10 +16,24 @@
 
 package de.madvertise.android.sdk;
 
-import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import org.apache.http.Header;
-import org.apache.http.NameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,22 +55,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.util.Log;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+import de.madvertise.android.sdk.MadvertiseView.MadvertiseViewCallbackListener;
 
 /**
  * Utility class for the madvertise android SDK.
@@ -313,6 +312,18 @@ public class MadvertiseUtil {
 
         return hexString.toString();
     }
+    
+    /**
+     * Adds an entity to a StringBuffer
+     */
+    public static void addEntity(StringBuilder builder, String name, String value) {
+    	if(builder.length() > 0)
+    		builder.append("&");
+    	
+    	try {
+    		builder.append(name).append("=").append(URLEncoder.encode(value, ENCODING));
+		} catch(UnsupportedEncodingException e) { /* ignore */ }
+    }
 
     /**
      * Print all header parameters, just for logging purpose
@@ -320,10 +331,13 @@ public class MadvertiseUtil {
      * @param headers header object
      * @return all headers concatenated
      */
-    public static String getAllHeadersAsString(final Header[] headers) {
+    public static String getAllHeadersAsString(final Map<String, List<String>> headers) {
         String returnString = "";
-        for (int i = 0; i < headers.length; i++) {
-            returnString += "<< " + headers[i].getName() + " : " + headers[i].getValue() + " >>";
+        for (String name : headers.keySet()) {
+        	returnString += "<< " + name + " : ";
+        	for (String value : headers.get(name))
+        		returnString += value+" ";
+        	returnString += ">>";
         }
         return returnString;
     }
@@ -449,17 +463,6 @@ public class MadvertiseUtil {
                 }
             }, context.getMainLooper());
         }
-    }
-
-    public static String printRequestParameters(final List<NameValuePair> parameterList) {
-        StringBuilder stringBuilder = new StringBuilder();
-        Iterator<NameValuePair> nameValueIterator = parameterList.iterator();
-        while (nameValueIterator.hasNext()) {
-            NameValuePair pair = nameValueIterator.next();
-            stringBuilder.append(pair.getName() + "=" + pair.getValue() + "\n");
-        }
-
-        return stringBuilder.toString();
     }
 
     /**
