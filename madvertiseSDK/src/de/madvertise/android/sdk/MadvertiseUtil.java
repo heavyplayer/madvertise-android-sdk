@@ -348,7 +348,7 @@ public class MadvertiseUtil {
      * @param inputStream stream from the http connection with the ad server
      * @return json string from the ad server
      */
-    public static String convertStreamToString(final InputStream inputStream) {
+    public static String convertStreamToString(final InputStream inputStream) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder stringBuilder = new StringBuilder();
         String line = null;
@@ -356,8 +356,8 @@ public class MadvertiseUtil {
             while ((line = bufferedReader.readLine()) != null) {
                 stringBuilder.append(line + "\n");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (OutOfMemoryError e) {
+            throw new IOException();
         } finally {
             try {
                 inputStream.close();
